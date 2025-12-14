@@ -15,7 +15,7 @@
     font-family: monospace;
     font-weight: 800;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 2px #EBFA7A;
+    text-shadow: 0 0 2px #EBFA7A; /* PATCH [9] glow across webpage */
     overflow-x: hidden;
   }
 
@@ -180,7 +180,7 @@
     border: 1px solid rgba(255, 204, 0, 0.35);
     box-shadow: 0 0 3px rgba(235, 250, 122, 0.25);
     padding: 10px 10px 8px 10px;
-    position: relative; /* for bottom-right zoom buttons */
+    position: relative; /* PATCH [9] for bottom-right zoom controls */
   }
 
   .map-topline {
@@ -240,30 +240,29 @@
     display: block;
   }
 
-  /* bottom-right zoom buttons */
-  .zoom-controls {
+  /* PATCH [9] zoom buttons moved to bottom-right; keep them clickable above pointer capture */
+  .map-zoompad {
     position: absolute;
     right: 10px;
     bottom: 10px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    z-index: 5;
-    user-select: none;
+    z-index: 50;
+    pointer-events: auto;
   }
-
-  .zoom-controls .zbtn {
+  .map-zoompad .zbtn {
     cursor: pointer;
     border: 1px solid rgba(255, 204, 0, 0.25);
     padding: 6px 10px;
     box-shadow: 0 0 2px rgba(235, 250, 122, 0.15);
+    user-select: none;
+    background: rgba(38,38,38,0.55);
+    text-align: center;
     font-weight: 1000;
     letter-spacing: 0.10em;
-    opacity: 0.95;
-    background: rgba(38,38,38,0.25);
-    backdrop-filter: blur(2px);
   }
-  .zoom-controls .zbtn:hover {
+  .map-zoompad .zbtn:hover {
     border-color: rgba(255, 204, 0, 0.6);
   }
 
@@ -351,38 +350,14 @@
 
   /* ---------- MOBILE UI OPTIMISATION (≤600px) ---------- */
   @media (max-width: 600px) {
-    body {
-      font-size: 8px;
-      padding: 0;
-      margin: 0;
-    }
-
-    .teku-header {
-      font-size: 1.3em;
-      letter-spacing: 0.15em;
-    }
-
+    body { font-size: 8px; padding: 0; margin: 0; }
+    .teku-header { font-size: 1.3em; letter-spacing: 0.15em; }
     p.small { font-size: 1.0em; }
-
-    h1 {
-      font-size: 2em;
-      line-height: 1.3;
-    }
-
+    h1 { font-size: 2em; line-height: 1.3; }
     p.bodytext { font-size: 1.3em; }
-
     .typeout { font-size: 1.3em; }
-
-    .button {
-      font-size: 1.4em;
-      padding: 16px 24px;
-    }
-
-    .container {
-      transform: none;
-      padding: 20px;
-    }
-
+    .button { font-size: 1.4em; padding: 16px 24px; }
+    .container { transform: none; padding: 20px; }
     .map-topline { font-size: 1.0em; }
     .map-controls { font-size: 1.0em; }
     .map-bottom { font-size: 1.0em; }
@@ -421,6 +396,7 @@
 
         <div style="height: 20px;"></div>
 
+        <!-- PATCH [16] -->
         <p class="typeout">▉ ▉ ▉ Calibrated </p>
 
         <div style="height: 100px;"></div>
@@ -474,7 +450,6 @@
   }
 
   function parseYMD(s){
-    // expects YYYY-MM-DD
     const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(s || "");
     if(!m) return null;
     const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
@@ -484,6 +459,7 @@
 
   // ---------------------------
   // 1) Orbital model
+  // JPL Standish "Approximate positions" Table 2a/2b for 3000 BC - 3000 AD
   // ---------------------------
   const JPL_T2A = {
     Mercury:  { a0:0.38709843, aDot:0.00000000, e0:0.20563661, eDot:0.00002123, I0:7.00559432, IDot:-0.00590158, L0:252.25166724, LDot:149472.67486623, wbar0:77.45771895, wbarDot:0.15940013, Omega0:48.33961819, OmegaDot:-0.12214182 },
@@ -503,8 +479,11 @@
     Neptune: { b:-0.00041348, c:0.68346318, s:-0.10162547, f: 7.67025000 }
   };
 
-  function makeKeplerBody({name, a, e, I, Omega, omega, Tp_jd, n_deg_per_day}){
-    return { name, a, e, I, Omega, omega, Tp_jd, n: n_deg_per_day };
+  function makeKeplerBody({name, a, e, I, Omega, omega, epoch_jd, M0_deg}){
+    const P_years = Math.sqrt(a*a*a);
+    const P_days  = P_years * 365.25;
+    const n = 360.0 / P_days;
+    return { name, a, e, I, Omega, omega, epoch_jd, M0_deg, n };
   }
 
   function solveKeplerE(Mdeg, e){
@@ -559,11 +538,40 @@
     return posFromElements(a, e, I, Omega, omega, M);
   }
 
+  function elementsJPL(name, jd){
+    // PATCH [15] trails need the instantaneous ellipse parameters for sampling
+    const el = JPL_T2A[name];
+    const T = (jd - 2451545.0) / 36525.0;
+    const a = el.a0 + el.aDot * T;
+    const e = el.e0 + el.eDot * T;
+    const I = el.I0 + el.IDot * T;
+    const L = el.L0 + el.LDot * T;
+    const wbar = el.wbar0 + el.wbarDot * T;
+    const Omega = el.Omega0 + el.OmegaDot * T;
+    const omega = wbar - Omega;
+
+    let M = L - wbar;
+    if(JPL_T2B[name]){
+      const t2b = JPL_T2B[name];
+      M += (t2b.b * T * T) + (t2b.c * Math.cos(t2b.f * T * DEG)) + (t2b.s * Math.sin(t2b.f * T * DEG));
+    }
+    M = modAngleDeg(M);
+    return {a,e,I,Omega,omega,M};
+  }
+
   function posFromKeplerBody(body, jd){
-    const M = modAngleDeg(body.n * (jd - body.Tp_jd));
+    const dt = jd - body.epoch_jd;
+    const M = modAngleDeg(body.M0_deg + body.n * dt);
     return posFromElements(body.a, body.e, body.I, body.Omega, body.omega, M);
   }
 
+  function elementsKeplerBody(body, jd){
+    const dt = jd - body.epoch_jd;
+    const M = modAngleDeg(body.M0_deg + body.n * dt);
+    return {a:body.a,e:body.e,I:body.I,Omega:body.Omega,omega:body.omega,M};
+  }
+
+  // Pluto: internal consistency (kept)
   const PLUTO = makeKeplerBody({
     name: "Pluto",
     a: 39.4821,
@@ -571,56 +579,72 @@
     I: 17.14001,
     Omega: 110.30,
     omega: 113.76,
-    Tp_jd: toJulianDay(1990,1,13),
-    n_deg_per_day: 0.003973966
+    epoch_jd: toJulianDay(1990,1,13),
+    M0_deg: 0.0
   });
 
+  // KYŪSEI (Planet Nine): canon
   const KYUSEI = (() => {
     const a = 520.0;
     const e = 0.35;
     const I = 20.0;
     const Omega = 88.0;
     const omega = 150.0;
-    const P_years = Math.sqrt(a*a*a);
-    const P_days  = P_years * 365.25;
-    const n = 360.0 / P_days;
     return makeKeplerBody({
       name: "KYŪSEI",
       a, e, I, Omega, omega,
-      Tp_jd: toJulianDay(2210,1,1),
-      n_deg_per_day: n
+      epoch_jd: toJulianDay(2210,1,1),
+      M0_deg: 0.0
     });
   })();
 
-  const CERES = (() => {
-    const P = 1680.2;
-    const n = 360.0 / P;
-    return makeKeplerBody({
-      name: "CERES",
-      a: 2.7675,
-      e: 0.0758,
-      I: 10.593,
-      Omega: 80.305,
-      omega: 73.597,
-      Tp_jd: toJulianDay(2220,1,1),
-      n_deg_per_day: n
-    });
-  })();
+  // Ceres / Vesta
+  const CERES = makeKeplerBody({
+    name: "CERES",
+    a: 2.7675,
+    e: 0.0758,
+    I: 10.593,
+    Omega: 80.305,
+    omega: 73.597,
+    epoch_jd: toJulianDay(2220,1,1),
+    M0_deg: 0.0
+  });
 
-  const VESTA = (() => {
-    const P = 1325.6;
-    const n = 360.0 / P;
-    return makeKeplerBody({
-      name: "VESTA",
-      a: 2.361,
-      e: 0.0887,
-      I: 7.140,
-      Omega: 103.851,
-      omega: 150.987,
-      Tp_jd: toJulianDay(2220,1,1) + (P/2),
-      n_deg_per_day: n
-    });
-  })();
+  const VESTA = makeKeplerBody({
+    name: "VESTA",
+    a: 2.361,
+    e: 0.0887,
+    I: 7.140,
+    Omega: 103.851,
+    omega: 150.987,
+    epoch_jd: toJulianDay(2220,1,1),
+    M0_deg: 180.0
+  });
+
+  // PATCH [14] add Eris + Haumea using JPL-derived infobox elements (epoch + a,e,i,Ω,ω,M)
+  // Eris epoch JD 2461000.5; a 67.99; e 0.4370; i 43.86; Ω 36.02; ω 150.73; M 211.45
+  const ERIS = makeKeplerBody({
+    name: "ERIS",
+    a: 67.99,
+    e: 0.4370,
+    I: 43.86,
+    Omega: 36.02,
+    omega: 150.73,
+    epoch_jd: 2461000.5,
+    M0_deg: 211.45
+  });
+
+  // Haumea epoch JD 2459200.5; a 43.116; e 0.19642; i 28.2137; Ω 122.167; ω 239.041; M 218.205
+  const HAUMEA = makeKeplerBody({
+    name: "HAUMEA",
+    a: 43.116,
+    e: 0.19642,
+    I: 28.2137,
+    Omega: 122.167,
+    omega: 239.041,
+    epoch_jd: 2459200.5,
+    M0_deg: 218.205
+  });
 
   // ---------------------------
   // 2) UI scaffold
@@ -628,8 +652,8 @@
   const mount = document.getElementById("solar-map");
   if(!mount) return;
 
-  // [9] zoom buttons moved to bottom-right overlay
-  // [11] input first (A/B), output second (readout)
+  // PATCH [11] swap input (selects) before output (readout)
+  // PATCH [13] remove button words; keep symbols only
   mount.innerHTML = `
     <div class="map-frame">
       <div class="map-topline">
@@ -637,14 +661,14 @@
         <div class="map-controls">
           <span class="ctrlbtn" id="btn-prev">◀</span>
           <span class="ctrlbtn" id="btn-next">▶</span>
-          <span class="ctrlbtn" id="btn-reset">RESET</span>
+          <span class="ctrlbtn" id="btn-reset">⟲</span>
         </div>
       </div>
 
       <div class="map-svg-wrap" id="map-wrap">
         <svg id="solar-svg" viewBox="-36 -36 72 72" preserveAspectRatio="xMidYMid meet"></svg>
 
-        <div class="zoom-controls">
+        <div class="map-zoompad" aria-label="Zoom controls">
           <div class="zbtn" id="btn-zoom-in">+</div>
           <div class="zbtn" id="btn-zoom-out">−</div>
         </div>
@@ -661,7 +685,7 @@
             <select id="sel-b"></select>
           </div>
         </div>
-        <div class="hint">TIP: tap bodies to set DEPART then ARRIVE. pinch to zoom; drag to pan. mouse wheel zoom works on desktop. click DATE to set specific date.</div>
+        <div class="hint">TIP: tap bodies to set DEPART then ARRIVE. pinch to zoom; drag to pan. mouse wheel zoom works on desktop. click DATE to set date.</div>
       </div>
 
       <div class="readout" id="readout">
@@ -698,35 +722,39 @@
   // ---------------------------
   // 3) Bodies
   // ---------------------------
-  // [15] rename + add L4/L5 for Jupiter and Saturn
+  // PATCH [13] rename Lagrange points and treat as minor
+  // PATCH [7] tighter trojan clouds; add Jupiter + Saturn L4/L5 clusters
+  // PATCH [14] add Eris, Haumea
   const BODIES = [
-    { key:"Mercury",  label:"MERCURY", type:"jpl", classHint:"inner" },
-    { key:"Venus",    label:"VENUS",   type:"jpl", classHint:"inner" },
-    { key:"Earth",    label:"EARTH",   type:"jpl", classHint:"inner" },
-    { key:"Mars",     label:"MARS",    type:"jpl", classHint:"inner" },
+    { key:"Mercury", label:"MERCURY", type:"jpl" },
+    { key:"Venus",   label:"VENUS",   type:"jpl" },
+    { key:"Earth",   label:"EARTH",   type:"jpl" },
+    { key:"Mars",    label:"MARS",    type:"jpl" },
 
-    { key:"Ceres",    label:"CERES",   type:"kepler", body:CERES, classHint:"minor" },
-    { key:"Vesta",    label:"VESTA",   type:"kepler", body:VESTA, classHint:"minor" },
+    { key:"Ceres",   label:"CERES",   type:"kepler", body:CERES, minor:true },
+    { key:"Vesta",   label:"VESTA",   type:"kepler", body:VESTA, minor:true },
 
-    { key:"Jupiter",  label:"JUPITER", type:"jpl", classHint:"major" },
-    { key:"JuL4",     label:"JU-L4",   type:"lagrange", parent:"Jupiter", offsetDeg:+60, classHint:"lag" },
-    { key:"JuL5",     label:"JU-L5",   type:"lagrange", parent:"Jupiter", offsetDeg:-60, classHint:"lag" },
+    { key:"Jupiter", label:"JUPITER", type:"jpl" },
+    { key:"Ju-L4",   label:"Ju-L4",   type:"lagrange", parent:"Jupiter", lag:+60, cluster:"ju", minor:true },
+    { key:"Ju-L5",   label:"Ju-L5",   type:"lagrange", parent:"Jupiter", lag:-60, cluster:"ju", minor:true },
 
-    { key:"Saturn",   label:"SATURN",  type:"jpl", classHint:"major" },
-    { key:"SaL4",     label:"SA-L4",   type:"lagrange", parent:"Saturn", offsetDeg:+60, classHint:"lag" },
-    { key:"SaL5",     label:"SA-L5",   type:"lagrange", parent:"Saturn", offsetDeg:-60, classHint:"lag" },
+    { key:"Saturn",  label:"SATURN",  type:"jpl" },
+    { key:"Sa-L4",   label:"Sa-L4",   type:"lagrange", parent:"Saturn",  lag:+60, cluster:"sa", minor:true },
+    { key:"Sa-L5",   label:"Sa-L5",   type:"lagrange", parent:"Saturn",  lag:-60, cluster:"sa", minor:true },
 
-    { key:"Uranus",   label:"URANUS",  type:"jpl", classHint:"major" },
-    { key:"Neptune",  label:"NEPTUNE", type:"jpl", classHint:"major" },
+    { key:"Uranus",  label:"URANUS",  type:"jpl" },
+    { key:"Neptune", label:"NEPTUNE", type:"jpl" },
 
-    { key:"Pluto",    label:"PLUTO",   type:"kepler", body:PLUTO, classHint:"minor" },
-    { key:"Kyusei",   label:"KYŪSEI",  type:"kepler", body:KYUSEI, classHint:"major" }
+    { key:"Pluto",   label:"PLUTO",   type:"kepler", body:PLUTO, minor:true },
+    { key:"Haumea",  label:"HAUMEA",  type:"kepler", body:HAUMEA, minor:true },
+    { key:"Eris",    label:"ERIS",    type:"kepler", body:ERIS, minor:true },
+
+    { key:"Kyusei",  label:"KYŪSEI",  type:"kepler", body:KYUSEI }
   ];
 
   function fillSelect(sel){
     sel.innerHTML = "";
     for(const b of BODIES){
-      // keep selection list clean: no duplicate planet entry needed; L points are included
       const opt = document.createElement("option");
       opt.value = b.key;
       opt.textContent = b.label;
@@ -768,64 +796,52 @@
     el.appendChild(document.createTextNode(txt));
   }
 
+  // Create defs (glow filter)
   function ensureDefs(){
     const defs = make("defs");
 
-    // [10] glow filter for bodies/labels
+    // PATCH [9][10] stronger + consistent glow for bodies/labels
     const filter = make("filter", {
       id: "tekugl",
-      x: "-40%",
-      y: "-40%",
-      width: "180%",
-      height: "180%"
+      x: "-60%",
+      y: "-60%",
+      width: "220%",
+      height: "220%"
     });
 
-    const fe1 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"0.8", "flood-color":"#EBFA7A", "flood-opacity":"0.24" });
-    const fe2 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" });
+    const fe1 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.05", "flood-color":"#EBFA7A", "flood-opacity":"0.38" });
+    const fe2 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.85", "flood-color":"#ffcc00", "flood-opacity":"0.22" });
     filter.appendChild(fe1);
     filter.appendChild(fe2);
 
     defs.appendChild(filter);
-
-    // [12] arc paths for belt labels (world-layer, not screen-constant)
-    const beltPaths = make("g", { id:"beltpaths" });
-
-    // helper: arc segment centered at an angle
-    function arcPath(id, r, centerDeg, spanDeg){
-      const a0 = (centerDeg - spanDeg/2) * DEG;
-      const a1 = (centerDeg + spanDeg/2) * DEG;
-      const x0 = r * Math.cos(a0), y0 = r * Math.sin(a0);
-      const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
-      const large = spanDeg > 180 ? 1 : 0;
-      // sweep 1 draws CCW in SVG y-down coordinates? Here we’re in mathematical coords; empirically, sweep=1 works fine for our use.
-      const d = `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
-      beltPaths.appendChild(make("path", { id, d, fill:"none" }));
-    }
-
-    // Wild Waste mid radius ~3.0
-    arcPath("ww_315", 3.02, 315, 120);
-    arcPath("ww_135", 3.02, 135, 120);
-
-    // Second Crown mid radius ~40.0
-    arcPath("sc_315", 40.0, 315, 120);
-    arcPath("sc_135", 40.0, 135, 120);
-
-    defs.appendChild(beltPaths);
-
     svg.appendChild(defs);
+
+    // PATCH [12] dotted patterns (true dot, not dash)
+    const dp = make("pattern", { id:"dotpat", patternUnits:"userSpaceOnUse", width:"0.45", height:"0.45" });
+    dp.appendChild(make("circle", { cx:"0.15", cy:"0.15", r:"0.07", fill:"rgba(255,204,0,0.8)" }));
+    defs.appendChild(dp);
   }
 
-  // layers: world (belts, sun), vector (transfer line), hud (markers/labels)
-  let gWorld, gVector, gHUD;
+  let gWorld, gTrails, gHUD, gOverlay;
 
   function buildLayers(){
+    // world: belts + sun + fixed band text
     gWorld  = make("g", { id:"world" });
-    gVector = make("g", { id:"vector" });
-    gHUD    = make("g", { id:"hud", filter:"url(#tekugl)" }); // glow on bodies/labels
+
+    // trails: behind bodies
+    gTrails = make("g", { id:"trails" });
+
+    // hud: bodies + labels + hit areas + journey line
+    gHUD    = make("g", { id:"hud", filter:"url(#tekugl)" });
+
+    // overlay: optional (unused, kept for future)
+    gOverlay = make("g", { id:"overlay" });
 
     svg.appendChild(gWorld);
-    svg.appendChild(gVector);
+    svg.appendChild(gTrails);
     svg.appendChild(gHUD);
+    svg.appendChild(gOverlay);
   }
 
   // ---------------------------
@@ -844,7 +860,6 @@
     svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
     updateHUDScale();
     updateDeclutter();
-    resolveLabelLayout(); // [12][14] reflow labels after zoom/pan
   }
 
   function clientToWorld(clientX, clientY){
@@ -874,8 +889,8 @@
     const nx = (focusWorld.x - vb.x) / vb.w;
     const ny = (focusWorld.y - vb.y) / vb.h;
 
-    // [1] allow deeper zoom-in: min viewbox width lowered
-    const newW = clamp(vb.w * factor, 2.0, 1600);
+    // PATCH [1] allow 3 more levels zoom-in (lower min width)
+    const newW = clamp(vb.w * factor, 2.0, 160000);
     const newH = newW;
 
     const newX = focusWorld.x - nx * newW;
@@ -885,18 +900,26 @@
     markGestured();
   }
 
-  // Zoom buttons bottom-right
-  btnZoomIn.addEventListener("click", () => {
+  // PATCH [1] zoom buttons fixed on desktop:
+  // - stop propagation so pointer system doesn't swallow click
+  // - keep pointer-events enabled by CSS
+  btnZoomIn.addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation();
     const focus = { x: interaction.vb.x + interaction.vb.w/2, y: interaction.vb.y + interaction.vb.h/2 };
-    zoomAt(focus, 0.78);
+    zoomAt(focus, 0.80);
   });
-  btnZoomOut.addEventListener("click", () => {
+  btnZoomOut.addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation();
     const focus = { x: interaction.vb.x + interaction.vb.w/2, y: interaction.vb.y + interaction.vb.h/2 };
-    zoomAt(focus, 1.24);
+    zoomAt(focus, 1.22);
   });
 
   // Pointer gestures
   wrap.addEventListener("pointerdown", (e) => {
+    // PATCH [1] don't steal pointerdown from zoom buttons
+    const t = e.target;
+    if(t && t.classList && t.classList.contains("zbtn")) return;
+
     wrap.setPointerCapture(e.pointerId);
     interaction.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   });
@@ -919,7 +942,6 @@
     const pts = Array.from(interaction.pointers.values());
 
     if(pts.length === 1){
-      // Pan
       const dx = curr.x - prev.x;
       const dy = curr.y - prev.y;
 
@@ -938,7 +960,6 @@
     }
 
     if(pts.length >= 2){
-      // Pinch zoom around midpoint
       const ids = Array.from(interaction.pointers.keys());
       const id1 = ids[0], id2 = ids[1];
       const p1 = interaction.pointers.get(id1);
@@ -947,17 +968,14 @@
       let b1 = p1, b2 = p2;
       let a1 = p1, a2 = p2;
 
-      if(e.pointerId === id1){
-        b1 = prev; a1 = curr;
-      } else if(e.pointerId === id2){
-        b2 = prev; a2 = curr;
-      }
+      if(e.pointerId === id1){ b1 = prev; a1 = curr; }
+      else if(e.pointerId === id2){ b2 = prev; a2 = curr; }
 
       const dBefore = dist2(b1,b2);
       const dAfter  = dist2(a1,a2);
       if(dBefore < 2 || dAfter < 2) return;
 
-      const scale = dBefore / dAfter; // >1 zoom in
+      const scale = dBefore / dAfter;
       const midClient = { x:(a1.x+a2.x)/2, y:(a1.y+a2.y)/2 };
       const midWorld = clientToWorld(midClient.x, midClient.y);
 
@@ -969,7 +987,7 @@
   wrap.addEventListener("wheel", (e) => {
     e.preventDefault();
     const delta = Math.sign(e.deltaY);
-    const factor = delta > 0 ? 1.12 : 0.86;
+    const factor = delta > 0 ? 1.14 : 0.88;
     const focus = clientToWorld(e.clientX, e.clientY);
     zoomAt(focus, factor);
   }, { passive:false });
@@ -981,27 +999,22 @@
     return BODIES.find(b => b.key === key) || null;
   }
 
-  // rotate heliocentric XY by deg
-  function rotateXY(p, deg){
-    const ang = deg * DEG;
-    const x = p.x * Math.cos(ang) - p.y * Math.sin(ang);
-    const y = p.x * Math.sin(ang) + p.y * Math.cos(ang);
-    return { x, y, z: p.z };
-  }
-
-  function lagrangePos(parentName, offsetDeg, jd){
-    const p = planetJPL(parentName, jd);
-    return rotateXY(p, offsetDeg);
-  }
-
   function bodyPos(key, jd){
     const b = bodyDef(key);
     if(!b) return {x:0,y:0,z:0};
 
     if(b.type === "jpl") return planetJPL(b.key, jd);
     if(b.type === "kepler") return posFromKeplerBody(b.body, jd);
-    if(b.type === "lagrange") return lagrangePos(b.parent, b.offsetDeg, jd);
+    if(b.type === "lagrange") return lagrangePos(b.parent, b.lag, jd);
     return {x:0,y:0,z:0};
+  }
+
+  function bodyElements(key, jd){
+    const b = bodyDef(key);
+    if(!b) return null;
+    if(b.type === "jpl") return elementsJPL(b.key, jd);
+    if(b.type === "kepler") return elementsKeplerBody(b.body, jd);
+    return null;
   }
 
   function computeDistanceAU(aKey, bKey, jd){
@@ -1013,7 +1026,15 @@
     return Math.sqrt(dx*dx + dy*dy + dz*dz);
   }
 
-  // Deterministic "random" for dot clouds
+  function lagrangePos(parentName, degOffset, jd){
+    const p = planetJPL(parentName, jd);
+    const ang = degOffset * DEG;
+    const x = p.x * Math.cos(ang) - p.y * Math.sin(ang);
+    const y = p.x * Math.sin(ang) + p.y * Math.cos(ang);
+    return { x, y, z: p.z };
+  }
+
+  // Deterministic "random" for cluster dot cloud
   function hash01(i){
     const s = Math.sin(i * 999.123 + 0.12345) * 43758.5453123;
     return s - Math.floor(s);
@@ -1022,18 +1043,32 @@
   // ---------------------------
   // 8) Screen-constant HUD scaling + declutter
   // ---------------------------
-  // [4] bigger name labels, smaller coords labels
-  // [8] keep readability at all zoom levels (screen-constant sizing)
+  // PATCH [6] increase standard label size (about 2×) and keep constant at all zooms:
+  // fix: DO NOT clamp hudScale too high at deep zoom-in (was causing growth).
   let hudScale = 1;
 
   function updateHUDScale(){
     hudScale = interaction.vb.w / interaction.baseW;
-    hudScale = clamp(hudScale, 0.22, 10.0);
+
+    // PATCH [6] allow deep zoom-in without hitting a clamp that makes things grow
+    hudScale = clamp(hudScale, 0.02, 40.0);
 
     const dots = gHUD ? gHUD.querySelectorAll("[data-dot]") : [];
     dots.forEach(el => {
       const base = Number(el.getAttribute("data-dot-base") || "0.16");
       el.setAttribute("r", (base * hudScale).toString());
+    });
+
+    const texts = gHUD ? gHUD.querySelectorAll("[data-label]") : [];
+    texts.forEach(el => {
+      const baseFS = Number(el.getAttribute("data-fs-base") || "1.20");
+      el.setAttribute("font-size", (baseFS * hudScale).toString());
+    });
+
+    const coord = gHUD ? gHUD.querySelectorAll("[data-coord]") : [];
+    coord.forEach(el => {
+      const baseFS = Number(el.getAttribute("data-fs-base") || "0.46");
+      el.setAttribute("font-size", (baseFS * hudScale).toString());
     });
 
     const hits = gHUD ? gHUD.querySelectorAll("[data-hit]") : [];
@@ -1042,44 +1077,47 @@
       el.setAttribute("r", (base * hudScale).toString());
     });
 
-    const nameTexts = gHUD ? gHUD.querySelectorAll("[data-name]") : [];
-    nameTexts.forEach(el => {
-      const baseFS = Number(el.getAttribute("data-fs-base") || "0.95");
-      el.setAttribute("font-size", (baseFS * hudScale).toString());
-    });
-
-    const coordTexts = gHUD ? gHUD.querySelectorAll("[data-coord]") : [];
-    coordTexts.forEach(el => {
-      const baseFS = Number(el.getAttribute("data-fs-base") || "0.52");
-      el.setAttribute("font-size", (baseFS * hudScale).toString());
-    });
+    // Band labels remain in WORLD (they scale with map). No hudScale updates on them. (per your earlier design)
   }
 
-  // [5] more aggressive small-body declutter
+  // PATCH [5] small-body labels disappear more aggressively on zoom-out
   const declutter = {
-    coordsHideAt: 85,
-    minorHideAt: 95,
-    innerHideAt: 185,
-    lagHideAt: 140
+    coordsHideAt: 70,
+    smallHideAt: 95,
+    innerHideAt: 160,
+    lagrangeHideAt: 85
   };
+
+  function isWorldPointInView(p){
+    const vb = interaction.vb;
+    return (p.x >= vb.x && p.x <= vb.x + vb.w && p.y >= vb.y && p.y <= vb.y + vb.h);
+  }
 
   function updateDeclutter(){
     const w = interaction.vb.w;
-
     const coordsOn = w < declutter.coordsHideAt;
-    const minorOn  = w < declutter.minorHideAt;
+    const smallOn  = w < declutter.smallHideAt;
     const innerOn  = w < declutter.innerHideAt;
-    const lagOn    = w < declutter.lagHideAt;
+    const lagOn    = w < declutter.lagrangeHideAt;
+
+    const forceKeys = new Set([selA.value, selB.value]); // PATCH [12] always show selected labels (if body in view)
 
     const labelNodes = gHUD ? gHUD.querySelectorAll("[data-label-group]") : [];
     labelNodes.forEach(g => {
+      const key = g.getAttribute("data-key") || "";
       const cls = g.getAttribute("data-class") || "major";
 
       let show = true;
-      if(cls === "minor" && !minorOn) show = false;
+      if(cls === "small" && !smallOn) show = false;
       if(cls === "inner" && !innerOn) show = false;
       if(cls === "lag"   && !lagOn)   show = false;
       if(cls === "major") show = true;
+
+      // PATCH [12] if selected AND the body is in view, keep visible
+      if(forceKeys.has(key)){
+        const bp = bodyPos(key, currentJD());
+        if(isWorldPointInView(bp)) show = true;
+      }
 
       g.style.opacity = show ? "1" : "0";
 
@@ -1091,18 +1129,36 @@
   // ---------------------------
   // 9) Draw world (sun, belts)
   // ---------------------------
+  const SUN_R = 0.55; // used for overlap avoidance too
+
   function drawSun(){
     gWorld.appendChild(make("circle", {
       cx:0, cy:0, r:0.22,
       fill:"#ffcc00",
-      opacity:"0.85"
+      opacity:"0.85",
+      filter:"url(#tekugl)" // PATCH [9] glow on bodies (sun too)
     }));
     gWorld.appendChild(make("circle", {
-      cx:0, cy:0, r:0.55,
+      cx:0, cy:0, r:SUN_R,
       fill:"none",
       stroke:"rgba(235,250,122,0.18)",
-      "stroke-width":"0.08"
+      "stroke-width":"0.08",
+      opacity:"0.55",
+      filter:"url(#tekugl)"
     }));
+  }
+
+  // PATCH [5] remove line borders from WILD WASTE / SECOND CROWN / OORT
+  function drawAnnulus(rIn, rOut, opacity){
+    const ring = make("path", {
+      d: annulusPath(rIn, rOut),
+      fill: `rgba(255,204,0,${opacity})`,
+      "fill-rule": "evenodd",
+      stroke: "none",
+      "stroke-width": "0",
+      opacity: 1
+    });
+    gWorld.appendChild(ring);
   }
 
   function annulusPath(rIn, rOut){
@@ -1120,51 +1176,197 @@
     ].join(" ");
   }
 
-  function drawAnnulus(rIn, rOut, opacity){
-    const ring = make("path", {
-      d: annulusPath(rIn, rOut),
-      fill: `rgba(255,204,0,${opacity})`,
-      "fill-rule": "evenodd",
-      stroke: "rgba(255,204,0,0.10)",
-      "stroke-width": "0.05",
-      opacity: 1
+  // PATCH [7][8] band label color + size adjustments
+  function ensureBandText(){
+    // second crown + wild waste as world text (behind all labels)
+    // WILD WASTE smaller (0.25 its earlier intention)
+    const ww = make("text", {
+      x: 2.55 * Math.cos(315*DEG),
+      y: 2.55 * Math.sin(315*DEG),
+      fill: "#54522C",
+      opacity: "0.30",
+      "font-family":"monospace",
+      "font-weight":"1000",
+      "letter-spacing":"0.22em",
+      "font-size":"0.55",   // reduced
+      "text-anchor":"middle"
     });
-    gWorld.appendChild(ring);
-  }
+    setText(ww, "WILD WASTE");
+    gWorld.appendChild(ww);
 
-  // [6][12] belt labels: much larger, low opacity, behind HUD, curved on path, non-screen-constant (world-layer)
-  function drawBeltText(label, pathId, fontSizeWorld, opacity){
-    const t = make("text", {
-      fill: `rgba(255,204,0,${opacity})`,
-      "font-family": "monospace",
-      "font-weight": "1000",
-      "letter-spacing": "0.25em",
-      "font-size": String(fontSizeWorld),
-      "dominant-baseline": "middle",
-      "text-anchor": "middle",
-      "pointer-events": "none"
+    const sc = make("text", {
+      x: 47.0 * Math.cos(135*DEG),
+      y: 47.0 * Math.sin(135*DEG),
+      fill: "#54522C",
+      opacity: "0.34",
+      "font-family":"monospace",
+      "font-weight":"1000",
+      "letter-spacing":"0.22em",
+      "font-size":"2.2",
+      "text-anchor":"middle"
     });
-    const tp = make("textPath", {
-      href: `#${pathId}`,
-      startOffset: "50%"
+    setText(sc, "SECOND CROWN");
+    gWorld.appendChild(sc);
+
+    // PATCH [11] Oort Cloud band + label (accurate scale band; huge, mostly off at normal view)
+    const oc = make("text", {
+      x: 8000 * Math.cos(45*DEG),
+      y: 8000 * Math.sin(45*DEG),
+      fill: "#54522C",
+      opacity: "0.16",
+      "font-family":"monospace",
+      "font-weight":"1000",
+      "letter-spacing":"0.28em",
+      "font-size":"260",
+      "text-anchor":"middle"
     });
-    setText(tp, label);
-    t.appendChild(tp);
-    gWorld.appendChild(t);
+    setText(oc, "OORT CLOUD");
+    gWorld.appendChild(oc);
   }
 
   // ---------------------------
-  // 10) Draw bodies (HUD) - dots + labels + coords
+  // 10) Trails (PATCH [15])
   // ---------------------------
-  const placed = {
-    markers: [], // {x,y,r,key}
-    labels: []   // {key, g, anchor:{x,y}, classHint, baseR}
-  };
+  function drawTrailForBody(key, jd, isMinor){
+    const el = bodyElements(key, jd);
+    if(!el) return;
 
-  function drawBody(b, pos){
-    const cls = b.classHint || "major";
+    // no trails for lagrange objects (caller ensures)
+    const N = 120;                 // number of segments
+    const step = 360 / N;          // degrees between samples
+    const fadeK = isMinor ? 2.0 : 1.0; // minor bodies fade faster (double reduction)
 
-    // dot base radii
+    // sample "behind" the current mean anomaly
+    for(let i=0;i<N;i++){
+      const M1 = modAngleDeg(el.M - i*step);
+      const M2 = modAngleDeg(el.M - (i+1)*step);
+
+      const p1 = posFromElements(el.a, el.e, el.I, el.Omega, el.omega, M1);
+      const p2 = posFromElements(el.a, el.e, el.I, el.Omega, el.omega, M2);
+
+      const t = i / N;
+      const op = Math.exp(-fadeK * t * 3.2) * 0.55;
+
+      const seg = make("line", {
+        x1: p1.x, y1: p1.y,
+        x2: p2.x, y2: p2.y,
+        stroke: "rgba(255,204,0,1)",
+        "stroke-opacity": op.toFixed(4),
+        "stroke-width": (0.06).toString(),
+        "stroke-linecap":"round",
+        filter:"url(#tekugl)"
+      });
+      gTrails.appendChild(seg);
+    }
+  }
+
+  // ---------------------------
+  // 11) Labels: magnetic placement w/ overlap avoidance (PATCH [4][10][14])
+  // ---------------------------
+  function approxTextBoxWorld(x, y, text, fs, lines){
+    // crude monospace estimate in world-units:
+    // width ~ chars * fs * 0.62 ; height ~ lines * fs * 1.15
+    const w = Math.max(1, text.length) * fs * 0.62;
+    const h = Math.max(1, lines) * fs * 1.15;
+    return { x, y: y - h, w, h }; // treat (x,y) as baseline left; bbox above baseline
+  }
+
+  function intersects(a,b){
+    return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+  }
+
+  function sunBox(){
+    return { x:-SUN_R, y:-SUN_R, w:SUN_R*2, h:SUN_R*2 };
+  }
+
+  function clampLabelIntoView(box){
+    const vb = interaction.vb;
+    let dx = 0, dy = 0;
+    if(box.x < vb.x) dx = vb.x - box.x;
+    if(box.x + box.w > vb.x + vb.w) dx = (vb.x + vb.w) - (box.x + box.w);
+    if(box.y < vb.y) dy = vb.y - box.y;
+    if(box.y + box.h > vb.y + vb.h) dy = (vb.y + vb.h) - (box.y + box.h);
+    return { dx, dy };
+  }
+
+  function pickLabelAnchor(pos, name, fsName, fsCoord, clsKey, placed){
+    // PATCH [10] magnetism stability: offsets scale with hudScale + text size
+    const basePad = 0.30 * hudScale;
+    const offsets = [
+      {dx:+(basePad), dy:-(basePad)},   // NE
+      {dx:+(basePad), dy:+(basePad)},   // SE
+      {dx:-(basePad), dy:-(basePad)},   // NW
+      {dx:-(basePad), dy:+(basePad)},   // SW
+      {dx:+(basePad*1.9), dy:0},        // E
+      {dx:-(basePad*1.9), dy:0},        // W
+      {dx:0, dy:-(basePad*1.9)},        // N
+      {dx:0, dy:+(basePad*1.9)}         // S
+    ];
+
+    // compute approximate boxes (name + 3 coords lines)
+    const lines = 1 + 3;
+    const fs = fsName;
+    const sunB = sunBox();
+
+    // marker avoid box
+    const m = { x: pos.x - 0.35*hudScale, y: pos.y - 0.35*hudScale, w: 0.70*hudScale, h: 0.70*hudScale };
+
+    let best = null;
+    let bestScore = 1e9;
+
+    for(const o of offsets){
+      const x = pos.x + o.dx + (0.25*hudScale);
+      const y = pos.y + o.dy - (0.10*hudScale);
+
+      const bb = approxTextBoxWorld(x, y, name + " x000 y000 z000", fs, lines);
+
+      // clamp so label stays in view when body is in view
+      const adj = clampLabelIntoView(bb);
+      const bb2 = { x: bb.x + adj.dx, y: bb.y + adj.dy, w: bb.w, h: bb.h };
+
+      // avoid sun, marker, other labels
+      if(intersects(bb2, sunB)) continue;
+      if(intersects(bb2, m)) continue;
+
+      let collide = false;
+      for(const p of placed){
+        if(intersects(bb2, p)) { collide = true; break; }
+      }
+      if(collide) continue;
+
+      // score prefers minimal movement from default offset
+      const score = Math.abs(o.dx) + Math.abs(o.dy) + Math.abs(adj.dx)*2 + Math.abs(adj.dy)*2;
+      if(score < bestScore){
+        bestScore = score;
+        best = { x: x + adj.dx, y: y + adj.dy, box: bb2 };
+      }
+    }
+
+    // fallback: still clamp into view; accept overlap if necessary
+    if(!best){
+      const x = pos.x + basePad + (0.25*hudScale);
+      const y = pos.y - basePad - (0.10*hudScale);
+      const bb = approxTextBoxWorld(x, y, name + " x000 y000 z000", fs, lines);
+      const adj = clampLabelIntoView(bb);
+      const bb2 = { x: bb.x + adj.dx, y: bb.y + adj.dy, w: bb.w, h: bb.h };
+      best = { x: x + adj.dx, y: y + adj.dy, box: bb2 };
+    }
+
+    placed.push(best.box);
+    return best;
+  }
+
+  // ---------------------------
+  // 12) Draw bodies (HUD) - dots + labels + coords
+  // ---------------------------
+  function drawBody(b, pos, placedBoxes){
+    const cls =
+      (b.type === "lagrange") ? "lag" :
+      (b.key === "Mercury" || b.key === "Venus" || b.key === "Earth" || b.key === "Mars") ? "inner" :
+      (b.minor) ? "small" :
+      "major";
+
+    // base radii
     const baseR =
       b.key === "Jupiter" ? 0.28 :
       b.key === "Saturn"  ? 0.26 :
@@ -1174,85 +1376,94 @@
       b.key === "Venus"   ? 0.16 :
       b.key === "Mars"    ? 0.14 :
       b.key === "Mercury" ? 0.13 :
-      b.key === "Ceres"   ? 0.11 :
-      b.key === "Vesta"   ? 0.11 :
-      b.key === "Pluto"   ? 0.12 :
-      b.key === "Kyusei"  ? 0.14 :
-      (cls === "lag" ? 0.12 : 0.14);
+      (b.minor ? 0.11 : 0.14);
 
     const hitBase = Math.max(0.75, baseR * 6);
 
-    // dot (glow via gHUD filter)
+    // dot
     const dot = make("circle", {
       cx: pos.x, cy: pos.y,
       r: (baseR * hudScale),
       fill: "#ffcc00",
-      opacity: "0.82",
+      opacity: "0.85",
       "data-dot": "1",
-      "data-dot-base": String(baseR)
+      "data-dot-base": String(baseR),
+      filter: "url(#tekugl)" // PATCH [9][10] glow on bodies
     });
     gHUD.appendChild(dot);
 
-    // record marker for collision avoidance
-    placed.markers.push({ x: pos.x, y: pos.y, r: baseR * hudScale, key: b.key });
-
-    // label group (will be positioned by layout pass)
+    // label group
     const g = make("g", {
       "data-label-group":"1",
       "data-class": cls,
       "data-key": b.key
     });
 
-    // [4][15] font size bases:
-    // - majors: bigger name
-    // - minors + lag: slightly smaller overall
-    const scaleHint = (cls === "minor" || cls === "lag") ? 0.90 : 1.00;
+    // PATCH [6] increase standard size of all labels; coords smaller
+    // PATCH [15] Ju-L4 and minor bodies slightly smaller
+    const nameBase = (cls === "small" || cls === "lag") ? 1.05 : 1.25;
+    const coordBase = (cls === "small" || cls === "lag") ? 0.40 : 0.46;
 
-    const nameFSBase  = 1.02 * scaleHint; // bigger than old 0.85
-    const coordFSBase = 0.50 * scaleHint; // smaller than old 0.62
+    // PATCH [14] fix line spacing scaling bug: compute from font size
+    const fsName = nameBase * hudScale;
+    const fsCoord = coordBase * hudScale;
+    const lineH = fsCoord * 1.25;
 
-    // name text
+    const anch = pickLabelAnchor(pos, b.label, fsName, fsCoord, cls, placedBoxes);
+
     const nameText = make("text", {
-      x: 0, y: 0,
+      x: anch.x,
+      y: anch.y,
       fill: "#ffcc00",
       "font-family":"monospace",
       "font-weight":"1000",
       "letter-spacing":"0.10em",
-      "font-size": (nameFSBase * hudScale),
-      "data-name":"1",
-      "data-fs-base": String(nameFSBase)
+      "font-size": fsName,
+      "data-label":"1",
+      "data-fs-base": String(nameBase),
+      filter: "url(#tekugl)"
     });
     setText(nameText, b.label);
     g.appendChild(nameText);
 
-    // coords: single text element with tspans in em units
-    // [3] remove AU from strings
-    // [14] fix line spacing scaling: use dy in em, not world offsets
-    const coords = make("text", {
-      x: 0, y: 0,
+    const coordStyle = {
       fill: "#ffcc00",
       "font-family":"monospace",
       "font-weight":"800",
       "letter-spacing":"0.08em",
-      opacity:"0.78",
-      "font-size": (coordFSBase * hudScale),
+      opacity:"0.78"
+    };
+
+    // PATCH [3] remove "AU" from in-map coordinates
+    const cx = make("text", {
+      x: anch.x, y: anch.y + (fsName*0.95) + (lineH*0.05),
+      "font-size": fsCoord,
       "data-coord":"1",
-      "data-fs-base": String(coordFSBase)
+      "data-fs-base": String(coordBase),
+      ...coordStyle
     });
+    setText(cx, `x ${fmtSign(pos.x, 3)}`);
+    g.appendChild(cx);
 
-    const t1 = make("tspan", { x: 0, dy: "1.15em" });
-    setText(t1, `x ${fmtSign(pos.x, 3)}`);
-    coords.appendChild(t1);
+    const cy = make("text", {
+      x: anch.x, y: anch.y + (fsName*0.95) + (lineH*1.05),
+      "font-size": fsCoord,
+      "data-coord":"1",
+      "data-fs-base": String(coordBase),
+      ...coordStyle
+    });
+    setText(cy, `y ${fmtSign(pos.y, 3)}`);
+    g.appendChild(cy);
 
-    const t2 = make("tspan", { x: 0, dy: "1.12em" });
-    setText(t2, `y ${fmtSign(pos.y, 3)}`);
-    coords.appendChild(t2);
-
-    const t3 = make("tspan", { x: 0, dy: "1.12em" });
-    setText(t3, `z ${fmtSign(pos.z, 3)}`);
-    coords.appendChild(t3);
-
-    g.appendChild(coords);
+    const cz = make("text", {
+      x: anch.x, y: anch.y + (fsName*0.95) + (lineH*2.05),
+      "font-size": fsCoord,
+      "data-coord":"1",
+      "data-fs-base": String(coordBase),
+      ...coordStyle
+    });
+    setText(cz, `z ${fmtSign(pos.z, 3)}`);
+    g.appendChild(cz);
 
     gHUD.appendChild(g);
 
@@ -1265,174 +1476,55 @@
       "data-hit-base": String(hitBase)
     });
     gHUD.appendChild(hit);
-
-    // record label for smart placement
-    placed.labels.push({
-      key: b.key,
-      g,
-      anchor: { x: pos.x, y: pos.y },
-      cls,
-      baseR
-    });
   }
 
-  // [7][15] tight dot cluster around L points (small fuzz, near marker size)
-  function drawLagrangeCluster(key, jd, seedBase){
-    const base = bodyPos(key, jd);
-
+  // PATCH [7] tighter cluster fuzz for lagrange points (tiny, near parent)
+  function drawClusterAround(pos, seed, tightnessAU){
     const nDots = 18;
     for(let i=0;i<nDots;i++){
-      const a = (hash01(seedBase + i*13) * 2*Math.PI);
-      const r = 0.06 + hash01(seedBase + i*29) * 0.12; // much tighter than before
+      const a = (hash01(i + seed) * 2*Math.PI);
+      const r = (tightnessAU * (0.35 + hash01(i+seed+100) * 0.65));
       const ox = Math.cos(a) * r;
       const oy = Math.sin(a) * r;
 
-      const p = { x: base.x + ox, y: base.y + oy };
+      const p = { x: pos.x + ox, y: pos.y + oy };
 
       const dot = make("circle", {
         cx: p.x, cy: p.y,
-        r: (0.045 * hudScale),
+        r: (0.055 * hudScale),
         fill: "#ffcc00",
-        opacity: "0.55"
+        opacity: "0.55",
+        filter:"url(#tekugl)"
       });
       gHUD.appendChild(dot);
     }
   }
 
   // ---------------------------
-  // 11) Smart label placement (collision + keep in view)
+  // 13) Journey line (PATCH [2][17])
   // ---------------------------
-  function bboxIntersects(a, b){
-    return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
-  }
+  function drawJourneyLine(jd){
+    const aKey = selA.value;
+    const bKey = selB.value;
+    const A = bodyPos(aKey, jd);
+    const B = bodyPos(bKey, jd);
 
-  function resolveLabelLayout(){
-    if(!gHUD) return;
-
-    // collect only visible-ish labels (opacity handled by declutter; but we still place so reappear instantly)
-    const vb = interaction.vb;
-    const pad = 0.6 * hudScale;
-
-    // candidate offsets (in world units) — screen-constant via hudScale
-    const step = 1.10 * hudScale;
-    const candidates = [
-      { dx: +1.2*step, dy: -1.0*step }, // NE
-      { dx: -1.2*step, dy: -1.0*step }, // NW
-      { dx: +1.2*step, dy: +1.1*step }, // SE
-      { dx: -1.2*step, dy: +1.1*step }, // SW
-      { dx: +1.6*step, dy:  0.0*step }, // E
-      { dx: -1.6*step, dy:  0.0*step }, // W
-      { dx:  0.0*step, dy: -1.5*step }, // N
-      { dx:  0.0*step, dy: +1.6*step }  // S
-    ];
-
-    const placedBoxes = [];
-
-    // marker exclusion zones
-    const markerBoxes = placed.markers.map(m => ({
-      x: m.x - (m.r + 0.45*hudScale),
-      y: m.y - (m.r + 0.45*hudScale),
-      w: 2*(m.r + 0.45*hudScale),
-      h: 2*(m.r + 0.45*hudScale),
-      key: m.key
-    }));
-
-    for(const L of placed.labels){
-      const g = L.g;
-      const a = L.anchor;
-
-      // ensure text anchored locally (we position via transform)
-      g.setAttribute("transform", `translate(${a.x} ${a.y})`);
-
-      // get the intrinsic bbox at anchor
-      let baseBBox;
-      try {
-        baseBBox = g.getBBox();
-      } catch {
-        continue;
-      }
-
-      // We want name at (0,0) and coords underneath.
-      // Ensure coords start under name: shift coords text down slightly in *em*, not world.
-      // (Already done via dy tspans; no further shift needed.)
-      // Now choose an offset transform for the entire group.
-      let best = null;
-      let bestScore = Infinity;
-
-      for(const c of candidates){
-        // tentative position
-        g.setAttribute("transform", `translate(${a.x + c.dx} ${a.y + c.dy})`);
-
-        let bb;
-        try { bb = g.getBBox(); } catch { continue; }
-
-        // [12] if anchor is in view, label must also be in view
-        const anchorInView = (a.x >= vb.x && a.x <= vb.x+vb.w && a.y >= vb.y && a.y <= vb.y+vb.h);
-        if(anchorInView){
-          const inView = (bb.x >= vb.x + pad && bb.y >= vb.y + pad &&
-                          bb.x + bb.width <= vb.x + vb.w - pad &&
-                          bb.y + bb.height <= vb.y + vb.h - pad);
-          if(!inView) continue;
-        }
-
-        // build rect for collisions
-        const rect = { x: bb.x, y: bb.y, w: bb.width, h: bb.height };
-
-        // collisions with previous labels
-        let coll = 0;
-        for(const pb of placedBoxes){
-          if(bboxIntersects(rect, pb)) coll++;
-        }
-
-        // collisions with markers (including other bodies)
-        for(const mb of markerBoxes){
-          // allow overlap with its own marker region a bit (keep adjacency)
-          if(mb.key === L.key) continue;
-          if(bboxIntersects(rect, mb)) coll += 3;
-        }
-
-        // prefer shorter distance from anchor, then fewer collisions
-        const dist = Math.hypot(c.dx, c.dy);
-        const score = coll*1000 + dist;
-
-        if(score < bestScore){
-          bestScore = score;
-          best = { dx: c.dx, dy: c.dy, rect };
-          if(coll === 0) break;
-        }
-      }
-
-      // fallback: clamp position to stay visible if anchor is visible
-      if(!best){
-        const dx = +1.2*step, dy = -1.0*step;
-        g.setAttribute("transform", `translate(${a.x + dx} ${a.y + dy})`);
-        let bb;
-        try { bb = g.getBBox(); } catch { bb = { x:a.x, y:a.y, width:0, height:0 }; }
-
-        const anchorInView = (a.x >= vb.x && a.x <= vb.x+vb.w && a.y >= vb.y && a.y <= vb.y+vb.h);
-        if(anchorInView){
-          let shiftX = 0, shiftY = 0;
-          if(bb.x < vb.x + pad) shiftX = (vb.x + pad) - bb.x;
-          if(bb.y < vb.y + pad) shiftY = (vb.y + pad) - bb.y;
-          if(bb.x + bb.width > vb.x + vb.w - pad) shiftX = (vb.x + vb.w - pad) - (bb.x + bb.width);
-          if(bb.y + bb.height > vb.y + vb.h - pad) shiftY = (vb.y + vb.h - pad) - (bb.y + bb.height);
-
-          g.setAttribute("transform", `translate(${a.x + dx + shiftX} ${a.y + dy + shiftY})`);
-          try { bb = g.getBBox(); } catch {}
-        }
-
-        placedBoxes.push({ x: bb.x, y: bb.y, w: bb.width, h: bb.height });
-        continue;
-      }
-
-      // apply best
-      g.setAttribute("transform", `translate(${a.x + best.dx} ${a.y + best.dy})`);
-      placedBoxes.push(best.rect);
-    }
+    // PATCH [2] true dotted not dashed: use round cap + tiny dasharray
+    const line = make("line", {
+      x1: A.x, y1: A.y,
+      x2: B.x, y2: B.y,
+      stroke: "#ffcc00",
+      "stroke-width": (0.10 * hudScale).toString(),
+      "stroke-linecap":"round",
+      "stroke-dasharray": `${(0.06*hudScale).toString()} ${(0.32*hudScale).toString()}`,
+      opacity: "0.38",
+      filter:"url(#tekugl)"
+    });
+    gHUD.appendChild(line);
   }
 
   // ---------------------------
-  // 12) Render
+  // 14) Render
   // ---------------------------
   function updateReadout(){
     const jd = currentJD();
@@ -1447,8 +1539,7 @@
 
     const dAU = computeDistanceAU(aKey, bKey, jd);
 
-    // 2% of c in AU/day:
-    // c ≈ 173.1446 AU/day, so 0.02c ≈ 3.4629 AU/day
+    // 2% of c in AU/day
     const AU_PER_DAY = 3.4629;
     const tDays = dAU / AU_PER_DAY;
 
@@ -1469,17 +1560,19 @@
 
     const key = target.getAttribute("data-hit");
     if(!key) return;
+
     if(!bodyDef(key)) return;
 
     if(clickStage % 2 === 0) selA.value = key;
     else selB.value = key;
 
     clickStage++;
-    render(); // re-render to update dotted line + label layout
+    updateReadout();
+    render(); // keep selected labels forced-visible logic correct
   });
 
-  selA.addEventListener("change", () => render());
-  selB.addEventListener("change", () => render());
+  selA.addEventListener("change", () => { updateReadout(); render(); });
+  selB.addEventListener("change", () => { updateReadout(); render(); });
 
   function render(){
     const jd = currentJD();
@@ -1488,62 +1581,50 @@
     ensureDefs();
     buildLayers();
 
-    // reset placement caches
-    placed.markers.length = 0;
-    placed.labels.length = 0;
+    // PATCH [2] remove circular orbit rings (were misleading)
 
-    // [2] orbit rings removed entirely (future: trails)
+    // Belts
+    drawAnnulus(2.10, 3.30, 0.05);   // WILD WASTE
+    drawAnnulus(30.0, 50.0, 0.03);   // SECOND CROWN
 
-    // Belts (world layer)
-    drawAnnulus(2.10, 3.30, 0.05);   // WILD WASTE band
-    drawAnnulus(30.0, 50.0, 0.03);   // SECOND CROWN band
+    // PATCH [11] Oort Cloud band (approx: 2,000–100,000 AU)
+    drawAnnulus(2000.0, 100000.0, 0.007);
 
-    // [6][12] big, low opacity, curved, world-layer (behind HUD)
-    // Two labels each, at 315° and 135°
-    drawBeltText("WILD WASTE",   "ww_315", 2.35, 0.14);
-    drawBeltText("WILD WASTE",   "ww_135", 2.35, 0.14);
-    drawBeltText("SECOND CROWN", "sc_315", 3.10, 0.10);
-    drawBeltText("SECOND CROWN", "sc_135", 3.10, 0.10);
-
+    ensureBandText();
     drawSun();
 
-    // Bodies
+    // PATCH [15] trails for all moving bodies except lagrange objects
+    for(const b of BODIES){
+      if(b.type === "lagrange") continue;
+      const isMinor = !!b.minor;
+      drawTrailForBody(b.key, jd, isMinor);
+    }
+
+    // bodies + labels
+    const placed = [];
     for(const b of BODIES){
       const pos = bodyPos(b.key, jd);
 
-      // draw cluster first for L points so label sits above fuzz
+      // lagrange clusters
       if(b.type === "lagrange"){
-        if(b.key === "JuL4") drawLagrangeCluster(b.key, jd, 1100);
-        if(b.key === "JuL5") drawLagrangeCluster(b.key, jd, 2100);
-        if(b.key === "SaL4") drawLagrangeCluster(b.key, jd, 3100);
-        if(b.key === "SaL5") drawLagrangeCluster(b.key, jd, 4100);
+        // PATCH [7] tighter fuzz around L points
+        drawClusterAround(pos, b.key === "Ju-L4" ? 500 : b.key === "Ju-L5" ? 600 : b.key === "Sa-L4" ? 700 : 800, 0.13);
       }
 
-      drawBody(b, pos);
+      drawBody(b, pos, placed);
     }
 
-    // [17] very faint dotted line between selected points (world-ish layer between belts and HUD)
-    const A = bodyPos(selA.value, jd);
-    const B = bodyPos(selB.value, jd);
-
-    gVector.appendChild(make("line", {
-      x1: A.x, y1: A.y,
-      x2: B.x, y2: B.y,
-      stroke: "rgba(255,204,0,0.22)",
-      "stroke-width": "0.08",
-      "stroke-dasharray": "0.45 0.65",
-      "stroke-linecap": "round"
-    }));
+    // PATCH [17] journey line dotted
+    drawJourneyLine(jd);
 
     setDateLabel();
     updateHUDScale();
     updateDeclutter();
     updateReadout();
-    resolveLabelLayout();
   }
 
   // ---------------------------
-  // 13) Controls
+  // 15) Controls
   // ---------------------------
   function stepDays(n){
     dayOffset += n;
@@ -1555,6 +1636,7 @@
   btnNext.addEventListener("click", () => stepDays(+1));
   btnReset.addEventListener("click", () => { dayOffset = 0; render(); });
 
+  // Date input
   dateEl.addEventListener("click", () => {
     const jd = currentJD();
     const {y,m,d} = jdToYMD(jd);
@@ -1574,7 +1656,7 @@
     render();
   });
 
-  // Initial viewBox (inner system out to Neptune)
+  // Initial viewBox
   setViewBox({ x:-36, y:-36, w:72, h:72 });
 
   // Initial render
