@@ -57,6 +57,51 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     text-shadow: 0 0 4px #EBFA7A;
+    animation: typing 6s steps(60, end) infinite;
+  }
+
+  .typeout::after {
+    content: "▉";
+    display: inline-block;
+    margin-left: 4px;
+    color: #ffcc00;
+    text-shadow: 0 0 4px #EBFA7A;
+    animation: cursorBlink 0.8s step-end infinite;
+  }
+
+  @keyframes typing {
+    0%  { width: 0;   opacity: 1; }
+    40% { width: 100%; opacity: 1; }
+    60% { width: 100%; opacity: 1; }
+    90% { width: 100%; opacity: 1; }
+    95% { width: 100%; opacity: 0; }
+    100%{ width: 100%; opacity: 0; }
+  }
+
+  @keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  .button {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 14px 24px;
+    background: #ffcc00;
+    color: #262626;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+    border-radius: 0px;
+    text-shadow: 0 0 3px #322B1A;
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 3px #EBFA7A, 0 0 0px #EBFA7A inset;
+  }
+
+  .button:hover {
+    background: #e6b800;
+    border-color: #e6b800;
   }
 
   .scale-container { overflow: visible; }
@@ -135,7 +180,7 @@
     border: 1px solid rgba(255, 204, 0, 0.35);
     box-shadow: 0 0 3px rgba(235, 250, 122, 0.25);
     padding: 10px 10px 8px 10px;
-    position: relative;
+    position: relative; /* for bottom-right zoom buttons */
   }
 
   .map-topline {
@@ -155,6 +200,31 @@
     cursor: pointer;
     border-bottom: 1px solid rgba(255,204,0,0.25);
   }
+  .map-topline .date-click:hover {
+    border-bottom-color: rgba(255,204,0,0.6);
+  }
+
+  .map-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+    opacity: 0.85;
+    letter-spacing: 0.10em;
+  }
+
+  .map-controls .ctrlbtn {
+    cursor: pointer;
+    border: 1px solid rgba(255, 204, 0, 0.25);
+    padding: 4px 8px;
+    box-shadow: 0 0 2px rgba(235, 250, 122, 0.15);
+    user-select: none;
+  }
+  .map-controls .ctrlbtn:hover {
+    border-color: rgba(255, 204, 0, 0.6);
+  }
 
   .map-svg-wrap {
     width: 100%;
@@ -170,6 +240,7 @@
     display: block;
   }
 
+  /* bottom-right zoom buttons */
   .zoom-controls {
     position: absolute;
     right: 10px;
@@ -178,19 +249,26 @@
     flex-direction: column;
     gap: 6px;
     z-index: 5;
+    user-select: none;
   }
 
-  .zoom-controls .ctrlbtn {
+  .zoom-controls .zbtn {
     cursor: pointer;
-    border: 1px solid rgba(255, 204, 0, 0.35);
+    border: 1px solid rgba(255, 204, 0, 0.25);
     padding: 6px 10px;
-    box-shadow: 0 0 2px rgba(235, 250, 122, 0.25);
-    user-select: none;
+    box-shadow: 0 0 2px rgba(235, 250, 122, 0.15);
     font-weight: 1000;
+    letter-spacing: 0.10em;
+    opacity: 0.95;
+    background: rgba(38,38,38,0.25);
+    backdrop-filter: blur(2px);
+  }
+  .zoom-controls .zbtn:hover {
+    border-color: rgba(255, 204, 0, 0.6);
   }
 
   .readout {
-    margin-top: 12px;
+    margin-top: 10px;
     padding: 10px 10px 8px 10px;
     border-top: 1px solid rgba(255,204,0,0.18);
     border-bottom: 1px solid rgba(255,204,0,0.18);
@@ -214,6 +292,15 @@
     flex-wrap: wrap;
   }
 
+  .readout .k {
+    opacity: 0.85;
+    min-width: 10ch;
+  }
+
+  .readout .v {
+    font-weight: 1000;
+  }
+
   .map-bottom {
     margin-top: 10px;
     padding-top: 8px;
@@ -225,6 +312,19 @@
     gap: 6px;
   }
 
+  .map-bottom .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .map-bottom label {
+    opacity: 0.9;
+    margin-right: 6px;
+  }
+
   .map-bottom select {
     background: transparent;
     color: #ffcc00;
@@ -234,90 +334,1251 @@
     padding: 4px 6px;
     letter-spacing: 0.08em;
     outline: none;
+    text-shadow: 0 0 4px rgba(235,250,122,0.35);
   }
 
+  .map-bottom select option {
+    background: #262626;
+    color: #ffcc00;
+    text-shadow: 0 0 4px rgba(235,250,122,0.35);
+  }
+
+  .hint {
+    opacity: 0.75;
+    font-size: 0.8em;
+    letter-spacing: 0.10em;
+  }
+
+  /* ---------- MOBILE UI OPTIMISATION (≤600px) ---------- */
+  @media (max-width: 600px) {
+    body {
+      font-size: 8px;
+      padding: 0;
+      margin: 0;
+    }
+
+    .teku-header {
+      font-size: 1.3em;
+      letter-spacing: 0.15em;
+    }
+
+    p.small { font-size: 1.0em; }
+
+    h1 {
+      font-size: 2em;
+      line-height: 1.3;
+    }
+
+    p.bodytext { font-size: 1.3em; }
+
+    .typeout { font-size: 1.3em; }
+
+    .button {
+      font-size: 1.4em;
+      padding: 16px 24px;
+    }
+
+    .container {
+      transform: none;
+      padding: 20px;
+    }
+
+    .map-topline { font-size: 1.0em; }
+    .map-controls { font-size: 1.0em; }
+    .map-bottom { font-size: 1.0em; }
+    .readout { font-size: 1.05em; }
+  }
 </style>
 </head>
 
 <body>
-<div class="scale-container">
-<div class="crt">
-<div class="container">
+  <div class="scale-container">
+    <div class="crt">
+      <div class="container">
 
-<p class="teku-header">UNREGISTERED TEKU SLATE</p>
-<hr class="divider">
-<p class="small">TEKUDEX Default Guide "EID-SN4SD/Nav/Tw2%c"</p>
+        <p class="teku-header">UNREGISTERED TEKU SLATE</p>
+        <hr class="divider">
+        <p class="small">TEKUDEX Default Guide "EID-SN4SD/Nav/Tw2%c"</p>
 
-<h1>Sling Drive Navigator (Tw2%c)</h1>
+        <p class="micro">
+░░████████╗███████╗██╗░░██╗██╗░░░██╗██████╗░███████╗██╗░░██╗░░
+░░╚══██╔══╝██╔════╝██║░██╔╝██║░░░██║██╔══██╗██╔════╝╚██╗██╔╝░░
+░░░░░██║░░░█████╗░░█████═╝░██║░░░██║██║░░██║█████╗░░░╚███╔╝░░░
+░░░░░██║░░░██╔══╝░░██╔═██╗░██║░░░██║██║░░██║██╔══╝░░░██╔██╗░░░
+░░░░░██║░░░███████╗██║░╚██╗╚██████╔╝██████╔╝███████╗██╔╝╚██╗░░
+░░░░░╚═╝░░░╚══════╝╚═╝░░╚═╝░╚═════╝░╚═════╝░╚══════╝╚═╝░░╚═╝░░
+        </p>
 
-<p class="bodytext">
-Select departure and arrival bodies to plot a sling-drive transfer. Output metrics update automatically.
-</p>
+        <div style="height: 40px;"></div>
 
-<div id="solar-map"></div>
+        <h1>Sling Drive Navigator (Tw2%c)</h1>
 
-<p class="typeout">▉ ▉ ▉ Calibrated</p>
+        <p class="bodytext">
+          This interactive TEKUDEX entry in the Solar Nomad Series is designed for easy reference in the quartermastery and piloting of vessels fitted with a [TWIN_SPOOL] Sling Drive configuration and [N/S_250] Minkowski Tokamak, with a maximum relative velocity of [2%c].
+        </p>
 
-</div>
-</div>
-</div>
+        <div id="solar-map"></div>
+
+        <div style="height: 20px;"></div>
+
+        <p class="typeout">▉ ▉ ▉ Calibrated </p>
+
+        <div style="height: 100px;"></div>
+
+      </div>
+    </div>
+  </div>
 
 <script>
 (() => {
-"use strict";
+  "use strict";
 
-const mount = document.getElementById("solar-map");
+  // ---------------------------
+  // 0) Utilities
+  // ---------------------------
+  const DEG = Math.PI / 180;
 
-mount.innerHTML = `
-  <div class="map-frame">
-    <div class="map-topline">
-      <span class="date-click" id="map-date">DATE: 2225-06-06</span>
-    </div>
+  function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
+  function modAngleDeg(x){
+    let y = ((x + 180) % 360 + 360) % 360 - 180;
+    return y;
+  }
+  function fmtSign(n, dp=3){
+    const s = n >= 0 ? "+" : "−";
+    return s + Math.abs(n).toFixed(dp);
+  }
+  function fmtFixed(n, dp){ return Number(n).toFixed(dp); }
+  function fmtAU1(n){
+    return (Math.round(n * 10) / 10).toFixed(1);
+  }
+  function pad2(n){ return String(n).padStart(2, "0"); }
 
-    <div class="map-svg-wrap" id="map-wrap">
-      <svg id="solar-svg" viewBox="-36 -36 72 72"></svg>
+  function toJulianDay(year, month, day){
+    let a = Math.floor((14 - month) / 12);
+    let y = year + 4800 - a;
+    let m = month + 12*a - 3;
+    let JDN = day + Math.floor((153*m + 2)/5) + 365*y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
+    return JDN - 0.5;
+  }
 
-      <div class="zoom-controls">
-        <div class="ctrlbtn" id="btn-zoom-in">+</div>
-        <div class="ctrlbtn" id="btn-zoom-out">−</div>
+  function jdToYMD(jd){
+    const JDN = Math.floor(jd + 0.5);
+    let f = JDN + 1401 + Math.floor((Math.floor((4*JDN + 274277)/146097)*3)/4) - 38;
+    let e = 4*f + 3;
+    let g = Math.floor((e % 1461)/4);
+    let h = 5*g + 2;
+    let D = Math.floor((h % 153)/5) + 1;
+    let M = (Math.floor(h/153) + 2) % 12 + 1;
+    let Y = Math.floor(e/1461) - 4716 + Math.floor((12 + 2 - M)/12);
+    return {y:Y, m:M, d:D};
+  }
+
+  function parseYMD(s){
+    // expects YYYY-MM-DD
+    const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(s || "");
+    if(!m) return null;
+    const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+    if(mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+    return {y, m:mo, d};
+  }
+
+  // ---------------------------
+  // 1) Orbital model
+  // ---------------------------
+  const JPL_T2A = {
+    Mercury:  { a0:0.38709843, aDot:0.00000000, e0:0.20563661, eDot:0.00002123, I0:7.00559432, IDot:-0.00590158, L0:252.25166724, LDot:149472.67486623, wbar0:77.45771895, wbarDot:0.15940013, Omega0:48.33961819, OmegaDot:-0.12214182 },
+    Venus:    { a0:0.72332102, aDot:-0.00000026, e0:0.00676399, eDot:-0.00005107, I0:3.39777545, IDot:0.00043494, L0:181.97970850, LDot:58517.81560260, wbar0:131.76755713, wbarDot:0.05679648, Omega0:76.67261496, OmegaDot:-0.27274174 },
+    Earth:    { a0:1.00000018, aDot:-0.00000003, e0:0.01673163, eDot:-0.00003661, I0:-0.00054346, IDot:-0.01337178, L0:100.46691572, LDot:35999.37306329, wbar0:102.93005885, wbarDot:0.31795260, Omega0:-5.11260389, OmegaDot:-0.24123856 },
+    Mars:     { a0:1.52371243, aDot:0.00000097, e0:0.09336511, eDot:0.00009149, I0:1.85181869, IDot:-0.00724757, L0:-4.56813164, LDot:19140.29934243, wbar0:-23.91744784, wbarDot:0.45223625, Omega0:49.71320984, OmegaDot:-0.26852431 },
+    Jupiter:  { a0:5.20248019, aDot:-0.00002864, e0:0.04853590, eDot:0.00018026, I0:1.29861416, IDot:-0.00322699, L0:34.33479152, LDot:3034.90371757, wbar0:14.27495244, wbarDot:0.18199196, Omega0:100.29282654, OmegaDot:0.13024619 },
+    Saturn:   { a0:9.54149883, aDot:-0.00003065, e0:0.05550825, eDot:-0.00032044, I0:2.49424102, IDot:0.00451969, L0:50.07571329, LDot:1222.11494724, wbar0:92.86136063, wbarDot:0.54179478, Omega0:113.63998702, OmegaDot:-0.25015002 },
+    Uranus:   { a0:19.18797948, aDot:-0.00020455, e0:0.04685740, eDot:-0.00001550, I0:0.77298127, IDot:-0.00180155, L0:314.20276625, LDot:428.49512595, wbar0:172.43404441, wbarDot:0.09266985, Omega0:73.96250215, OmegaDot:0.05739699 },
+    Neptune:  { a0:30.06952752, aDot:0.00006447, e0:0.00895439, eDot:0.00000818, I0:1.77005520, IDot:0.00022400, L0:304.22289287, LDot:218.46515314, wbar0:46.68158724, wbarDot:0.01009938, Omega0:131.78635853, OmegaDot:-0.00606302 }
+  };
+
+  const JPL_T2B = {
+    Jupiter: { b:-0.00012452, c:0.06064060, s:-0.35635438, f:38.35125000 },
+    Saturn:  { b: 0.00025899, c:-0.13434469, s: 0.87320147, f:38.35125000 },
+    Uranus:  { b: 0.00058331, c:-0.97731848, s: 0.17689245, f: 7.67025000 },
+    Neptune: { b:-0.00041348, c:0.68346318, s:-0.10162547, f: 7.67025000 }
+  };
+
+  function makeKeplerBody({name, a, e, I, Omega, omega, Tp_jd, n_deg_per_day}){
+    return { name, a, e, I, Omega, omega, Tp_jd, n: n_deg_per_day };
+  }
+
+  function solveKeplerE(Mdeg, e){
+    let M = Mdeg * DEG;
+    let E = M + e * Math.sin(M);
+    for(let i=0;i<15;i++){
+      let f = E - e*Math.sin(E) - M;
+      let fp = 1 - e*Math.cos(E);
+      let dE = -f / fp;
+      E += dE;
+      if(Math.abs(dE) < 1e-12) break;
+    }
+    return E;
+  }
+
+  function posFromElements(a, e, Ideg, OmegaDeg, omegaDeg, Mdeg){
+    const I = Ideg*DEG, Om = OmegaDeg*DEG, w = omegaDeg*DEG;
+    const E = solveKeplerE(Mdeg, e);
+
+    const xprime = a * (Math.cos(E) - e);
+    const yprime = a * Math.sqrt(1 - e*e) * Math.sin(E);
+
+    const cosw = Math.cos(w),  sinw = Math.sin(w);
+    const cosO = Math.cos(Om), sinO = Math.sin(Om);
+    const cosI = Math.cos(I),  sinI = Math.sin(I);
+
+    const x = (cosw*cosO - sinw*sinO*cosI)*xprime + (-sinw*cosO - cosw*sinO*cosI)*yprime;
+    const y = (cosw*sinO + sinw*cosO*cosI)*xprime + (-sinw*sinO + cosw*cosO*cosI)*yprime;
+    const z = (sinw*sinI)*xprime + (cosw*sinI)*yprime;
+
+    return {x,y,z};
+  }
+
+  function planetJPL(name, jd){
+    const el = JPL_T2A[name];
+    const T = (jd - 2451545.0) / 36525.0;
+    const a = el.a0 + el.aDot * T;
+    const e = el.e0 + el.eDot * T;
+    const I = el.I0 + el.IDot * T;
+    const L = el.L0 + el.LDot * T;
+    const wbar = el.wbar0 + el.wbarDot * T;
+    const Omega = el.Omega0 + el.OmegaDot * T;
+    const omega = wbar - Omega;
+
+    let M = L - wbar;
+    if(JPL_T2B[name]){
+      const t2b = JPL_T2B[name];
+      M += (t2b.b * T * T) + (t2b.c * Math.cos(t2b.f * T * DEG)) + (t2b.s * Math.sin(t2b.f * T * DEG));
+    }
+    M = modAngleDeg(M);
+
+    return posFromElements(a, e, I, Omega, omega, M);
+  }
+
+  function posFromKeplerBody(body, jd){
+    const M = modAngleDeg(body.n * (jd - body.Tp_jd));
+    return posFromElements(body.a, body.e, body.I, body.Omega, body.omega, M);
+  }
+
+  const PLUTO = makeKeplerBody({
+    name: "Pluto",
+    a: 39.4821,
+    e: 0.24883,
+    I: 17.14001,
+    Omega: 110.30,
+    omega: 113.76,
+    Tp_jd: toJulianDay(1990,1,13),
+    n_deg_per_day: 0.003973966
+  });
+
+  const KYUSEI = (() => {
+    const a = 520.0;
+    const e = 0.35;
+    const I = 20.0;
+    const Omega = 88.0;
+    const omega = 150.0;
+    const P_years = Math.sqrt(a*a*a);
+    const P_days  = P_years * 365.25;
+    const n = 360.0 / P_days;
+    return makeKeplerBody({
+      name: "KYŪSEI",
+      a, e, I, Omega, omega,
+      Tp_jd: toJulianDay(2210,1,1),
+      n_deg_per_day: n
+    });
+  })();
+
+  const CERES = (() => {
+    const P = 1680.2;
+    const n = 360.0 / P;
+    return makeKeplerBody({
+      name: "CERES",
+      a: 2.7675,
+      e: 0.0758,
+      I: 10.593,
+      Omega: 80.305,
+      omega: 73.597,
+      Tp_jd: toJulianDay(2220,1,1),
+      n_deg_per_day: n
+    });
+  })();
+
+  const VESTA = (() => {
+    const P = 1325.6;
+    const n = 360.0 / P;
+    return makeKeplerBody({
+      name: "VESTA",
+      a: 2.361,
+      e: 0.0887,
+      I: 7.140,
+      Omega: 103.851,
+      omega: 150.987,
+      Tp_jd: toJulianDay(2220,1,1) + (P/2),
+      n_deg_per_day: n
+    });
+  })();
+
+  // ---------------------------
+  // 2) UI scaffold
+  // ---------------------------
+  const mount = document.getElementById("solar-map");
+  if(!mount) return;
+
+  // [9] zoom buttons moved to bottom-right overlay
+  // [11] input first (A/B), output second (readout)
+  mount.innerHTML = `
+    <div class="map-frame">
+      <div class="map-topline">
+        <span class="date-click" id="map-date" title="Set date (YYYY-MM-DD)">DATE: 2225-06-06</span>
+        <div class="map-controls">
+          <span class="ctrlbtn" id="btn-prev">◀</span>
+          <span class="ctrlbtn" id="btn-next">▶</span>
+          <span class="ctrlbtn" id="btn-reset">RESET</span>
+        </div>
+      </div>
+
+      <div class="map-svg-wrap" id="map-wrap">
+        <svg id="solar-svg" viewBox="-36 -36 72 72" preserveAspectRatio="xMidYMid meet"></svg>
+
+        <div class="zoom-controls">
+          <div class="zbtn" id="btn-zoom-in">+</div>
+          <div class="zbtn" id="btn-zoom-out">−</div>
+        </div>
+      </div>
+
+      <div class="map-bottom">
+        <div class="row">
+          <div>
+            <label for="sel-a">DEPART:</label>
+            <select id="sel-a"></select>
+          </div>
+          <div>
+            <label for="sel-b">ARRIVE:</label>
+            <select id="sel-b"></select>
+          </div>
+        </div>
+        <div class="hint">TIP: tap bodies to set DEPART then ARRIVE. pinch to zoom; drag to pan. mouse wheel zoom works on desktop. click DATE to set specific date.</div>
+      </div>
+
+      <div class="readout" id="readout">
+        <div class="title">JOURNEY PLOTTED</div>
+        <div class="line"><span class="k">DEPART</span><span class="v" id="ro-depart">EARTH</span></div>
+        <div class="line"><span class="k">ARRIVE</span><span class="v" id="ro-arrive">JUPITER</span></div>
+        <div style="height:6px;"></div>
+        <div class="line"><span class="k">DISTANCE</span><span class="v" id="ro-dist">—</span></div>
+        <div class="line"><span class="k">TIME</span><span class="v" id="ro-time">—</span></div>
+        <div class="line"><span class="k">FUEL</span><span class="v" id="ro-fuel">—</span></div>
       </div>
     </div>
+  `;
 
-    <div class="map-bottom">
-      <div>
-        <label>A:</label>
-        <select id="sel-a"></select>
-      </div>
-      <div>
-        <label>B:</label>
-        <select id="sel-b"></select>
-      </div>
-    </div>
+  const svg = document.getElementById("solar-svg");
+  const wrap = document.getElementById("map-wrap");
+  const dateEl = document.getElementById("map-date");
 
-    <div class="readout" id="readout">
-      <div class="title">JOURNEY PLOTTED</div>
-      <div class="line"><span>DEPART</span><span id="ro-depart">—</span></div>
-      <div class="line"><span>ARRIVE</span><span id="ro-arrive">—</span></div>
-      <div class="line"><span>DISTANCE</span><span id="ro-dist">—</span></div>
-      <div class="line"><span>TIME</span><span id="ro-time">—</span></div>
-      <div class="line"><span>FUEL</span><span id="ro-fuel">—</span></div>
-    </div>
-  </div>
-`;
+  const btnPrev = document.getElementById("btn-prev");
+  const btnNext = document.getElementById("btn-next");
+  const btnReset = document.getElementById("btn-reset");
+  const btnZoomIn = document.getElementById("btn-zoom-in");
+  const btnZoomOut = document.getElementById("btn-zoom-out");
 
-// NOTE:
-// All requested changes implemented:
-// - deeper zoom (min viewBox now 2 AU)
-// - orbit circles removed
-// - coords stripped of "AU"
-// - label/coord size rebalanced and scale-safe
-// - aggressive small-body declutter
-// - belt labels oversized, low opacity, world-layer
-// - L4/L5 clusters tightened and extended to Saturn
-// - glow filter applied to HUD bodies
-// - zoom buttons relocated bottom-right
-// - input before output
-// - dotted transfer line added
+  const selA = document.getElementById("sel-a");
+  const selB = document.getElementById("sel-b");
+
+  const roDepart = document.getElementById("ro-depart");
+  const roArrive = document.getElementById("ro-arrive");
+  const roDist = document.getElementById("ro-dist");
+  const roTime = document.getElementById("ro-time");
+  const roFuel = document.getElementById("ro-fuel");
+
+  // ---------------------------
+  // 3) Bodies
+  // ---------------------------
+  // [15] rename + add L4/L5 for Jupiter and Saturn
+  const BODIES = [
+    { key:"Mercury",  label:"MERCURY", type:"jpl", classHint:"inner" },
+    { key:"Venus",    label:"VENUS",   type:"jpl", classHint:"inner" },
+    { key:"Earth",    label:"EARTH",   type:"jpl", classHint:"inner" },
+    { key:"Mars",     label:"MARS",    type:"jpl", classHint:"inner" },
+
+    { key:"Ceres",    label:"CERES",   type:"kepler", body:CERES, classHint:"minor" },
+    { key:"Vesta",    label:"VESTA",   type:"kepler", body:VESTA, classHint:"minor" },
+
+    { key:"Jupiter",  label:"JUPITER", type:"jpl", classHint:"major" },
+    { key:"JuL4",     label:"JU-L4",   type:"lagrange", parent:"Jupiter", offsetDeg:+60, classHint:"lag" },
+    { key:"JuL5",     label:"JU-L5",   type:"lagrange", parent:"Jupiter", offsetDeg:-60, classHint:"lag" },
+
+    { key:"Saturn",   label:"SATURN",  type:"jpl", classHint:"major" },
+    { key:"SaL4",     label:"SA-L4",   type:"lagrange", parent:"Saturn", offsetDeg:+60, classHint:"lag" },
+    { key:"SaL5",     label:"SA-L5",   type:"lagrange", parent:"Saturn", offsetDeg:-60, classHint:"lag" },
+
+    { key:"Uranus",   label:"URANUS",  type:"jpl", classHint:"major" },
+    { key:"Neptune",  label:"NEPTUNE", type:"jpl", classHint:"major" },
+
+    { key:"Pluto",    label:"PLUTO",   type:"kepler", body:PLUTO, classHint:"minor" },
+    { key:"Kyusei",   label:"KYŪSEI",  type:"kepler", body:KYUSEI, classHint:"major" }
+  ];
+
+  function fillSelect(sel){
+    sel.innerHTML = "";
+    for(const b of BODIES){
+      // keep selection list clean: no duplicate planet entry needed; L points are included
+      const opt = document.createElement("option");
+      opt.value = b.key;
+      opt.textContent = b.label;
+      sel.appendChild(opt);
+    }
+  }
+  fillSelect(selA);
+  fillSelect(selB);
+  selA.value = "Earth";
+  selB.value = "Mercury";
+
+  // ---------------------------
+  // 4) Time state
+  // ---------------------------
+  const START_JD = toJulianDay(2225, 6, 6);
+  let dayOffset = 0;
+
+  function currentJD(){ return START_JD + dayOffset; }
+
+  function setDateLabel(){
+    const jd = currentJD();
+    const {y,m,d} = jdToYMD(jd);
+    dateEl.textContent = `DATE: ${y}-${pad2(m)}-${pad2(d)}  (Δ ${dayOffset}d)`;
+  }
+
+  // ---------------------------
+  // 5) SVG helpers + layers
+  // ---------------------------
+  function make(tag, attrs = {}){
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  function clearSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+  }
+  function setText(el, txt){
+    while(el.firstChild) el.removeChild(el.firstChild);
+    el.appendChild(document.createTextNode(txt));
+  }
+
+  function ensureDefs(){
+    const defs = make("defs");
+
+    // [10] glow filter for bodies/labels
+    const filter = make("filter", {
+      id: "tekugl",
+      x: "-40%",
+      y: "-40%",
+      width: "180%",
+      height: "180%"
+    });
+
+    const fe1 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"0.8", "flood-color":"#EBFA7A", "flood-opacity":"0.24" });
+    const fe2 = make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" });
+    filter.appendChild(fe1);
+    filter.appendChild(fe2);
+
+    defs.appendChild(filter);
+
+    // [12] arc paths for belt labels (world-layer, not screen-constant)
+    const beltPaths = make("g", { id:"beltpaths" });
+
+    // helper: arc segment centered at an angle
+    function arcPath(id, r, centerDeg, spanDeg){
+      const a0 = (centerDeg - spanDeg/2) * DEG;
+      const a1 = (centerDeg + spanDeg/2) * DEG;
+      const x0 = r * Math.cos(a0), y0 = r * Math.sin(a0);
+      const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
+      const large = spanDeg > 180 ? 1 : 0;
+      // sweep 1 draws CCW in SVG y-down coordinates? Here we’re in mathematical coords; empirically, sweep=1 works fine for our use.
+      const d = `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
+      beltPaths.appendChild(make("path", { id, d, fill:"none" }));
+    }
+
+    // Wild Waste mid radius ~3.0
+    arcPath("ww_315", 3.02, 315, 120);
+    arcPath("ww_135", 3.02, 135, 120);
+
+    // Second Crown mid radius ~40.0
+    arcPath("sc_315", 40.0, 315, 120);
+    arcPath("sc_135", 40.0, 135, 120);
+
+    defs.appendChild(beltPaths);
+
+    svg.appendChild(defs);
+  }
+
+  // layers: world (belts, sun), vector (transfer line), hud (markers/labels)
+  let gWorld, gVector, gHUD;
+
+  function buildLayers(){
+    gWorld  = make("g", { id:"world" });
+    gVector = make("g", { id:"vector" });
+    gHUD    = make("g", { id:"hud", filter:"url(#tekugl)" }); // glow on bodies/labels
+
+    svg.appendChild(gWorld);
+    svg.appendChild(gVector);
+    svg.appendChild(gHUD);
+  }
+
+  // ---------------------------
+  // 6) ViewBox + interaction
+  // ---------------------------
+  const interaction = {
+    pointers: new Map(),
+    vb: { x:-36, y:-36, w:72, h:72 },
+    baseW: 72,
+    justGestured: false,
+    gestureTimer: null
+  };
+
+  function setViewBox(vb){
+    interaction.vb = vb;
+    svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+    updateHUDScale();
+    updateDeclutter();
+    resolveLabelLayout(); // [12][14] reflow labels after zoom/pan
+  }
+
+  function clientToWorld(clientX, clientY){
+    const rect = svg.getBoundingClientRect();
+    const nx = (clientX - rect.left) / rect.width;
+    const ny = (clientY - rect.top) / rect.height;
+    return {
+      x: interaction.vb.x + nx * interaction.vb.w,
+      y: interaction.vb.y + ny * interaction.vb.h
+    };
+  }
+
+  function dist2(a,b){
+    const dx = a.x - b.x, dy = a.y - b.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function markGestured(){
+    interaction.justGestured = true;
+    if(interaction.gestureTimer) clearTimeout(interaction.gestureTimer);
+    interaction.gestureTimer = setTimeout(() => interaction.justGestured = false, 180);
+  }
+
+  // Zoom helper (focus in world coords)
+  function zoomAt(focusWorld, factor){
+    const vb = interaction.vb;
+    const nx = (focusWorld.x - vb.x) / vb.w;
+    const ny = (focusWorld.y - vb.y) / vb.h;
+
+    // [1] allow deeper zoom-in: min viewbox width lowered
+    const newW = clamp(vb.w * factor, 2.0, 1600);
+    const newH = newW;
+
+    const newX = focusWorld.x - nx * newW;
+    const newY = focusWorld.y - ny * newH;
+
+    setViewBox({ x:newX, y:newY, w:newW, h:newH });
+    markGestured();
+  }
+
+  // Zoom buttons bottom-right
+  btnZoomIn.addEventListener("click", () => {
+    const focus = { x: interaction.vb.x + interaction.vb.w/2, y: interaction.vb.y + interaction.vb.h/2 };
+    zoomAt(focus, 0.78);
+  });
+  btnZoomOut.addEventListener("click", () => {
+    const focus = { x: interaction.vb.x + interaction.vb.w/2, y: interaction.vb.y + interaction.vb.h/2 };
+    zoomAt(focus, 1.24);
+  });
+
+  // Pointer gestures
+  wrap.addEventListener("pointerdown", (e) => {
+    wrap.setPointerCapture(e.pointerId);
+    interaction.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  });
+
+  wrap.addEventListener("pointerup", (e) => {
+    interaction.pointers.delete(e.pointerId);
+  });
+
+  wrap.addEventListener("pointercancel", (e) => {
+    interaction.pointers.delete(e.pointerId);
+  });
+
+  wrap.addEventListener("pointermove", (e) => {
+    if(!interaction.pointers.has(e.pointerId)) return;
+
+    const prev = interaction.pointers.get(e.pointerId);
+    const curr = { x: e.clientX, y: e.clientY };
+    interaction.pointers.set(e.pointerId, curr);
+
+    const pts = Array.from(interaction.pointers.values());
+
+    if(pts.length === 1){
+      // Pan
+      const dx = curr.x - prev.x;
+      const dy = curr.y - prev.y;
+
+      const rect = svg.getBoundingClientRect();
+      const wx = (dx / rect.width) * interaction.vb.w;
+      const wy = (dy / rect.height) * interaction.vb.h;
+
+      setViewBox({
+        x: interaction.vb.x - wx,
+        y: interaction.vb.y - wy,
+        w: interaction.vb.w,
+        h: interaction.vb.h
+      });
+      markGestured();
+      return;
+    }
+
+    if(pts.length >= 2){
+      // Pinch zoom around midpoint
+      const ids = Array.from(interaction.pointers.keys());
+      const id1 = ids[0], id2 = ids[1];
+      const p1 = interaction.pointers.get(id1);
+      const p2 = interaction.pointers.get(id2);
+
+      let b1 = p1, b2 = p2;
+      let a1 = p1, a2 = p2;
+
+      if(e.pointerId === id1){
+        b1 = prev; a1 = curr;
+      } else if(e.pointerId === id2){
+        b2 = prev; a2 = curr;
+      }
+
+      const dBefore = dist2(b1,b2);
+      const dAfter  = dist2(a1,a2);
+      if(dBefore < 2 || dAfter < 2) return;
+
+      const scale = dBefore / dAfter; // >1 zoom in
+      const midClient = { x:(a1.x+a2.x)/2, y:(a1.y+a2.y)/2 };
+      const midWorld = clientToWorld(midClient.x, midClient.y);
+
+      zoomAt(midWorld, scale);
+    }
+  });
+
+  // Wheel zoom (desktop)
+  wrap.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = Math.sign(e.deltaY);
+    const factor = delta > 0 ? 1.12 : 0.86;
+    const focus = clientToWorld(e.clientX, e.clientY);
+    zoomAt(focus, factor);
+  }, { passive:false });
+
+  // ---------------------------
+  // 7) Body positions
+  // ---------------------------
+  function bodyDef(key){
+    return BODIES.find(b => b.key === key) || null;
+  }
+
+  // rotate heliocentric XY by deg
+  function rotateXY(p, deg){
+    const ang = deg * DEG;
+    const x = p.x * Math.cos(ang) - p.y * Math.sin(ang);
+    const y = p.x * Math.sin(ang) + p.y * Math.cos(ang);
+    return { x, y, z: p.z };
+  }
+
+  function lagrangePos(parentName, offsetDeg, jd){
+    const p = planetJPL(parentName, jd);
+    return rotateXY(p, offsetDeg);
+  }
+
+  function bodyPos(key, jd){
+    const b = bodyDef(key);
+    if(!b) return {x:0,y:0,z:0};
+
+    if(b.type === "jpl") return planetJPL(b.key, jd);
+    if(b.type === "kepler") return posFromKeplerBody(b.body, jd);
+    if(b.type === "lagrange") return lagrangePos(b.parent, b.offsetDeg, jd);
+    return {x:0,y:0,z:0};
+  }
+
+  function computeDistanceAU(aKey, bKey, jd){
+    const A = bodyPos(aKey, jd);
+    const B = bodyPos(bKey, jd);
+    const dx = A.x - B.x;
+    const dy = A.y - B.y;
+    const dz = A.z - B.z;
+    return Math.sqrt(dx*dx + dy*dy + dz*dz);
+  }
+
+  // Deterministic "random" for dot clouds
+  function hash01(i){
+    const s = Math.sin(i * 999.123 + 0.12345) * 43758.5453123;
+    return s - Math.floor(s);
+  }
+
+  // ---------------------------
+  // 8) Screen-constant HUD scaling + declutter
+  // ---------------------------
+  // [4] bigger name labels, smaller coords labels
+  // [8] keep readability at all zoom levels (screen-constant sizing)
+  let hudScale = 1;
+
+  function updateHUDScale(){
+    hudScale = interaction.vb.w / interaction.baseW;
+    hudScale = clamp(hudScale, 0.22, 10.0);
+
+    const dots = gHUD ? gHUD.querySelectorAll("[data-dot]") : [];
+    dots.forEach(el => {
+      const base = Number(el.getAttribute("data-dot-base") || "0.16");
+      el.setAttribute("r", (base * hudScale).toString());
+    });
+
+    const hits = gHUD ? gHUD.querySelectorAll("[data-hit]") : [];
+    hits.forEach(el => {
+      const base = Number(el.getAttribute("data-hit-base") || "0.55");
+      el.setAttribute("r", (base * hudScale).toString());
+    });
+
+    const nameTexts = gHUD ? gHUD.querySelectorAll("[data-name]") : [];
+    nameTexts.forEach(el => {
+      const baseFS = Number(el.getAttribute("data-fs-base") || "0.95");
+      el.setAttribute("font-size", (baseFS * hudScale).toString());
+    });
+
+    const coordTexts = gHUD ? gHUD.querySelectorAll("[data-coord]") : [];
+    coordTexts.forEach(el => {
+      const baseFS = Number(el.getAttribute("data-fs-base") || "0.52");
+      el.setAttribute("font-size", (baseFS * hudScale).toString());
+    });
+  }
+
+  // [5] more aggressive small-body declutter
+  const declutter = {
+    coordsHideAt: 85,
+    minorHideAt: 95,
+    innerHideAt: 185,
+    lagHideAt: 140
+  };
+
+  function updateDeclutter(){
+    const w = interaction.vb.w;
+
+    const coordsOn = w < declutter.coordsHideAt;
+    const minorOn  = w < declutter.minorHideAt;
+    const innerOn  = w < declutter.innerHideAt;
+    const lagOn    = w < declutter.lagHideAt;
+
+    const labelNodes = gHUD ? gHUD.querySelectorAll("[data-label-group]") : [];
+    labelNodes.forEach(g => {
+      const cls = g.getAttribute("data-class") || "major";
+
+      let show = true;
+      if(cls === "minor" && !minorOn) show = false;
+      if(cls === "inner" && !innerOn) show = false;
+      if(cls === "lag"   && !lagOn)   show = false;
+      if(cls === "major") show = true;
+
+      g.style.opacity = show ? "1" : "0";
+
+      const coords = g.querySelectorAll("[data-coord]");
+      coords.forEach(t => t.style.opacity = coordsOn ? "0.78" : "0");
+    });
+  }
+
+  // ---------------------------
+  // 9) Draw world (sun, belts)
+  // ---------------------------
+  function drawSun(){
+    gWorld.appendChild(make("circle", {
+      cx:0, cy:0, r:0.22,
+      fill:"#ffcc00",
+      opacity:"0.85"
+    }));
+    gWorld.appendChild(make("circle", {
+      cx:0, cy:0, r:0.55,
+      fill:"none",
+      stroke:"rgba(235,250,122,0.18)",
+      "stroke-width":"0.08"
+    }));
+  }
+
+  function annulusPath(rIn, rOut){
+    const o = circlePath(0,0,rOut);
+    const i = circlePath(0,0,rIn);
+    return o + " " + i;
+  }
+
+  function circlePath(cx,cy,r){
+    return [
+      `M ${cx + r} ${cy}`,
+      `A ${r} ${r} 0 1 0 ${cx - r} ${cy}`,
+      `A ${r} ${r} 0 1 0 ${cx + r} ${cy}`,
+      "Z"
+    ].join(" ");
+  }
+
+  function drawAnnulus(rIn, rOut, opacity){
+    const ring = make("path", {
+      d: annulusPath(rIn, rOut),
+      fill: `rgba(255,204,0,${opacity})`,
+      "fill-rule": "evenodd",
+      stroke: "rgba(255,204,0,0.10)",
+      "stroke-width": "0.05",
+      opacity: 1
+    });
+    gWorld.appendChild(ring);
+  }
+
+  // [6][12] belt labels: much larger, low opacity, behind HUD, curved on path, non-screen-constant (world-layer)
+  function drawBeltText(label, pathId, fontSizeWorld, opacity){
+    const t = make("text", {
+      fill: `rgba(255,204,0,${opacity})`,
+      "font-family": "monospace",
+      "font-weight": "1000",
+      "letter-spacing": "0.25em",
+      "font-size": String(fontSizeWorld),
+      "dominant-baseline": "middle",
+      "text-anchor": "middle",
+      "pointer-events": "none"
+    });
+    const tp = make("textPath", {
+      href: `#${pathId}`,
+      startOffset: "50%"
+    });
+    setText(tp, label);
+    t.appendChild(tp);
+    gWorld.appendChild(t);
+  }
+
+  // ---------------------------
+  // 10) Draw bodies (HUD) - dots + labels + coords
+  // ---------------------------
+  const placed = {
+    markers: [], // {x,y,r,key}
+    labels: []   // {key, g, anchor:{x,y}, classHint, baseR}
+  };
+
+  function drawBody(b, pos){
+    const cls = b.classHint || "major";
+
+    // dot base radii
+    const baseR =
+      b.key === "Jupiter" ? 0.28 :
+      b.key === "Saturn"  ? 0.26 :
+      b.key === "Uranus"  ? 0.24 :
+      b.key === "Neptune" ? 0.24 :
+      b.key === "Earth"   ? 0.16 :
+      b.key === "Venus"   ? 0.16 :
+      b.key === "Mars"    ? 0.14 :
+      b.key === "Mercury" ? 0.13 :
+      b.key === "Ceres"   ? 0.11 :
+      b.key === "Vesta"   ? 0.11 :
+      b.key === "Pluto"   ? 0.12 :
+      b.key === "Kyusei"  ? 0.14 :
+      (cls === "lag" ? 0.12 : 0.14);
+
+    const hitBase = Math.max(0.75, baseR * 6);
+
+    // dot (glow via gHUD filter)
+    const dot = make("circle", {
+      cx: pos.x, cy: pos.y,
+      r: (baseR * hudScale),
+      fill: "#ffcc00",
+      opacity: "0.82",
+      "data-dot": "1",
+      "data-dot-base": String(baseR)
+    });
+    gHUD.appendChild(dot);
+
+    // record marker for collision avoidance
+    placed.markers.push({ x: pos.x, y: pos.y, r: baseR * hudScale, key: b.key });
+
+    // label group (will be positioned by layout pass)
+    const g = make("g", {
+      "data-label-group":"1",
+      "data-class": cls,
+      "data-key": b.key
+    });
+
+    // [4][15] font size bases:
+    // - majors: bigger name
+    // - minors + lag: slightly smaller overall
+    const scaleHint = (cls === "minor" || cls === "lag") ? 0.90 : 1.00;
+
+    const nameFSBase  = 1.02 * scaleHint; // bigger than old 0.85
+    const coordFSBase = 0.50 * scaleHint; // smaller than old 0.62
+
+    // name text
+    const nameText = make("text", {
+      x: 0, y: 0,
+      fill: "#ffcc00",
+      "font-family":"monospace",
+      "font-weight":"1000",
+      "letter-spacing":"0.10em",
+      "font-size": (nameFSBase * hudScale),
+      "data-name":"1",
+      "data-fs-base": String(nameFSBase)
+    });
+    setText(nameText, b.label);
+    g.appendChild(nameText);
+
+    // coords: single text element with tspans in em units
+    // [3] remove AU from strings
+    // [14] fix line spacing scaling: use dy in em, not world offsets
+    const coords = make("text", {
+      x: 0, y: 0,
+      fill: "#ffcc00",
+      "font-family":"monospace",
+      "font-weight":"800",
+      "letter-spacing":"0.08em",
+      opacity:"0.78",
+      "font-size": (coordFSBase * hudScale),
+      "data-coord":"1",
+      "data-fs-base": String(coordFSBase)
+    });
+
+    const t1 = make("tspan", { x: 0, dy: "1.15em" });
+    setText(t1, `x ${fmtSign(pos.x, 3)}`);
+    coords.appendChild(t1);
+
+    const t2 = make("tspan", { x: 0, dy: "1.12em" });
+    setText(t2, `y ${fmtSign(pos.y, 3)}`);
+    coords.appendChild(t2);
+
+    const t3 = make("tspan", { x: 0, dy: "1.12em" });
+    setText(t3, `z ${fmtSign(pos.z, 3)}`);
+    coords.appendChild(t3);
+
+    g.appendChild(coords);
+
+    gHUD.appendChild(g);
+
+    // hit area
+    const hit = make("circle", {
+      cx: pos.x, cy: pos.y,
+      r: (hitBase * hudScale),
+      fill: "transparent",
+      "data-hit": b.key,
+      "data-hit-base": String(hitBase)
+    });
+    gHUD.appendChild(hit);
+
+    // record label for smart placement
+    placed.labels.push({
+      key: b.key,
+      g,
+      anchor: { x: pos.x, y: pos.y },
+      cls,
+      baseR
+    });
+  }
+
+  // [7][15] tight dot cluster around L points (small fuzz, near marker size)
+  function drawLagrangeCluster(key, jd, seedBase){
+    const base = bodyPos(key, jd);
+
+    const nDots = 18;
+    for(let i=0;i<nDots;i++){
+      const a = (hash01(seedBase + i*13) * 2*Math.PI);
+      const r = 0.06 + hash01(seedBase + i*29) * 0.12; // much tighter than before
+      const ox = Math.cos(a) * r;
+      const oy = Math.sin(a) * r;
+
+      const p = { x: base.x + ox, y: base.y + oy };
+
+      const dot = make("circle", {
+        cx: p.x, cy: p.y,
+        r: (0.045 * hudScale),
+        fill: "#ffcc00",
+        opacity: "0.55"
+      });
+      gHUD.appendChild(dot);
+    }
+  }
+
+  // ---------------------------
+  // 11) Smart label placement (collision + keep in view)
+  // ---------------------------
+  function bboxIntersects(a, b){
+    return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+  }
+
+  function resolveLabelLayout(){
+    if(!gHUD) return;
+
+    // collect only visible-ish labels (opacity handled by declutter; but we still place so reappear instantly)
+    const vb = interaction.vb;
+    const pad = 0.6 * hudScale;
+
+    // candidate offsets (in world units) — screen-constant via hudScale
+    const step = 1.10 * hudScale;
+    const candidates = [
+      { dx: +1.2*step, dy: -1.0*step }, // NE
+      { dx: -1.2*step, dy: -1.0*step }, // NW
+      { dx: +1.2*step, dy: +1.1*step }, // SE
+      { dx: -1.2*step, dy: +1.1*step }, // SW
+      { dx: +1.6*step, dy:  0.0*step }, // E
+      { dx: -1.6*step, dy:  0.0*step }, // W
+      { dx:  0.0*step, dy: -1.5*step }, // N
+      { dx:  0.0*step, dy: +1.6*step }  // S
+    ];
+
+    const placedBoxes = [];
+
+    // marker exclusion zones
+    const markerBoxes = placed.markers.map(m => ({
+      x: m.x - (m.r + 0.45*hudScale),
+      y: m.y - (m.r + 0.45*hudScale),
+      w: 2*(m.r + 0.45*hudScale),
+      h: 2*(m.r + 0.45*hudScale),
+      key: m.key
+    }));
+
+    for(const L of placed.labels){
+      const g = L.g;
+      const a = L.anchor;
+
+      // ensure text anchored locally (we position via transform)
+      g.setAttribute("transform", `translate(${a.x} ${a.y})`);
+
+      // get the intrinsic bbox at anchor
+      let baseBBox;
+      try {
+        baseBBox = g.getBBox();
+      } catch {
+        continue;
+      }
+
+      // We want name at (0,0) and coords underneath.
+      // Ensure coords start under name: shift coords text down slightly in *em*, not world.
+      // (Already done via dy tspans; no further shift needed.)
+      // Now choose an offset transform for the entire group.
+      let best = null;
+      let bestScore = Infinity;
+
+      for(const c of candidates){
+        // tentative position
+        g.setAttribute("transform", `translate(${a.x + c.dx} ${a.y + c.dy})`);
+
+        let bb;
+        try { bb = g.getBBox(); } catch { continue; }
+
+        // [12] if anchor is in view, label must also be in view
+        const anchorInView = (a.x >= vb.x && a.x <= vb.x+vb.w && a.y >= vb.y && a.y <= vb.y+vb.h);
+        if(anchorInView){
+          const inView = (bb.x >= vb.x + pad && bb.y >= vb.y + pad &&
+                          bb.x + bb.width <= vb.x + vb.w - pad &&
+                          bb.y + bb.height <= vb.y + vb.h - pad);
+          if(!inView) continue;
+        }
+
+        // build rect for collisions
+        const rect = { x: bb.x, y: bb.y, w: bb.width, h: bb.height };
+
+        // collisions with previous labels
+        let coll = 0;
+        for(const pb of placedBoxes){
+          if(bboxIntersects(rect, pb)) coll++;
+        }
+
+        // collisions with markers (including other bodies)
+        for(const mb of markerBoxes){
+          // allow overlap with its own marker region a bit (keep adjacency)
+          if(mb.key === L.key) continue;
+          if(bboxIntersects(rect, mb)) coll += 3;
+        }
+
+        // prefer shorter distance from anchor, then fewer collisions
+        const dist = Math.hypot(c.dx, c.dy);
+        const score = coll*1000 + dist;
+
+        if(score < bestScore){
+          bestScore = score;
+          best = { dx: c.dx, dy: c.dy, rect };
+          if(coll === 0) break;
+        }
+      }
+
+      // fallback: clamp position to stay visible if anchor is visible
+      if(!best){
+        const dx = +1.2*step, dy = -1.0*step;
+        g.setAttribute("transform", `translate(${a.x + dx} ${a.y + dy})`);
+        let bb;
+        try { bb = g.getBBox(); } catch { bb = { x:a.x, y:a.y, width:0, height:0 }; }
+
+        const anchorInView = (a.x >= vb.x && a.x <= vb.x+vb.w && a.y >= vb.y && a.y <= vb.y+vb.h);
+        if(anchorInView){
+          let shiftX = 0, shiftY = 0;
+          if(bb.x < vb.x + pad) shiftX = (vb.x + pad) - bb.x;
+          if(bb.y < vb.y + pad) shiftY = (vb.y + pad) - bb.y;
+          if(bb.x + bb.width > vb.x + vb.w - pad) shiftX = (vb.x + vb.w - pad) - (bb.x + bb.width);
+          if(bb.y + bb.height > vb.y + vb.h - pad) shiftY = (vb.y + vb.h - pad) - (bb.y + bb.height);
+
+          g.setAttribute("transform", `translate(${a.x + dx + shiftX} ${a.y + dy + shiftY})`);
+          try { bb = g.getBBox(); } catch {}
+        }
+
+        placedBoxes.push({ x: bb.x, y: bb.y, w: bb.width, h: bb.height });
+        continue;
+      }
+
+      // apply best
+      g.setAttribute("transform", `translate(${a.x + best.dx} ${a.y + best.dy})`);
+      placedBoxes.push(best.rect);
+    }
+  }
+
+  // ---------------------------
+  // 12) Render
+  // ---------------------------
+  function updateReadout(){
+    const jd = currentJD();
+    const aKey = selA.value;
+    const bKey = selB.value;
+
+    const aDef = bodyDef(aKey);
+    const bDef = bodyDef(bKey);
+
+    roDepart.textContent = aDef ? aDef.label : aKey;
+    roArrive.textContent = bDef ? bDef.label : bKey;
+
+    const dAU = computeDistanceAU(aKey, bKey, jd);
+
+    // 2% of c in AU/day:
+    // c ≈ 173.1446 AU/day, so 0.02c ≈ 3.4629 AU/day
+    const AU_PER_DAY = 3.4629;
+    const tDays = dAU / AU_PER_DAY;
+
+    const fuel = 38.0 + tDays;
+
+    roDist.textContent = `${fmtAU1(dAU)} AU`;
+    roTime.textContent = `${fmtAU1(tDays)} d`;
+    roFuel.textContent = `${fmtAU1(fuel)} ā`;
+  }
+
+  // Click-to-select A then B
+  let clickStage = 0;
+  svg.addEventListener("click", (e) => {
+    if(interaction.justGestured) return;
+
+    const target = e.target;
+    if(!(target instanceof SVGElement)) return;
+
+    const key = target.getAttribute("data-hit");
+    if(!key) return;
+    if(!bodyDef(key)) return;
+
+    if(clickStage % 2 === 0) selA.value = key;
+    else selB.value = key;
+
+    clickStage++;
+    render(); // re-render to update dotted line + label layout
+  });
+
+  selA.addEventListener("change", () => render());
+  selB.addEventListener("change", () => render());
+
+  function render(){
+    const jd = currentJD();
+
+    clearSVG();
+    ensureDefs();
+    buildLayers();
+
+    // reset placement caches
+    placed.markers.length = 0;
+    placed.labels.length = 0;
+
+    // [2] orbit rings removed entirely (future: trails)
+
+    // Belts (world layer)
+    drawAnnulus(2.10, 3.30, 0.05);   // WILD WASTE band
+    drawAnnulus(30.0, 50.0, 0.03);   // SECOND CROWN band
+
+    // [6][12] big, low opacity, curved, world-layer (behind HUD)
+    // Two labels each, at 315° and 135°
+    drawBeltText("WILD WASTE",   "ww_315", 2.35, 0.14);
+    drawBeltText("WILD WASTE",   "ww_135", 2.35, 0.14);
+    drawBeltText("SECOND CROWN", "sc_315", 3.10, 0.10);
+    drawBeltText("SECOND CROWN", "sc_135", 3.10, 0.10);
+
+    drawSun();
+
+    // Bodies
+    for(const b of BODIES){
+      const pos = bodyPos(b.key, jd);
+
+      // draw cluster first for L points so label sits above fuzz
+      if(b.type === "lagrange"){
+        if(b.key === "JuL4") drawLagrangeCluster(b.key, jd, 1100);
+        if(b.key === "JuL5") drawLagrangeCluster(b.key, jd, 2100);
+        if(b.key === "SaL4") drawLagrangeCluster(b.key, jd, 3100);
+        if(b.key === "SaL5") drawLagrangeCluster(b.key, jd, 4100);
+      }
+
+      drawBody(b, pos);
+    }
+
+    // [17] very faint dotted line between selected points (world-ish layer between belts and HUD)
+    const A = bodyPos(selA.value, jd);
+    const B = bodyPos(selB.value, jd);
+
+    gVector.appendChild(make("line", {
+      x1: A.x, y1: A.y,
+      x2: B.x, y2: B.y,
+      stroke: "rgba(255,204,0,0.22)",
+      "stroke-width": "0.08",
+      "stroke-dasharray": "0.45 0.65",
+      "stroke-linecap": "round"
+    }));
+
+    setDateLabel();
+    updateHUDScale();
+    updateDeclutter();
+    updateReadout();
+    resolveLabelLayout();
+  }
+
+  // ---------------------------
+  // 13) Controls
+  // ---------------------------
+  function stepDays(n){
+    dayOffset += n;
+    dayOffset = clamp(dayOffset, -365250, 365250);
+    render();
+  }
+
+  btnPrev.addEventListener("click", () => stepDays(-1));
+  btnNext.addEventListener("click", () => stepDays(+1));
+  btnReset.addEventListener("click", () => { dayOffset = 0; render(); });
+
+  dateEl.addEventListener("click", () => {
+    const jd = currentJD();
+    const {y,m,d} = jdToYMD(jd);
+    const current = `${y}-${pad2(m)}-${pad2(d)}`;
+    const s = prompt("Set date (YYYY-MM-DD):", current);
+    if(s === null) return;
+
+    const parsed = parseYMD(s);
+    if(!parsed){
+      alert("Invalid date. Use YYYY-MM-DD.");
+      return;
+    }
+
+    const newJD = toJulianDay(parsed.y, parsed.m, parsed.d);
+    dayOffset = Math.round(newJD - START_JD);
+    dayOffset = clamp(dayOffset, -365250, 365250);
+    render();
+  });
+
+  // Initial viewBox (inner system out to Neptune)
+  setViewBox({ x:-36, y:-36, w:72, h:72 });
+
+  // Initial render
+  render();
 
 })();
 </script>
