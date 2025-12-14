@@ -36,16 +36,16 @@
   }
 
   .micro {
-  font-size: 0.65em;
-  opacity: 0.7;
-  letter-spacing: 0.08em;
-}
+    font-size: 0.65em;
+    opacity: 0.7;
+    letter-spacing: 0.08em;
+  }
 
   p.bodytext {
     margin-top: 20px;
     font-size: 1.3em;
   }
-  
+
   .typeout {
     display: block;
     overflow: hidden;
@@ -87,7 +87,7 @@
     0%, 50% { opacity: 1; }
     50%, 100% { opacity: 0; }
   }
-  
+
   .button {
     display: inline-block;
     margin-top: 40px;
@@ -108,12 +108,12 @@
     background: #e6b800;
     border-color: #e6b800;
   }
-  
+
   /* SCALE WRAPPER – now neutral; no transform here */
   .scale-container {
     overflow: visible;
   }
-  
+
   .container {
     max-width: 650px;
     margin: 0 auto;
@@ -185,53 +185,168 @@
     100% { opacity: 0.97; }
   }
 
+  /* ---------- SOLAR MAP (boxed line, retro) ---------- */
+  #solar-map { margin-top: 22px; }
+
+  .map-frame {
+    border: 1px solid rgba(255, 204, 0, 0.35);
+    box-shadow: 0 0 3px rgba(235, 250, 122, 0.25);
+    padding: 10px 10px 8px 10px;
+  }
+
+  .map-topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    font-size: 0.85em;
+    opacity: 0.85;
+    user-select: none;
+  }
+
+  .map-topline .date-click {
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,204,0,0.25);
+  }
+  .map-topline .date-click:hover {
+    border-bottom-color: rgba(255,204,0,0.6);
+  }
+
+  .map-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+    opacity: 0.85;
+    letter-spacing: 0.10em;
+  }
+
+  .map-controls .ctrlbtn {
+    cursor: pointer;
+    border: 1px solid rgba(255, 204, 0, 0.25);
+    padding: 4px 8px;
+    box-shadow: 0 0 2px rgba(235, 250, 122, 0.15);
+    user-select: none;
+  }
+  .map-controls .ctrlbtn:hover {
+    border-color: rgba(255, 204, 0, 0.6);
+  }
+
+  .map-svg-wrap {
+    width: 100%;
+    height: clamp(320px, 58vh, 520px);
+    position: relative;
+    overflow: hidden;
+    touch-action: none; /* crucial: allow us to handle pinch/pan */
+  }
+
+  svg#solar-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .map-bottom {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,204,0,0.18);
+    font-size: 0.85em;
+    letter-spacing: 0.10em;
+    opacity: 0.90;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .map-bottom .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .map-bottom label {
+    opacity: 0.9;
+    margin-right: 6px;
+  }
+
+  .map-bottom select {
+    background: transparent;
+    color: #ffcc00;
+    border: 1px solid rgba(255,204,0,0.25);
+    font-family: monospace;
+    font-weight: 800;
+    padding: 4px 6px;
+    letter-spacing: 0.08em;
+    outline: none;
+  }
+
+  .map-bottom select option {
+    background: #262626;
+    color: #ffcc00;
+  }
+
+  .map-bottom .dist {
+    font-weight: 1000;
+    letter-spacing: 0.12em;
+  }
+
+  .hint {
+    opacity: 0.75;
+    font-size: 0.8em;
+    letter-spacing: 0.10em;
+  }
+
   /* ---------- MOBILE UI OPTIMISATION (≤600px) ---------- */
   @media (max-width: 600px) {
-
-    /* overall font slightly bigger but not insane */
     body {
       font-size: 8px;
-      padding: 0;        /* ← THIS FIXES THE MOBILE BORDER */
+      padding: 0;
       margin: 0;
     }
 
-    /* TEKU header */
     .teku-header {
       font-size: 1.3em;
       letter-spacing: 0.15em;
     }
 
-    /* transmission ID */
-    p.small {
-      font-size: 1.0em;
-    }
+    p.small { font-size: 1.0em; }
 
-    /* main huge title */
     h1 {
       font-size: 2em;
       line-height: 1.3;
     }
 
-    /* body text */
-    p.bodytext {
-      font-size: 1.3em;
-    }
+    p.bodytext { font-size: 1.3em; }
 
-    /* typeout line */
-    .typeout {
-      font-size: 1.3em;
-    }
+    .typeout { font-size: 1.3em; }
 
-    /* button */
     .button {
       font-size: 1.4em;
       padding: 16px 24px;
     }
 
-    /* adjust container so text isn't glued to edges */
     .container {
       transform: none;
-      padding: 20px;     /* internal spacing moved here */
+      padding: 20px;
+    }
+
+    .map-topline {
+      font-size: 1.0em;
+      letter-spacing: 0.12em;
+    }
+    .map-controls {
+      font-size: 1.0em;
+    }
+    .map-bottom {
+      font-size: 1.0em;
     }
   }
 </style>
@@ -245,8 +360,8 @@
         <p class="teku-header">UNREGISTERED TEKU SLATE</p>
         <hr class="divider">
         <p class="small">TEKUDEX Default Guide "EID-SN4SD/Nav/Tw2%c"</p>
-        
-  <p class="micro"> 
+
+        <p class="micro">
 
 ░░████████╗███████╗██╗░░██╗██╗░░░██╗██████╗░███████╗██╗░░██╗░░
 ░░╚══██╔══╝██╔════╝██║░██╔╝██║░░░██║██╔══██╗██╔════╝╚██╗██╔╝░░
@@ -254,28 +369,672 @@
 ░░░░░██║░░░██╔══╝░░██╔═██╗░██║░░░██║██║░░██║██╔══╝░░░██╔██╗░░░
 ░░░░░██║░░░███████╗██║░╚██╗╚██████╔╝██████╔╝███████╗██╔╝╚██╗░░
 ░░░░░╚═╝░░░╚══════╝╚═╝░░╚═╝░╚═════╝░╚═════╝░╚══════╝╚═╝░░╚═╝░░
-   </p>     
-        
+        </p>
+
         <div style="height: 40px;"></div>
-        
+
         <h1>Sling Drive Navigator (Tw2%c)</h1>
 
-<p class="bodytext">
-This interactive TEKUDEX entry in the Solar Nomad Series is designed for easy reference in the quartermastery and piloting of vessels fitted with a [TWIN_SPOOL] Sling Drive configuration and [N/S_250] Minkowski Tokamak, with a maximum relative velocity of [2%c].
-</p>
+        <p class="bodytext">
+          This interactive TEKUDEX entry in the Solar Nomad Series is designed for easy reference in the quartermastery and piloting of vessels fitted with a [TWIN_SPOOL] Sling Drive configuration and [N/S_250] Minkowski Tokamak, with a maximum relative velocity of [2%c].
+        </p>
 
-<div id="solar-map"></div>
+        <div id="solar-map"></div>
 
-        
         <div style="height: 20px;"></div>
 
         <p class="typeout">▉ ▉ ▉ Calibrating </p>
 
-                <div style="height: 100px;"></div>
-
+        <div style="height: 100px;"></div>
 
       </div>
     </div>
   </div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------------------------
+  // 0) Utilities
+  // ---------------------------
+  const DEG = Math.PI / 180;
+
+  function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
+  function modAngleDeg(x){
+    // wrap to [-180, +180]
+    let y = ((x + 180) % 360 + 360) % 360 - 180;
+    return y;
+  }
+  function fmtSign(n){
+    const s = n >= 0 ? "+" : "−";
+    return s + Math.abs(n).toFixed(3);
+  }
+  function fmtAU1(n){
+    return (Math.round(n * 10) / 10).toFixed(1);
+  }
+  function pad2(n){ return String(n).padStart(2, "0"); }
+
+  // Gregorian date -> Julian Day (UTC-ish; good enough for our use)
+  // Algorithm: Fliegel/Van Flandern variant.
+  function toJulianDay(year, month, day){
+    // month 1-12
+    let a = Math.floor((14 - month) / 12);
+    let y = year + 4800 - a;
+    let m = month + 12*a - 3;
+    let JDN = day + Math.floor((153*m + 2)/5) + 365*y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
+    // Julian Day starts at noon; we'll use midnight -> JD = JDN - 0.5
+    return JDN - 0.5;
+  }
+
+  function jdToYMD(jd){
+    // Convert JD -> Gregorian date (UTC-ish)
+    // We’ll convert via JDN first.
+    const JDN = Math.floor(jd + 0.5);
+    let f = JDN + 1401 + Math.floor((Math.floor((4*JDN + 274277)/146097)*3)/4) - 38;
+    let e = 4*f + 3;
+    let g = Math.floor((e % 1461)/4);
+    let h = 5*g + 2;
+    let D = Math.floor((h % 153)/5) + 1;
+    let M = (Math.floor(h/153) + 2) % 12 + 1;
+    let Y = Math.floor(e/1461) - 4716 + Math.floor((12 + 2 - M)/12);
+    return {y:Y, m:M, d:D};
+  }
+
+  // ---------------------------
+  // 1) Orbital model (JPL Standish "Approximate positions")
+  //    Table 2a/2b for 3000 BC - 3000 AD (good for 2225)
+  // ---------------------------
+  // Elements: a0, aDot, e0, eDot, I0, IDot, L0, LDot, wbar0, wbarDot, Omega0, OmegaDot
+  // Units: AU, AU/Cy, dimensionless, deg, deg/Cy
+  // Extra M terms for Jupiter-Neptune: b, c, s, f (degrees)
+  // Source model: https://ssd.jpl.nasa.gov/planets/approx_pos.html
+  const JPL_T2A = {
+    Mercury:  { a0:0.38709843, aDot:0.00000000, e0:0.20563661, eDot:0.00002123, I0:7.00559432, IDot:-0.00590158, L0:252.25166724, LDot:149472.67486623, wbar0:77.45771895, wbarDot:0.15940013, Omega0:48.33961819, OmegaDot:-0.12214182 },
+    Venus:    { a0:0.72332102, aDot:-0.00000026, e0:0.00676399, eDot:-0.00005107, I0:3.39777545, IDot:0.00043494, L0:181.97970850, LDot:58517.81560260, wbar0:131.76755713, wbarDot:0.05679648, Omega0:76.67261496, OmegaDot:-0.27274174 },
+    Earth:    { a0:1.00000018, aDot:-0.00000003, e0:0.01673163, eDot:-0.00003661, I0:-0.00054346, IDot:-0.01337178, L0:100.46691572, LDot:35999.37306329, wbar0:102.93005885, wbarDot:0.31795260, Omega0:-5.11260389, OmegaDot:-0.24123856 }, // EM bary model; good for Earth in this context
+    Mars:     { a0:1.52371243, aDot:0.00000097, e0:0.09336511, eDot:0.00009149, I0:1.85181869, IDot:-0.00724757, L0:-4.56813164, LDot:19140.29934243, wbar0:-23.91744784, wbarDot:0.45223625, Omega0:49.71320984, OmegaDot:-0.26852431 },
+    Jupiter:  { a0:5.20248019, aDot:-0.00002864, e0:0.04853590, eDot:0.00018026, I0:1.29861416, IDot:-0.00322699, L0:34.33479152, LDot:3034.90371757, wbar0:14.27495244, wbarDot:0.18199196, Omega0:100.29282654, OmegaDot:0.13024619 },
+    Saturn:   { a0:9.54149883, aDot:-0.00003065, e0:0.05550825, eDot:-0.00032044, I0:2.49424102, IDot:0.00451969, L0:50.07571329, LDot:1222.11494724, wbar0:92.86136063, wbarDot:0.54179478, Omega0:113.63998702, OmegaDot:-0.25015002 },
+    Uranus:   { a0:19.18797948, aDot:-0.00020455, e0:0.04685740, eDot:-0.00001550, I0:0.77298127, IDot:-0.00180155, L0:314.20276625, LDot:428.49512595, wbar0:172.43404441, wbarDot:0.09266985, Omega0:73.96250215, OmegaDot:0.05739699 },
+    Neptune:  { a0:30.06952752, aDot:0.00006447, e0:0.00895439, eDot:0.00000818, I0:1.77005520, IDot:0.00022400, L0:304.22289287, LDot:218.46515314, wbar0:46.68158724, wbarDot:0.01009938, Omega0:131.78635853, OmegaDot:-0.00606302 }
+  };
+
+  const JPL_T2B = {
+    Jupiter: { b:-0.00012452, c:0.06064060, s:-0.35635438, f:38.35125000 },
+    Saturn:  { b: 0.00025899, c:-0.13434469, s: 0.87320147, f:38.35125000 },
+    Uranus:  { b: 0.00058331, c:-0.97731848, s: 0.17689245, f: 7.67025000 },
+    Neptune: { b:-0.00041348, c:0.68346318, s:-0.10162547, f: 7.67025000 }
+  };
+
+  // Pluto: simple Keplerian (good internal consistency).
+  // Elements used here are a reasonable modern mean set; we compute mean anomaly from periapsis epoch + mean motion.
+  // If you later want Pluto sourced from Horizons at a chosen epoch, we can swap this cleanly.
+  const PLUTO = {
+    name: "Pluto",
+    a: 39.4821,
+    e: 0.24883,
+    I: 17.14001,
+    Omega: 110.30,
+    omega: 113.76,  // argument of perihelion
+    // time of periapsis: 1990-01-13 (approx)
+    Tp_jd: toJulianDay(1990,1,13),
+    // mean motion (deg/day)
+    n: 0.003973966
+  };
+
+  // Planet Nine (canon, colonised, internal consistency).
+  // Choose a stable, plausible orbit: a=520 AU, e=0.35, i=20°, slow period ~ 11871 years.
+  const PLANET_NINE = (() => {
+    const a = 520.0;
+    const e = 0.35;
+    const I = 20.0;
+    const Omega = 88.0;
+    const omega = 150.0;
+    const P_years = Math.sqrt(a*a*a);            // Kepler's 3rd, in Earth years (GM normalized)
+    const P_days  = P_years * 365.25;
+    const n = 360.0 / P_days;                    // deg/day
+    const Tp_jd = toJulianDay(2210, 1, 1);       // arbitrary in-setting periapsis epoch (stable)
+    return { name:"Planet Nine", a, e, I, Omega, omega, Tp_jd, n };
+  })();
+
+  // Solve Kepler's equation for E (radians) given M (degrees) and e
+  function solveKeplerE(Mdeg, e){
+    let M = Mdeg * DEG;
+    // initial guess
+    let E = M + e * Math.sin(M);
+    for(let i=0;i<15;i++){
+      let f = E - e*Math.sin(E) - M;
+      let fp = 1 - e*Math.cos(E);
+      let dE = -f / fp;
+      E += dE;
+      if(Math.abs(dE) < 1e-12) break;
+    }
+    return E;
+  }
+
+  function posFromElements(a, e, Ideg, OmegaDeg, omegaDeg, Mdeg){
+    const I = Ideg*DEG, Om = OmegaDeg*DEG, w = omegaDeg*DEG;
+    const E = solveKeplerE(Mdeg, e);
+
+    const xprime = a * (Math.cos(E) - e);
+    const yprime = a * Math.sqrt(1 - e*e) * Math.sin(E);
+
+    // Rotation per JPL formula:
+    const cosw = Math.cos(w),  sinw = Math.sin(w);
+    const cosO = Math.cos(Om), sinO = Math.sin(Om);
+    const cosI = Math.cos(I),  sinI = Math.sin(I);
+
+    const x = (cosw*cosO - sinw*sinO*cosI)*xprime + (-sinw*cosO - cosw*sinO*cosI)*yprime;
+    const y = (cosw*sinO + sinw*cosO*cosI)*xprime + (-sinw*sinO + cosw*cosO*cosI)*yprime;
+    const z = (sinw*sinI)*xprime + (cosw*sinI)*yprime;
+
+    return {x,y,z};
+  }
+
+  function planetJPL(name, jd){
+    const el = JPL_T2A[name];
+    const T = (jd - 2451545.0) / 36525.0; // centuries from J2000
+    const a = el.a0 + el.aDot * T;
+    const e = el.e0 + el.eDot * T;
+    const I = el.I0 + el.IDot * T;
+    const L = el.L0 + el.LDot * T;
+    const wbar = el.wbar0 + el.wbarDot * T;
+    const Omega = el.Omega0 + el.OmegaDot * T;
+
+    const omega = wbar - Omega; // argument of perihelion (deg)
+
+    // Mean anomaly:
+    let M = L - wbar;
+    if(JPL_T2B[name]){
+      const t2b = JPL_T2B[name];
+      M += (t2b.b * T * T) + (t2b.c * Math.cos(t2b.f * T * DEG)) + (t2b.s * Math.sin(t2b.f * T * DEG));
+    }
+    M = modAngleDeg(M);
+
+    return posFromElements(a, e, I, Omega, omega, M);
+  }
+
+  function plutoPos(jd){
+    const M = modAngleDeg(PLUTO.n * (jd - PLUTO.Tp_jd));
+    return posFromElements(PLUTO.a, PLUTO.e, PLUTO.I, PLUTO.Omega, PLUTO.omega, M);
+  }
+
+  function p9Pos(jd){
+    const M = modAngleDeg(PLANET_NINE.n * (jd - PLANET_NINE.Tp_jd));
+    return posFromElements(PLANET_NINE.a, PLANET_NINE.e, PLANET_NINE.I, PLANET_NINE.Omega, PLANET_NINE.omega, M);
+  }
+
+  // ---------------------------
+  // 2) UI scaffold in #solar-map
+  // ---------------------------
+  const mount = document.getElementById("solar-map");
+  if(!mount) return;
+
+  mount.innerHTML = `
+    <div class="map-frame">
+      <div class="map-topline">
+        <span class="date-click" id="map-date">DATE: 2225-06-06</span>
+        <div class="map-controls">
+          <span class="ctrlbtn" id="btn-prev">◀ PREV</span>
+          <span class="ctrlbtn" id="btn-next">NEXT ▶</span>
+          <span class="ctrlbtn" id="btn-reset">RESET</span>
+        </div>
+      </div>
+
+      <div class="map-svg-wrap" id="map-wrap">
+        <svg id="solar-svg" viewBox="-36 -36 72 72" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="map-bottom">
+        <div class="row">
+          <div>
+            <label for="sel-a">A:</label>
+            <select id="sel-a"></select>
+          </div>
+          <div>
+            <label for="sel-b">B:</label>
+            <select id="sel-b"></select>
+          </div>
+          <div class="dist" id="dist-out">DISTANCE: —</div>
+        </div>
+        <div class="hint">TIP: tap bodies to set A then B. pinch to zoom; drag to pan. click DATE to advance +1 day.</div>
+      </div>
+    </div>
+  `;
+
+  const svg = document.getElementById("solar-svg");
+  const wrap = document.getElementById("map-wrap");
+  const dateEl = document.getElementById("map-date");
+  const btnPrev = document.getElementById("btn-prev");
+  const btnNext = document.getElementById("btn-next");
+  const btnReset = document.getElementById("btn-reset");
+  const selA = document.getElementById("sel-a");
+  const selB = document.getElementById("sel-b");
+  const distOut = document.getElementById("dist-out");
+
+  // Bodies in map (order matters for dropdown readability)
+  const BODIES = [
+    { key:"Mercury", label:"MERCURY", type:"jpl" },
+    { key:"Venus",   label:"VENUS",   type:"jpl" },
+    { key:"Earth",   label:"EARTH",   type:"jpl" },
+    { key:"Mars",    label:"MARS",    type:"jpl" },
+    { key:"Jupiter", label:"JUPITER", type:"jpl" },
+    { key:"Saturn",  label:"SATURN",  type:"jpl" },
+    { key:"Uranus",  label:"URANUS",  type:"jpl" },
+    { key:"Neptune", label:"NEPTUNE", type:"jpl" },
+    { key:"Pluto",   label:"PLUTO",   type:"pluto" },
+    { key:"Planet9", label:"PLANET NINE", type:"p9" }
+  ];
+
+  // Dropdown setup
+  function fillSelect(sel){
+    sel.innerHTML = "";
+    for(const b of BODIES){
+      const opt = document.createElement("option");
+      opt.value = b.key;
+      opt.textContent = b.label;
+      sel.appendChild(opt);
+    }
+  }
+  fillSelect(selA);
+  fillSelect(selB);
+  selA.value = "Earth";
+  selB.value = "Jupiter";
+
+  // ---------------------------
+  // 3) Rendering
+  // ---------------------------
+  function setSVGText(el, txt){
+    while(el.firstChild) el.removeChild(el.firstChild);
+    el.appendChild(document.createTextNode(txt));
+  }
+
+  function make(tag, attrs = {}){
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for(const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  function clearSVG(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+  }
+
+  // Current time state
+  const START_JD = toJulianDay(2225, 6, 6);
+  let dayOffset = 0;
+
+  // Click-to-select behaviour:
+  // first click sets A, second sets B, then repeats.
+  let clickStage = 0;
+
+  function bodyPos(bodyKey, jd){
+    const b = BODIES.find(x => x.key === bodyKey);
+    if(!b) return {x:0,y:0,z:0};
+
+    if(b.type === "jpl")  return planetJPL(b.key, jd);
+    if(b.type === "pluto")return plutoPos(jd);
+    if(b.type === "p9")   return p9Pos(jd);
+    return {x:0,y:0,z:0};
+  }
+
+  function computeDistanceAU(aKey, bKey, jd){
+    const A = bodyPos(aKey, jd);
+    const B = bodyPos(bKey, jd);
+    const dx = A.x - B.x;
+    const dy = A.y - B.y;
+    const dz = A.z - B.z;
+    return Math.sqrt(dx*dx + dy*dy + dz*dz);
+  }
+
+  function updateDistance(){
+    const jd = START_JD + dayOffset;
+    const d = computeDistanceAU(selA.value, selB.value, jd);
+    distOut.textContent = `DISTANCE: ${fmtAU1(d)} AU`;
+  }
+
+  function setDateLabel(){
+    const jd = START_JD + dayOffset;
+    const {y,m,d} = jdToYMD(jd);
+    dateEl.textContent = `DATE: ${y}-${pad2(m)}-${pad2(d)}  (Δ ${dayOffset}d)`;
+  }
+
+  // Orbits: just light rings (aesthetic guide, not exact ellipse)
+  function drawOrbitRadius(rAU){
+    svg.appendChild(make("circle", {
+      cx: 0, cy: 0, r: rAU,
+      fill: "none",
+      stroke: "rgba(255,204,0,0.10)",
+      "stroke-width": 0.06
+    }));
+  }
+
+  function drawSun(){
+    svg.appendChild(make("circle", {
+      cx: 0, cy: 0, r: 0.22,
+      fill: "#ffcc00",
+      opacity: 0.85
+    }));
+    svg.appendChild(make("circle", {
+      cx: 0, cy: 0, r: 0.55,
+      fill: "none",
+      stroke: "rgba(235,250,122,0.18)",
+      "stroke-width": 0.08
+    }));
+  }
+
+  function drawBody(label, pos, radiusAU){
+    const g = make("g", { "data-body": label });
+
+    // planet glyph
+    g.appendChild(make("circle", {
+      cx: pos.x, cy: pos.y, r: radiusAU,
+      fill: "#ffcc00",
+      opacity: 0.8
+    }));
+
+    // label block
+    const tx = pos.x + radiusAU + 0.25;
+    const ty = pos.y - radiusAU - 0.10;
+
+    const text = make("text", {
+      x: tx, y: ty,
+      fill: "#ffcc00",
+      "font-family": "monospace",
+      "font-size": 0.85,
+      "font-weight": 900,
+      "letter-spacing": "0.10em",
+      "paint-order": "stroke",
+      "stroke": "rgba(0,0,0,0.55)",
+      "stroke-width": 0.25
+    });
+
+    const tName = make("tspan", { x: tx, dy: 0 });
+    setSVGText(tName, label);
+    text.appendChild(tName);
+
+    const coordStyle = {
+      "font-size": 0.62,
+      "font-weight": 700,
+      "opacity": 0.78,
+      "letter-spacing": "0.08em"
+    };
+
+    const tX = make("tspan", { x: tx, dy: 1.00 });
+    Object.entries(coordStyle).forEach(([k,v]) => tX.setAttribute(k,v));
+    setSVGText(tX, `x ${fmtSign(pos.x)} AU`);
+    text.appendChild(tX);
+
+    const tY = make("tspan", { x: tx, dy: 0.92 });
+    Object.entries(coordStyle).forEach(([k,v]) => tY.setAttribute(k,v));
+    setSVGText(tY, `y ${fmtSign(pos.y)} AU`);
+    text.appendChild(tY);
+
+    const tZ = make("tspan", { x: tx, dy: 0.92 });
+    Object.entries(coordStyle).forEach(([k,v]) => tZ.setAttribute(k,v));
+    setSVGText(tZ, `z ${fmtSign(pos.z)} AU`);
+    text.appendChild(tZ);
+
+    g.appendChild(text);
+
+    // hit area (for easy tap/click)
+    const hit = make("circle", {
+      cx: pos.x, cy: pos.y, r: Math.max(0.55, radiusAU * 6),
+      fill: "transparent",
+      "data-hit": label
+    });
+    g.appendChild(hit);
+
+    svg.appendChild(g);
+  }
+
+  function render(){
+    const jd = START_JD + dayOffset;
+
+    clearSVG();
+
+    // guide orbits (semi-major-ish rings; keeps retro readability)
+    drawOrbitRadius(0.39);
+    drawOrbitRadius(0.72);
+    drawOrbitRadius(1.00);
+    drawOrbitRadius(1.52);
+    drawOrbitRadius(5.20);
+    drawOrbitRadius(9.54);
+    drawOrbitRadius(19.19);
+    drawOrbitRadius(30.07);
+    drawOrbitRadius(39.48);
+    drawOrbitRadius(520.0);
+
+    drawSun();
+
+    // compute and draw bodies
+    for(const b of BODIES){
+      let pos;
+      if(b.type === "jpl") pos = planetJPL(b.key, jd);
+      else if(b.type === "pluto") pos = plutoPos(jd);
+      else pos = p9Pos(jd);
+
+      // Visual radii (purely display)
+      const r = (
+        b.key === "Jupiter" ? 0.28 :
+        b.key === "Saturn"  ? 0.26 :
+        b.key === "Uranus"  ? 0.24 :
+        b.key === "Neptune" ? 0.24 :
+        b.key === "Earth"   ? 0.16 :
+        b.key === "Venus"   ? 0.16 :
+        b.key === "Mars"    ? 0.14 :
+        b.key === "Mercury" ? 0.13 :
+        b.key === "Pluto"   ? 0.12 :
+        0.14
+      );
+
+      drawBody(b.label, pos, r);
+    }
+
+    setDateLabel();
+    updateDistance();
+  }
+
+  // ---------------------------
+  // 4) Click/tap to set A/B
+  // ---------------------------
+  svg.addEventListener("click", (e) => {
+    // Ignore clicks immediately after a pan/zoom gesture (handled below).
+    if(interaction.justGestured) return;
+
+    const target = e.target;
+    if(!(target instanceof SVGElement)) return;
+
+    const label = target.getAttribute("data-hit") || target.getAttribute("data-body");
+    if(!label) return;
+
+    // Map label -> key
+    const found = BODIES.find(b => b.label === label);
+    if(!found) return;
+
+    if(clickStage % 2 === 0){
+      selA.value = found.key;
+    } else {
+      selB.value = found.key;
+    }
+    clickStage++;
+    updateDistance();
+  });
+
+  selA.addEventListener("change", updateDistance);
+  selB.addEventListener("change", updateDistance);
+
+  // ---------------------------
+  // 5) Time controls
+  // ---------------------------
+  function stepDays(n){
+    dayOffset += n;
+    // Keep it within a sensible window (still huge, but avoids insane float drift)
+    dayOffset = clamp(dayOffset, -365250, 365250); // +/- 1000 years
+    render();
+  }
+  btnPrev.addEventListener("click", () => stepDays(-1));
+  btnNext.addEventListener("click", () => stepDays(+1));
+  btnReset.addEventListener("click", () => { dayOffset = 0; render(); });
+
+  dateEl.addEventListener("click", () => stepDays(+1));
+
+  // ---------------------------
+  // 6) Pinch-zoom + pan (viewBox manipulation)
+  // ---------------------------
+  const interaction = {
+    pointers: new Map(),     // id -> {x,y}
+    vb: { x:-36, y:-36, w:72, h:72 },
+    justGestured: false,
+    gestureTimer: null
+  };
+
+  function setViewBox(vb){
+    interaction.vb = vb;
+    svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  }
+
+  function clientToWorld(clientX, clientY){
+    const rect = svg.getBoundingClientRect();
+    const nx = (clientX - rect.left) / rect.width;
+    const ny = (clientY - rect.top) / rect.height;
+    return {
+      x: interaction.vb.x + nx * interaction.vb.w,
+      y: interaction.vb.y + ny * interaction.vb.h
+    };
+  }
+
+  function dist(a,b){
+    const dx = a.x - b.x, dy = a.y - b.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function markGestured(){
+    interaction.justGestured = true;
+    if(interaction.gestureTimer) clearTimeout(interaction.gestureTimer);
+    interaction.gestureTimer = setTimeout(() => interaction.justGestured = false, 180);
+  }
+
+  wrap.addEventListener("pointerdown", (e) => {
+    wrap.setPointerCapture(e.pointerId);
+    interaction.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  });
+
+  wrap.addEventListener("pointerup", (e) => {
+    interaction.pointers.delete(e.pointerId);
+  });
+
+  wrap.addEventListener("pointercancel", (e) => {
+    interaction.pointers.delete(e.pointerId);
+  });
+
+  wrap.addEventListener("pointermove", (e) => {
+    if(!interaction.pointers.has(e.pointerId)) return;
+
+    const prev = interaction.pointers.get(e.pointerId);
+    const curr = { x: e.clientX, y: e.clientY };
+    interaction.pointers.set(e.pointerId, curr);
+
+    const pts = Array.from(interaction.pointers.values());
+
+    if(pts.length === 1){
+      // Pan
+      const dx = curr.x - prev.x;
+      const dy = curr.y - prev.y;
+
+      // Convert pixel delta -> world delta
+      const rect = svg.getBoundingClientRect();
+      const wx = (dx / rect.width) * interaction.vb.w;
+      const wy = (dy / rect.height) * interaction.vb.h;
+
+      setViewBox({
+        x: interaction.vb.x - wx,
+        y: interaction.vb.y - wy,
+        w: interaction.vb.w,
+        h: interaction.vb.h
+      });
+      markGestured();
+      return;
+    }
+
+    if(pts.length >= 2){
+      // Pinch zoom around midpoint
+      const [p1, p2] = pts;
+      const prevPts = Array.from(interaction.pointers.entries()).map(([id,pt]) => ({id, pt}));
+      // We don’t have "previous positions of both pointers" stored separately, so we approximate:
+      // Use current move event's prev for moved pointer + current for others.
+      // Good enough, stable, and feels right.
+
+      // Build "before" and "after" pair:
+      let a1 = p1, a2 = p2;
+      let b1 = p1, b2 = p2;
+
+      // identify which pointer moved (current event)
+      const movedId = e.pointerId;
+      const movedBefore = prev;
+      const movedAfter = curr;
+
+      // assign:
+      const ids = Array.from(interaction.pointers.keys());
+      const id1 = ids[0], id2 = ids[1];
+
+      if(id1 === movedId){
+        b1 = movedBefore; a1 = movedAfter;
+        b2 = interaction.pointers.get(id2); a2 = interaction.pointers.get(id2);
+      } else if(id2 === movedId){
+        b2 = movedBefore; a2 = movedAfter;
+        b1 = interaction.pointers.get(id1); a1 = interaction.pointers.get(id1);
+      }
+
+      const dBefore = dist(b1,b2);
+      const dAfter  = dist(a1,a2);
+      if(dBefore < 2 || dAfter < 2) return;
+
+      const scale = dBefore / dAfter; // >1 zoom in, <1 zoom out
+      const midClient = { x:(a1.x+a2.x)/2, y:(a1.y+a2.y)/2 };
+      const midWorld = clientToWorld(midClient.x, midClient.y);
+
+      const newW = clamp(interaction.vb.w * scale, 8, 1400); // min zoom in, max zoom out
+      const newH = newW; // keep square (matches diagram vibe)
+
+      // Keep midpoint stable
+      const nx = (midWorld.x - interaction.vb.x) / interaction.vb.w;
+      const ny = (midWorld.y - interaction.vb.y) / interaction.vb.h;
+      const newX = midWorld.x - nx * newW;
+      const newY = midWorld.y - ny * newH;
+
+      setViewBox({ x:newX, y:newY, w:newW, h:newH });
+      markGestured();
+    }
+  });
+
+  // Mouse wheel zoom (desktop bonus)
+  wrap.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = Math.sign(e.deltaY);
+    const factor = delta > 0 ? 1.12 : 0.89;
+
+    const focus = clientToWorld(e.clientX, e.clientY);
+    const nx = (focus.x - interaction.vb.x) / interaction.vb.w;
+    const ny = (focus.y - interaction.vb.y) / interaction.vb.h;
+
+    const newW = clamp(interaction.vb.w * factor, 8, 1400);
+    const newH = newW;
+
+    const newX = focus.x - nx * newW;
+    const newY = focus.y - ny * newH;
+
+    setViewBox({ x:newX, y:newY, w:newW, h:newH });
+    markGestured();
+  }, { passive:false });
+
+  // Initial viewBox: show inner system out to Neptune comfortably
+  setViewBox({ x:-36, y:-36, w:72, h:72 });
+
+  // Initial render
+  render();
+})();
+</script>
+
 </body>
 </html>
