@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sling Drive Navigator</title>
+
+<style>
+  body {
+    background: #262626;
+    color: #ffcc00;
+    margin: 0;
+    padding: 0px;
+    line-height: 1.1;
+    font-family: monospace;
+    font-weight: 800; /* makes it chunkier, more terminal-like */
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 2px #EBFA7A;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-family: monospace;
+    font-weight: 1000;
+    letter-spacing: 0.05em;
+    color: #ffcc00;
+    text-shadow: 0 0 3px #EBFA7A;
+    margin-top: 30px;
+    letter-spacing: 1px;
+  }
+
+  p.small {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-bottom: 20px;
+  }
+
+  .micro {
+  font-size: 0.65em;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+}
+
+  p.bodytext {
+    margin-top: 20px;
+    font-size: 1.3em;
+  }
+  
+  .typeout {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 1.4em; /* prevents layout shift */
+    width: min(32ch, 100%);   /* prevents pushing the button */
+    font-family: monospace;
+    font-size: 1.1em;
+    font-weight: 600; /* makes it chunkier, more terminal-like */
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 4px #EBFA7A;
+
+    /* typing animation + fadeout */
+    animation: typing 6s steps(60, end) infinite;
+  }
+
+  /* THE NEW, PROPER TERMINAL CURSOR */
+  .typeout::after {
+    content: "▉";                 /* block cursor */
+    display: inline-block;
+    margin-left: 4px;
+    color: #ffcc00;
+    text-shadow: 0 0 4px #EBFA7A;
+    animation: cursorBlink 0.8s step-end infinite;
+  }
+
+  /* typing effect (no deletion) */
+  @keyframes typing {
+    0%  { width: 0;   opacity: 1; }
+    40% { width: 100%; opacity: 1; }
+    60% { width: 100%; opacity: 1; }
+    90% { width: 100%; opacity: 1; }
+    95% { width: 100%; opacity: 0; }
+    100%{ width: 100%; opacity: 0; }
+  }
+
+  /* NEW cursor blink animation */
+  @keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  
+  .button {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 14px 24px;
+    background: #ffcc00;
+    color: #262626;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+    border-radius: 0px;
+    text-shadow: 0 0 3px #322B1A;
+    border: 2px solid #ffcc00;
+    box-shadow: 0 0 3px #EBFA7A, 0 0 0px #EBFA7A inset;
+  }
+
+  .button:hover {
+    background: #e6b800;
+    border-color: #e6b800;
+  }
+  
+  /* SCALE WRAPPER – now neutral; no transform here */
+  .scale-container {
+    overflow: visible;
+  }
+  
+  .container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 50px;
+
+    /* scale the content (not the CRT frame) on desktop */
+    transform: scale(1.2);
+    transform-origin: top center;
+  }
+
+  .teku-header {
+    font-family: monospace;
+    font-size: 0.85em;
+    font-weight: 900; /* makes it chunkier, more terminal-like */
+    letter-spacing: 0.2em;
+    opacity: 0.8;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .divider {
+    border: none;
+    border-bottom: 1px solid #ffcc00;
+    opacity: 0.3;
+    margin-bottom: 20px;
+  }
+
+  .crt {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh; /* extend CRT to full viewport height */
+    width: 100%;
+    animation: crtFlicker 0.15s infinite;
+  }
+
+  /* CRT Scanlines */
+  .crt::before {
+    content: "";
+    position: absolute;
+    inset: 0;          /* <- flush with edges, no gaps */
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(0, 0, 0, 0) 2px
+    );
+    opacity: 0.25;
+    mix-blend-mode: overlay;
+  }
+
+  /* CRT Vignette Glow */
+  .crt::after {
+    content: "";
+    position: absolute;
+    inset: 0;          /* <- also flush; no -10% tricks */
+    pointer-events: none;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+    opacity: 0.3;
+  }
+
+  @keyframes crtFlicker {
+    0% { opacity: 0.96; }
+    50% { opacity: 1; }
+    100% { opacity: 0.97; }
+  }
+
+  /* ---------- MOBILE UI OPTIMISATION (≤600px) ---------- */
+  @media (max-width: 600px) {
+
+    /* overall font slightly bigger but not insane */
+    body {
+      font-size: 8px;
+      padding: 0;        /* ← THIS FIXES THE MOBILE BORDER */
+      margin: 0;
+    }
+
+    /* TEKU header */
+    .teku-header {
+      font-size: 1.3em;
+      letter-spacing: 0.15em;
+    }
+
+    /* transmission ID */
+    p.small {
+      font-size: 1.0em;
+    }
+
+    /* main huge title */
+    h1 {
+      font-size: 2em;
+      line-height: 1.3;
+    }
+
+    /* body text */
+    p.bodytext {
+      font-size: 1.3em;
+    }
+
+    /* typeout line */
+    .typeout {
+      font-size: 1.3em;
+    }
+
+    /* button */
+    .button {
+      font-size: 1.4em;
+      padding: 16px 24px;
+    }
+
+    /* adjust container so text isn't glued to edges */
+    .container {
+      transform: none;
+      padding: 20px;     /* internal spacing moved here */
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="scale-container">
+    <div class="crt">
+      <div class="container">
+
+        <p class="teku-header">UNREGISTERED TEKU SLATE</p>
+        <hr class="divider">
+        <p class="small">TEKUDEX Default Guide "EID-SN4SD/Nav/Tw2%c"</p>
+        
+  <p class="micro"> 
+
+░░████████╗███████╗██╗░░██╗██╗░░░██╗██████╗░███████╗██╗░░██╗░░
+░░╚══██╔══╝██╔════╝██║░██╔╝██║░░░██║██╔══██╗██╔════╝╚██╗██╔╝░░
+░░░░░██║░░░█████╗░░█████═╝░██║░░░██║██║░░██║█████╗░░░╚███╔╝░░░
+░░░░░██║░░░██╔══╝░░██╔═██╗░██║░░░██║██║░░██║██╔══╝░░░██╔██╗░░░
+░░░░░██║░░░███████╗██║░╚██╗╚██████╔╝██████╔╝███████╗██╔╝╚██╗░░
+░░░░░╚═╝░░░╚══════╝╚═╝░░╚═╝░╚═════╝░╚═════╝░╚══════╝╚═╝░░╚═╝░░
+   </p>     
+        
+        <div style="height: 40px;"></div>
+        
+        <h1>Sling Drive Navigator (Tw2%c)</h1>
+
+<p class="bodytext">
+This interactive TEKUDEX entry in the Solar Nomad Series is designed for easy reference in the quartermastery and piloting of vessels fitted with a [TWIN_SPOOL] Sling Drive configuration and [N/S_250] Minkowski Tokamak, with a maximum relative velocity of [2%c].
+</p>
+
+<p class="bodytext">
+...
+</p>
+
+        
+        <div style="height: 20px;"></div>
+
+        <p class="typeout">▉ ▉ ▉ Calibrating </p>
+
+                <div style="height: 100px;"></div>
+
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
