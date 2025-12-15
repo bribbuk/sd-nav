@@ -1591,24 +1591,57 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   }
 
   function drawLCluster(center, seed){
-    // Tight “tiny fuzz” clusters (much closer than before)
-    const nDots = 18;
-    for(let i=0;i<nDots;i++){
-      const a = hash01(seed + i*17) * 2*Math.PI;
-      const r = (0.015 + hash01(seed + i*31) * 0.040); // tight
-      const ox = Math.cos(a) * r;
-      const oy = Math.sin(a) * r;
+  // PATCH G:
+  // - Dot-like particulate cluster
+  // - Elongated (~2x) along orbital tangent
+  // - Always perpendicular to Sun vector
 
-      const dot = make("circle", {
-        cx: center.x + ox,
-        cy: center.y + oy,
-        r: (0.05 * hudScale),
-        fill: "#ffcc00",
-        opacity: "0.62"
-      });
-      gHUD.appendChild(dot);
-    }
+  const nDots = 28;              // denser, gritty
+  const coreRadius = 0.010;      // tight core
+  const stretch = 0.085;         // elongation length (≈2x old)
+  const jitter = 0.020;          // noise
+
+  // Vector from Sun (0,0) to L-point
+  const vx = center.x;
+  const vy = center.y;
+  const vLen = Math.hypot(vx, vy) || 1;
+
+  // Tangent (perpendicular to Sun vector)
+  const tx = -vy / vLen;
+  const ty =  vx / vLen;
+
+  for(let i = 0; i < nDots; i++){
+    const h1 = hash01(seed + i * 37);
+    const h2 = hash01(seed + i * 91);
+
+    // Position along stretched tangent
+    const along = (h1 - 0.5) * stretch;
+
+    // Small radial jitter
+    const radial = (h2 - 0.5) * jitter;
+
+    const x = center.x
+      + tx * along
+      + (vx / vLen) * radial;
+
+    const y = center.y
+      + ty * along
+      + (vy / vLen) * radial;
+
+    const r = 0.035 + h2 * 0.025; // small dots, varied
+
+    const dot = make("circle", {
+      cx: x,
+      cy: y,
+      r: r * hudScale,
+      fill: "#ffcc00",
+      opacity: 0.55 + h1 * 0.25
+    });
+
+    gHUD.appendChild(dot);
   }
+}
+
 
   // Journey line: dotted, glow, opacity 1, single line
   let journeyLine = null;
