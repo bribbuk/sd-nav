@@ -1101,7 +1101,8 @@ function addLeaderLine(g, bodyPos, box){
   const endX = bx - ux * (box.w * 0.5);
   const endY = by - uy * (box.h * 0.5);
 
-  const line = make("line", {
+const line = make("line", {
+  "data-leader":"1",
     x1: startX,
     y1: startY,
     x2: endX,
