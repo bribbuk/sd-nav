@@ -1036,13 +1036,55 @@ btnReset.addEventListener("click", () => {
   // ---------------------------
   // 7) HUD scaling + declutter + placement (no overlap)
   // ---------------------------
+  function addLabelBox(g){
+  const texts = Array.from(g.querySelectorAll("text"));
+  if(!texts.length) return;
+
+  // Compute bounding box manually (SVG getBBox unreliable pre-render)
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+  texts.forEach(t => {
+    const x = Number(t.getAttribute("x") || 0);
+    const y = Number(t.getAttribute("y") || 0);
+    const fs = Number(t.getAttribute("font-size") || 1);
+    const len = (t.textContent || "").length;
+
+    const w = len * fs * 0.62;
+    const h = fs * 1.05;
+
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x + w);
+    minY = Math.min(minY, y - h);
+    maxY = Math.max(maxY, y);
+  });
+
+  const pad = 0.12 * hudScale;
+
+  const rect = make("rect", {
+    x: minX - pad,
+    y: minY - pad,
+    width: (maxX - minX) + pad*2,
+    height: (maxY - minY) + pad*2,
+    fill: "#262626",
+    stroke: "#ffcc00",
+    "stroke-width": 0.06 * hudScale,
+    filter: "url(#tekugl)"
+  });
+
+  g.insertBefore(rect, g.firstChild);
+}
+
   let hudScale = 1;
 
-  const SIZE = {
-    nameBase: 1.55,   // big
-    coordBase: 0.55,  // smaller
-    hitBase: 0.85
-  };
+const SIZE = {
+  nameBase: 1.55,
+  coordBase: 0.55,
+  hitBase: 0.85,
+
+  // PATCH G
+  minorScale: 0.70
+};
+
 
   const JOURNEY = {
     strokeBase: 0.06,       // thinner
@@ -1557,11 +1599,17 @@ function updateTrailForBody(key, pos, frac){
 
     const g = make("g", { "data-label-group":"1", "data-class": b.class, "data-key": b.key });
     g.__bodyPos = pos;
-
-    // Slightly smaller labels for minors + L-points
+    
+    // PATCH G: minor label scaling
     const isMinorish = (b.class === "small" || b.class === "smallL");
-    const nameBase = isMinorish ? (SIZE.nameBase * 0.88) : SIZE.nameBase;
-    const coordBase = isMinorish ? (SIZE.coordBase * 0.90) : SIZE.coordBase;
+    const isSelected = (b.key === selA.value || b.key === selB.value);
+    
+    // Minor bodies smaller unless selected
+    const scale = (isMinorish && !isSelected) ? SIZE.minorScale : 1.0;
+    
+    const nameBase  = SIZE.nameBase  * scale;
+    const coordBase = SIZE.coordBase * scale;
+
 
     const nameText = make("text", {
       fill:"#ffcc00",
@@ -1595,6 +1643,8 @@ function updateTrailForBody(key, pos, frac){
     setText(cz, `z ${fmtSign(pos.z, 3)}`);
     g.appendChild(cz);
 
+addLabelBox(g);
+    
     gHUD.appendChild(g);
 
     const hit = make("circle", {
@@ -1703,6 +1753,25 @@ function updateTrailForBody(key, pos, frac){
     updateReadout();
     updateDeclutter();
     updateJourneyLine();
+
+// PATCH G: label z-order (distance from Sun, plotted always top)
+const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
+groups.sort((a,b) => {
+  const pa = a.__bodyPos || {x:0,y:0};
+  const pb = b.__bodyPos || {x:0,y:0};
+
+  const da = Math.hypot(pa.x, pa.y);
+  const db = Math.hypot(pb.x, pb.y);
+
+  // Selected bodies always top
+  if(a.getAttribute("data-key") === selA.value || a.getAttribute("data-key") === selB.value) return 1;
+  if(b.getAttribute("data-key") === selA.value || b.getAttribute("data-key") === selB.value) return -1;
+
+  return da - db;
+});
+groups.forEach(g => gHUD.appendChild(g));
+
+    
     updateLabelPlacement();
   });
 
