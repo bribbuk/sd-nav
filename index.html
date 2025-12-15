@@ -1264,90 +1264,114 @@ function updateDeclutter(){
     return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
   }
 
-  function updateLabelPlacement(){
-    if(!gHUD) return;
-    const vb = interaction.vb;
+function updateLabelPlacement(){
+  if(!gHUD) return;
+  const vb = interaction.vb;
 
-    const used = [];
-    // avoid Sun region (text overlap)
-    used.push({ x:-0.9, y:-0.9, w:1.8, h:1.8 });
+  const used = [];
+  // avoid Sun region
+  used.push({ x:-0.9, y:-0.9, w:1.8, h:1.8 });
 
-    const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
-    for(const g of groups){
-      const nameT = g.querySelector("[data-label]");
-      if(!nameT) continue;
+  const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
 
-      const pos = g.__bodyPos || {x:0,y:0,z:0};
+  for(const g of groups){
+    const nameT = g.querySelector("[data-label]");
+    if(!nameT) continue;
 
-      const labelTxt = nameT.textContent || "";
-      const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
-      const box = estimateTextBox(labelTxt, fsName);
+    const pos = g.__bodyPos || {x:0,y:0,z:0};
 
-      const coords = Array.from(g.querySelectorAll("[data-coord]"));
-      const fsCoord = coords[0] ? Number(coords[0].getAttribute("font-size") || (SIZE.coordBase * hudScale)) : (SIZE.coordBase * hudScale);
-      const extraH = coords.length ? (coords.length * (fsCoord * 1.10) + fsCoord*0.35) : 0;
+    const labelTxt = nameT.textContent || "";
+    const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
+    const boxText = estimateTextBox(labelTxt, fsName);
 
-      let placed = null;
+    const coords = Array.from(g.querySelectorAll("[data-coord]"));
+    const fsCoord = coords[0]
+      ? Number(coords[0].getAttribute("font-size"))
+      : (SIZE.coordBase * hudScale);
 
-      for(const off of labelPlacement.offsets){
-        const dx = off.dx * hudScale;
-        const dy = off.dy * hudScale;
+    const extraH = coords.length
+      ? (coords.length * (fsCoord * 1.10) + fsCoord*0.35)
+      : 0;
 
-        let x = pos.x + dx;
-        let y = pos.y + dy;
+    let placed = null;
 
-        let r = {
-          x: x,
-          y: y - box.h,
-          w: box.w + labelPlacement.pad*hudScale,
-          h: box.h + extraH + labelPlacement.pad*hudScale
-        };
+    for(const off of labelPlacement.offsets){
+      const dx = off.dx * hudScale;
+      const dy = off.dy * hudScale;
 
-        if(inView(pos)){
-          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-        }
+      let x = pos.x + dx;
+      let y = pos.y + dy;
 
-        let ok = true;
-        for(const u of used){
-          if(rectsOverlap(r,u)){ ok = false; break; }
-        }
-        if(!ok) continue;
+      let r = {
+        x: x,
+        y: y - boxText.h,
+        w: boxText.w + labelPlacement.pad*hudScale,
+        h: boxText.h + extraH + labelPlacement.pad*hudScale
+      };
 
-        placed = r;
-        break;
+      if(inView(pos)){
+        r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
+        r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
       }
 
-      if(!placed){
-        let x = pos.x + 0.65*hudScale;
-        let y = pos.y - 0.55*hudScale;
-        let r = { x:x, y:y - box.h, w: box.w + labelPlacement.pad*hudScale, h: box.h + extraH + labelPlacement.pad*hudScale };
-        if(inView(pos)){
-          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-        }
-        placed = r;
+      let ok = true;
+      for(const u of used){
+        if(rectsOverlap(r,u)){ ok = false; break; }
       }
+      if(!ok) continue;
 
-      used.push(placed);
-
-addLeaderLine(g, pos, placed);
-
-      
-      const baseX = placed.x;
-      const baseY = placed.y + box.h;
-
-      nameT.setAttribute("x", baseX);
-      nameT.setAttribute("y", baseY);
-
-      let yCursor = baseY + (fsName * 0.92);
-      coords.forEach(t => {
-        t.setAttribute("x", baseX);
-        t.setAttribute("y", yCursor);
-        yCursor += (fsCoord * 1.10);
-      });
+      placed = r;
+      break;
     }
+
+    if(!placed){
+      placed = {
+        x: pos.x + 0.65*hudScale,
+        y: pos.y - boxText.h - 0.55*hudScale,
+        w: boxText.w + labelPlacement.pad*hudScale,
+        h: boxText.h + extraH + labelPlacement.pad*hudScale
+      };
+    }
+
+    used.push(placed);
+
+    // --- UPDATE TEXT POSITIONS ---
+    const baseX = placed.x;
+    const baseY = placed.y + boxText.h;
+
+    nameT.setAttribute("x", baseX);
+    nameT.setAttribute("y", baseY);
+
+    let yCursor = baseY + (fsName * 0.92);
+    coords.forEach(t => {
+      t.setAttribute("x", baseX);
+      t.setAttribute("y", yCursor);
+      yCursor += (fsCoord * 1.10);
+    });
+
+    // --- REMOVE OLD BOX / LEADER IF ANY ---
+    Array.from(g.querySelectorAll("rect[data-label-box], line[data-leader]"))
+      .forEach(el => el.remove());
+
+    // --- ADD BOX ---
+    const rect = make("rect", {
+      x: placed.x,
+      y: placed.y,
+      width: placed.w,
+      height: placed.h,
+      fill: "#262626",
+      stroke: "#ffcc00",
+      "stroke-width": 0.06 * hudScale,
+      filter: "url(#tekugl)",
+      "data-label-box":"1"
+    });
+    g.insertBefore(rect, g.firstChild);
+
+    // --- ADD LEADER (if needed) ---
+    addLeaderLine(g, pos, placed);
   }
+}
+
 
   // ---------------------------
   // 8) Belts + belt labels (vectorised: do NOT rescale with zoom)
@@ -1688,8 +1712,6 @@ function updateTrailForBody(key, pos, frac){
     const cz = make("text", { "data-coord":"1", "data-fs-base": String(coordBase), ...coordStyle });
     setText(cz, `z ${fmtSign(pos.z, 3)}`);
     g.appendChild(cz);
-
-addLabelBox(g);
     
     gHUD.appendChild(g);
 
