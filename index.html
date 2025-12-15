@@ -980,14 +980,58 @@
     render();
   });
 
-  function stepDays(n){
-    dayOffset += n;
-    dayOffset = clamp(dayOffset, -365250, 365250);
-    render();
+function stepDays(n){
+  dayOffset += n;
+  dayOffset = clamp(dayOffset, -365250, 365250);
+  render();
+}
+
+// --- Hold-to-advance behaviour (PATCH G) ---
+function makeHoldStepper(button, direction){
+  let holdTimer = null;
+  let repeatTimer = null;
+  let holding = false;
+
+  const START_DELAY = 800;   // ms before auto-advance starts
+  const REPEAT_RATE = 100;   // ms per step once active
+
+  function clearTimers(){
+    if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    if(repeatTimer){ clearInterval(repeatTimer); repeatTimer = null; }
+    holding = false;
   }
-  btnPrev.addEventListener("click", () => stepDays(-1));
-  btnNext.addEventListener("click", () => stepDays(+1));
-  btnReset.addEventListener("click", () => { dayOffset = 0; render(); });
+
+  button.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    holding = true;
+
+    // Immediate single step on press
+    stepDays(direction);
+
+    // After delay, begin rapid stepping
+    holdTimer = setTimeout(() => {
+      if(!holding) return;
+      repeatTimer = setInterval(() => {
+        stepDays(direction);
+      }, REPEAT_RATE);
+    }, START_DELAY);
+  });
+
+  // Stop on release, cancel, or leaving button
+  ["pointerup", "pointercancel", "pointerleave"].forEach(evt => {
+    button.addEventListener(evt, clearTimers);
+  });
+}
+
+// Attach hold behaviour
+makeHoldStepper(btnPrev, -1);
+makeHoldStepper(btnNext, +1);
+
+btnReset.addEventListener("click", () => {
+  dayOffset = 0;
+  render();
+});
+
 
   // ---------------------------
   // 7) HUD scaling + declutter + placement (no overlap)
