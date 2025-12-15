@@ -1334,32 +1334,31 @@ function updateLabelPlacement(){
   const used = [];
   // avoid Sun region
   used.push({ x:-0.9, y:-0.9, w:1.8, h:1.8 });
-  // avoid major bodies (8 planets + Kyūsei)
-function planetBlockRadiusFor(key){
-  const b = bodyDef(key);
-  if(!b) return 0.5 * hudScale;
-  return dotRadiusFor(b) * 6 * hudScale;
+
+// avoid planets + Kyūsei (labels must make way for bodies)
+for(const b of BODIES){
+  // planets + Kyūsei only
+  if(!(b.class === "major" || b.class === "inner")) continue;
+
+  const out = bodyPosAndM(b.key, currentJD());
+  if(!out || !out.pos) continue;
+
+  const p = out.pos;
+
+  // radius based on actual rendered dot + glow safety
+  const baseR = dotRadiusFor(b);
+  const r = baseR * hudScale * 8.0;
+
+  used.push({
+    x: p.x - r,
+    y: p.y - r,
+    w: r * 2,
+    h: r * 2
+  });
 }
 
-for(const gg of gHUD.querySelectorAll("[data-label-group]")){
-  const cls = gg.getAttribute("data-class");
-  if(!(cls === "major" || cls === "inner")) continue;
 
-
-  const p = gg.__bodyPos;
-  if(!p) continue;
-
-const r = planetBlockRadiusFor(gg.getAttribute("data-key"));
-
-used.push({
-  x: p.x - r,
-  y: p.y - r,
-  w: r * 2,
-  h: r * 2
-});
-
-}
-
+  
   
   const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
 
