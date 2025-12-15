@@ -755,16 +755,50 @@
 
   let gWorld, gTrails, gJourney, gHUD;
 
-  function ensureDefs(){
-    const defs = make("defs");
+function ensureDefs(){
+  const defs = make("defs");
 
-    const filter = make("filter", { id:"tekugl", x:"-60%", y:"-60%", width:"220%", height:"220%" });
-    filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"0.9", "flood-color":"#EBFA7A", "flood-opacity":"0.22" }));
-    filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" }));
-    defs.appendChild(filter);
+  // TEXT / JOURNEY glow (existing behaviour, slightly toned)
+  const textGlow = make("filter", {
+    id:"tekugl",
+    x:"-40%", y:"-40%", width:"180%", height:"180%"
+  });
+  textGlow.appendChild(make("feDropShadow", {
+    dx:"0", dy:"0",
+    stdDeviation:"0.8",
+    "flood-color":"#EBFA7A",
+    "flood-opacity":"0.22"
+  }));
+  textGlow.appendChild(make("feDropShadow", {
+    dx:"0", dy:"0",
+    stdDeviation:"1.2",
+    "flood-color":"#ffcc00",
+    "flood-opacity":"0.14"
+  }));
+  defs.appendChild(textGlow);
 
-    svg.appendChild(defs);
-  }
+  // BOX / LEADER glow (tighter, CRT edge burn)
+  const boxGlow = make("filter", {
+    id:"tekugl-box",
+    x:"-25%", y:"-25%", width:"150%", height:"150%"
+  });
+  boxGlow.appendChild(make("feDropShadow", {
+    dx:"0", dy:"0",
+    stdDeviation:"0.35",
+    "flood-color":"#ffcc00",
+    "flood-opacity":"0.35"
+  }));
+  boxGlow.appendChild(make("feDropShadow", {
+    dx:"0", dy:"0",
+    stdDeviation:"0.8",
+    "flood-color":"#EBFA7A",
+    "flood-opacity":"0.10"
+  }));
+  defs.appendChild(boxGlow);
+
+  svg.appendChild(defs);
+}
+
 
   function buildLayers(){
     gWorld  = make("g", { id:"world" });                  // belts + belt labels (NO glow)
@@ -1254,12 +1288,18 @@ function updateDeclutter(){
     pad: 0.25
   };
 
-  function estimateTextBox(text, fsWorld){
-    const ch = Math.max(1, (text || "").length);
-    const w = ch * fsWorld * 0.62;
-    const h = fsWorld * 1.10;
-    return {w, h};
-  }
+function estimateTextBox(text, fsWorld){
+  const ch = Math.max(1, (text || "").length);
+
+  // Slightly more honest monospace width (prevents clipping)
+  const w = ch * fsWorld * 0.66;
+
+  // Vertical safety for heavy weight + CRT line bleed
+  const h = fsWorld * 1.18;
+
+  return { w, h };
+}
+
 
   function rectsOverlap(a,b){
     return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
