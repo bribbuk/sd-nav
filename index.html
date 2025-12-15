@@ -1534,6 +1534,8 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
     // IMPORTANT: no glow filter here (belt texts should NOT glow)
   });
 
+  label.setAttribute("stroke", "none");
+
   const tp = make("textPath", {
     href: `#${id}`,
     startOffset:"50%",
