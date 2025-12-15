@@ -1124,10 +1124,29 @@ function addLeaderLine(g, bodyPos, box){
   // Close enough → no leader
   if(dist < 0.9 * hudScale) return;
 
-  // Snap angle to nearest 45°
-  const angle = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
-  const ux = Math.cos(angle);
-  const uy = Math.sin(angle);
+// Prefer cardinal directions, allow diagonals only if clearly closer
+const raw = Math.atan2(dy, dx);
+const snap = Math.PI / 4;
+
+const candidates = [
+  0, Math.PI/2, Math.PI, -Math.PI/2,          // cardinals
+  snap, 3*snap, -snap, -3*snap                // diagonals
+];
+
+let best = candidates[0];
+let bestDiff = Infinity;
+
+for(const a of candidates){
+  const d = Math.abs(Math.atan2(Math.sin(raw-a), Math.cos(raw-a)));
+  if(d < bestDiff){
+    bestDiff = d;
+    best = a;
+  }
+}
+
+const ux = Math.cos(best);
+const uy = Math.sin(best);
+
 
   const startX = bodyPos.x + ux * 0.25 * hudScale;
   const startY = bodyPos.y + uy * 0.25 * hudScale;
@@ -1276,17 +1295,20 @@ function updateDeclutter(){
 
 
   // Magnetic placement: adjacent, non-overlap, label always in-view if body in-view
-  const labelPlacement = {
-    offsets: [
-      {dx:  0.60, dy: -0.55},
-      {dx:  0.60, dy:  0.75},
-      {dx: -0.60, dy: -0.55},
-      {dx: -0.60, dy:  0.75},
-      {dx:  0.00, dy: -0.95},
-      {dx:  0.00, dy:  1.10},
-    ],
-    pad: 0.25
-  };
+const labelPlacement = {
+  offsets: [
+    {dx:  0.60, dy: -0.55},
+    {dx:  0.60, dy:  0.75},
+    {dx: -0.60, dy: -0.55},
+    {dx: -0.60, dy:  0.75},
+    {dx:  0.00, dy: -0.95},
+    {dx:  0.00, dy:  1.10},
+  ],
+
+  // PATCH G: intentionally cramped but safe
+  pad: 0.18
+};
+
 
 function estimateTextBox(text, fsWorld){
   const ch = Math.max(1, (text || "").length);
@@ -1403,7 +1425,7 @@ function updateLabelPlacement(){
       fill: "#262626",
       stroke: "#ffcc00",
       "stroke-width": 0.06 * hudScale,
-      filter: "url(#tekugl)",
+      filter: "url(#tekugl-box)",
       "data-label-box":"1"
     });
     g.insertBefore(rect, g.firstChild);
