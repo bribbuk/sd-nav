@@ -777,6 +777,34 @@ function ensureDefs(){
   }));
   defs.appendChild(textGlow);
 
+// BELT TEXT glow — soft, olive, matches band
+const beltGlow = make("filter", {
+  id: "beltglow",
+  x: "-40%",
+  y: "-40%",
+  width: "180%",
+  height: "180%"
+});
+
+beltGlow.appendChild(make("feDropShadow", {
+  dx: "0",
+  dy: "0",
+  stdDeviation: "1.4",
+  "flood-color": "#54522C",
+  "flood-opacity": "0.55"
+}));
+
+beltGlow.appendChild(make("feDropShadow", {
+  dx: "0",
+  dy: "0",
+  stdDeviation: "2.6",
+  "flood-color": "#54522C",
+  "flood-opacity": "0.25"
+}));
+
+defs.appendChild(beltGlow);
+
+  
   // BOX / LEADER glow (tighter, CRT edge burn)
   const boxGlow = make("filter", {
     id:"tekugl-box",
