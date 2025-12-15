@@ -1075,26 +1075,31 @@ btnReset.addEventListener("click", () => {
 }
 
 function addLeaderLine(g, bodyPos, box){
-  // Only draw if box is meaningfully offset
-  const bx = box.x + box.w/2;
-  const by = box.y + box.h/2;
+  // Guard: only draw if we have a valid box
+  if(!box || !isFinite(box.x) || !isFinite(box.y) || !isFinite(box.w) || !isFinite(box.h)){
+    return;
+  }
+
+  const bx = box.x + box.w * 0.5;
+  const by = box.y + box.h * 0.5;
 
   const dx = bx - bodyPos.x;
   const dy = by - bodyPos.y;
   const dist = Math.hypot(dx, dy);
 
-  if(dist < 0.9 * hudScale) return; // close enough, no line
+  // Close enough → no leader
+  if(dist < 0.9 * hudScale) return;
 
   // Snap angle to nearest 45°
-  const angle = Math.round(Math.atan2(dy, dx) / (Math.PI/4)) * (Math.PI/4);
+  const angle = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
   const ux = Math.cos(angle);
   const uy = Math.sin(angle);
 
   const startX = bodyPos.x + ux * 0.25 * hudScale;
   const startY = bodyPos.y + uy * 0.25 * hudScale;
 
-  const endX = bx - ux * (box.w/2);
-  const endY = by - uy * (box.h/2);
+  const endX = bx - ux * (box.w * 0.5);
+  const endY = by - uy * (box.h * 0.5);
 
   const line = make("line", {
     x1: startX,
@@ -1109,6 +1114,7 @@ function addLeaderLine(g, bodyPos, box){
 
   g.insertBefore(line, g.firstChild);
 }
+
 
   
   let hudScale = 1;
