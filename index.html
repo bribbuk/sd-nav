@@ -1551,14 +1551,11 @@ function updateLabelPlacement(){
       break;
     }
 
-    if(!placed){
-      placed = {
-        x: pos.x + 0.65*hudScale,
-        y: pos.y - boxText.h - 0.55*hudScale,
-        w: boxText.w + labelPlacement.pad*hudScale,
-        h: boxText.h + extraH + labelPlacement.pad*hudScale
-      };
-    }
+          if(!placed){
+            // do NOT place label if no valid position exists
+            continue;
+          }
+
 
     used.push(placed);
 
