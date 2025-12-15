@@ -1404,7 +1404,8 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   }
 
   // Per-body trail: multiple ellipse layers => “gradient” tail
-  const orbitTrails = new Map(); // key -> { refEllipse, totalLen, layers:[{node, segLen, op}], minor, lastLen }
+const orbitTrails = new Map(); 
+// key -> { refEllipse, totalLen, layers, minor, lastLen, lastPos }
 
   function buildTrailForBody(b, el){
     const g = ellipseXYFromElements(el.a, el.e, el.I, el.Omega, el.omega);
@@ -1453,29 +1454,35 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
     orbitTrails.set(b.key, { refEllipse: ref, totalLen, layers, minor, lastLen: 0 });
   }
 
-  function findClosestLen(refEllipse, totalLen, pos, guessLen){
-    // local search around guess for closest point => keeps tail end aligned to planet
-    let bestLen = clamp(guessLen, 0, totalLen);
-    let bestD = Infinity;
+function findClosestLen(refEllipse, totalLen, pos, guessLen){
+  // PATCH G:
+  // Tight local minimisation so trail head sticks to body
+  let bestLen = clamp(guessLen, 0, totalLen);
+  let bestD = Infinity;
 
-    const spans = [0.02, 0.06, 0.12]; // progressively wider
-    for(const spanFrac of spans){
-      const span = totalLen * spanFrac;
-      const steps = 18;
-      for(let i=0;i<=steps;i++){
-        const t = -span/2 + (span * (i/steps));
-        const L = clamp(bestLen + t, 0, totalLen);
-        const p = refEllipse.getPointAtLength(L);
-        const dx = p.x - pos.x, dy = p.y - pos.y;
-        const d = dx*dx + dy*dy;
-        if(d < bestD){
-          bestD = d;
-          bestLen = L;
-        }
+  // Progressive local search windows
+  const windows = [0.01, 0.03, 0.08];
+
+  for(const w of windows){
+    const span = totalLen * w;
+    const steps = 24;
+
+    for(let i = 0; i <= steps; i++){
+      const t = -span/2 + (span * i/steps);
+      const L = clamp(bestLen + t, 0, totalLen);
+      const p = refEllipse.getPointAtLength(L);
+      const dx = p.x - pos.x;
+      const dy = p.y - pos.y;
+      const d = dx*dx + dy*dy;
+      if(d < bestD){
+        bestD = d;
+        bestLen = L;
       }
     }
-    return bestLen;
   }
+  return bestLen;
+}
+
 
   function updateTrailForBody(key, pos, frac){
     const ot = orbitTrails.get(key);
