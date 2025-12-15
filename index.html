@@ -1276,23 +1276,51 @@ btnReset.addEventListener("click", () => {
     gWorld.appendChild(p);
   }
 
-  function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
-    // Label height ~= 50% of band width (vectorised, map-space)
-    const fs = Math.max(0.12, bandWidth * 0.50);
+function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
+  // Base label height ~= 50% of band width (vectorised, map-space)
+  let fs = Math.max(0.12, bandWidth * 0.50);
 
-    const span = 110;
-    const path = make("path", { id, d: arcPath(rMid, centerDeg, span), fill:"none", stroke:"none" });
-    defs.appendChild(path);
+  // PATCH G belt-specific scaling
+  // SECOND CROWN: ~20% smaller
+  // OORT CLOUD: ~50% larger
+  const t = (text || "").toUpperCase();
+  if(t.includes("SECOND CROWN")){
+    fs *= 0.80;
+  }
+  if(t.includes("OORT CLOUD")){
+    fs *= 1.50;
+  }
 
-    const t = make("text", {
-      fill: "#54522C",
-      opacity: "1.0",
-      "font-family":"monospace",
-      "font-weight":"1000",
-      "letter-spacing":"0.22em",
-      "font-size": String(fs)
-      // IMPORTANT: no glow filter here (belt texts should NOT glow)
-    });
+  const span = 110;
+  const path = make("path", {
+    id,
+    d: arcPath(rMid, centerDeg, span),
+    fill:"none",
+    stroke:"none"
+  });
+  defs.appendChild(path);
+
+  const label = make("text", {
+    fill: "#54522C",
+    opacity: "1.0",
+    "font-family":"monospace",
+    "font-weight":"1000",
+    "letter-spacing":"0.22em",
+    "font-size": String(fs)
+    // IMPORTANT: no glow filter here (belt texts should NOT glow)
+  });
+
+  const tp = make("textPath", {
+    href: `#${id}`,
+    startOffset:"50%",
+    "text-anchor":"middle"
+  });
+
+  setText(tp, text);
+  label.appendChild(tp);
+  gWorld.appendChild(label);
+}
+
 
     const tp = make("textPath", { href: `#${id}`, startOffset:"50%", "text-anchor":"middle" });
     setText(tp, text);
