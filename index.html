@@ -1082,37 +1082,38 @@ btnReset.addEventListener("click", () => {
     }
   }
 
-  const declutter = {
-    coordsHideAt: 95,
-    smallHideAt: 110,
-    innerHideAt: 220,
-    lagrangeHideAt: 95
-  };
+const declutter = {
+  coordsHideAt:    95,
+  smallHideAt:    110,
+  innerHideAt:    220,
+  lagrangeHideAt: 95,
+
+  // PATCH G: extreme macro view
+  macroHideAt: 8000   // beyond this, Kyūsei + plotted bodies only
+};
+
 
   function inView(p){
     const vb = interaction.vb;
     return (p.x >= vb.x && p.x <= vb.x + vb.w && p.y >= vb.y && p.y <= vb.y + vb.h);
   }
+
 function updateDeclutter(){
   const w = interaction.vb.w;
 
-  // Existing tiers
   const coordsOn = w < declutter.coordsHideAt;
   const smallOn  = w < declutter.smallHideAt;
   const innerOn  = w < declutter.innerHideAt;
   const lagOn    = w < declutter.lagrangeHideAt;
 
-  // PATCH G: extreme zoom tier
-  // At very large view widths, ONLY Kyūsei + plotted bodies remain
-  const EXTREME_HIDE_AT = 1200; // deliberately “wayyy out”
-  const extreme = w > EXTREME_HIDE_AT;
+  const macroOnly = w > declutter.macroHideAt;
 
   const aSel = selA.value;
   const bSel = selB.value;
 
   if(!gHUD) return;
-  const groups = gHUD.querySelectorAll("[data-label-group]");
 
+  const groups = gHUD.querySelectorAll("[data-label-group]");
   groups.forEach(g => {
     const cls = g.getAttribute("data-class") || "major";
     const key = g.getAttribute("data-key") || "";
@@ -1121,25 +1122,23 @@ function updateDeclutter(){
     const isSmall = cls === "small";
     const isMajor = cls === "major";
     const isLag   = cls === "smallL";
-    const isKyusei = key === "Kyusei";
 
     let show = true;
 
-    // PATCH G extreme rule first (overrides everything else)
-    if(extreme){
+    // PATCH G macro rule
+    if(macroOnly){
       show = (
-        isKyusei ||
+        key === "Kyusei" ||
         key === aSel ||
         key === bSel
       );
     } else {
-      // Normal declutter rules
       if(isSmall && !smallOn) show = false;
       if(isInner && !innerOn) show = false;
-      if(isLag   && !lagOn)   show = false;
+      if(isLag && !lagOn) show = false;
       if(isMajor) show = true;
 
-      // Selected labels always visible if body is in view
+      // Selected labels always visible if body in view
       if((key === aSel || key === bSel) && g.__bodyPos && inView(g.__bodyPos)){
         show = true;
       }
@@ -1147,13 +1146,13 @@ function updateDeclutter(){
 
     g.style.opacity = show ? "1" : "0";
 
-    // Coordinate sub-labels
     const coords = g.querySelectorAll("[data-coord]");
     coords.forEach(t => {
-      t.style.opacity = (show && coordsOn && !extreme) ? "0.78" : "0";
+      t.style.opacity = (coordsOn && !macroOnly) ? "0.78" : "0";
     });
   });
 }
+
 
 
   // Magnetic placement: adjacent, non-overlap, label always in-view if body in-view
