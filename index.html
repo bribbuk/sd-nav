@@ -1321,13 +1321,6 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   gWorld.appendChild(label);
 }
 
-
-    const tp = make("textPath", { href: `#${id}`, startOffset:"50%", "text-anchor":"middle" });
-    setText(tp, text);
-    t.appendChild(tp);
-    gWorld.appendChild(t);
-  }
-
   // ---------------------------
   // 9) Trails (aligned + gradient fade)
   // ---------------------------
