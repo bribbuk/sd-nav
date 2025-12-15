@@ -1074,6 +1074,43 @@ btnReset.addEventListener("click", () => {
   g.insertBefore(rect, g.firstChild);
 }
 
+function addLeaderLine(g, bodyPos, box){
+  // Only draw if box is meaningfully offset
+  const bx = box.x + box.w/2;
+  const by = box.y + box.h/2;
+
+  const dx = bx - bodyPos.x;
+  const dy = by - bodyPos.y;
+  const dist = Math.hypot(dx, dy);
+
+  if(dist < 0.9 * hudScale) return; // close enough, no line
+
+  // Snap angle to nearest 45°
+  const angle = Math.round(Math.atan2(dy, dx) / (Math.PI/4)) * (Math.PI/4);
+  const ux = Math.cos(angle);
+  const uy = Math.sin(angle);
+
+  const startX = bodyPos.x + ux * 0.25 * hudScale;
+  const startY = bodyPos.y + uy * 0.25 * hudScale;
+
+  const endX = bx - ux * (box.w/2);
+  const endY = by - uy * (box.h/2);
+
+  const line = make("line", {
+    x1: startX,
+    y1: startY,
+    x2: endX,
+    y2: endY,
+    stroke: "#ffcc00",
+    "stroke-width": 0.035 * hudScale,
+    opacity: "0.85",
+    filter: "url(#tekugl)"
+  });
+
+  g.insertBefore(line, g.firstChild);
+}
+
+  
   let hudScale = 1;
 
 const SIZE = {
@@ -1288,6 +1325,9 @@ function updateDeclutter(){
 
       used.push(placed);
 
+addLeaderLine(g, pos, placed);
+
+      
       const baseX = placed.x;
       const baseY = placed.y + box.h;
 
