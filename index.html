@@ -1355,10 +1355,12 @@ function estimateTextBox(text, fsWorld){
     return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
   }
 
+
+
 function updateLabelPlacement(){
   if(!gHUD) return;
-  const vb = interaction.vb;
 
+  const vb = interaction.vb;
   const used = [];
 
   // --- BODY EXCLUSION ZONES (ALL BODIES, INCLUDING SELF) ---
@@ -1386,18 +1388,18 @@ function updateLabelPlacement(){
     const nameT = g.querySelector("[data-label]");
     if(!nameT) continue;
 
-    const key = g.getAttribute("data-key");
+    const key = g.getAttribute("data-key") || "";
     const pos = g.__bodyPos;
     if(!pos) continue;
 
     const labelTxt = nameT.textContent || "";
-    const fsName = Number(nameT.getAttribute("font-size"));
+    const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
     const boxText = estimateTextBox(labelTxt, fsName);
 
     const coords = Array.from(g.querySelectorAll("[data-coord]"));
     const fsCoord = coords[0]
       ? Number(coords[0].getAttribute("font-size"))
-      : 0;
+      : (SIZE.coordBase * hudScale);
 
     const extraH = coords.length
       ? (coords.length * (fsCoord * 1.10) + fsCoord * 0.35)
@@ -1409,74 +1411,66 @@ function updateLabelPlacement(){
       const x = pos.x + off.dx * hudScale;
       const y = pos.y + off.dy * hudScale;
 
-      const rect = {
-        x,
+      // candidate rect in world coords
+      let r = {
+        x: x,
         y: y - boxText.h,
         w: boxText.w + labelPlacement.pad * hudScale,
         h: boxText.h + extraH + labelPlacement.pad * hudScale
       };
 
-      // keep in view if body is visible
-              if(inView(pos)){
-              r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-              r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-            }
-            
-            // NOW test the FINAL rectangle
-            let ok = true;
-            for(const u of used){
-              if(rectsOverlap(r,u)){
-                ok = false;
-                break;
-              }
-            }
+      // keep label in view *if the body is in view*
+      if(inView(pos)){
+        r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
+        r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
+      }
 
-
+      // reject if overlaps any exclusion rect (including its own body)
       let ok = true;
       for(const u of used){
-        // 🚨 DO NOT SKIP SELF — labels must avoid their own body
-        if(rectsOverlap(rect, u)){
-          ok = false;
-          break;
-        }
+        if(rectsOverlap(r, u)){ ok = false; break; }
       }
+      if(!ok) continue;
 
-      if(ok){
-        placed = rect;
-        break;
-      }
+      placed = r;
+      break;
     }
 
-    // fallback (still collision-safe because exclusion already includes body)
+    // fallback (may overlap labels, but still avoids planets because exclusion zones are in used[])
     if(!placed){
       placed = {
-        x: pos.x + 0.7 * hudScale,
-        y: pos.y - boxText.h - 0.6 * hudScale,
-        w: boxText.w + labelPlacement.pad * hudScale,
-        h: boxText.h + extraH + labelPlacement.pad * hudScale
+        x: pos.x + 0.65*hudScale,
+        y: pos.y - boxText.h - 0.55*hudScale,
+        w: boxText.w + labelPlacement.pad*hudScale,
+        h: boxText.h + extraH + labelPlacement.pad*hudScale
       };
+
+      if(inView(pos)){
+        placed.x = clamp(placed.x, vb.x + 0.4*hudScale, vb.x + vb.w - placed.w - 0.4*hudScale);
+        placed.y = clamp(placed.y, vb.y + 0.4*hudScale, vb.y + vb.h - placed.h - 0.4*hudScale);
+      }
     }
 
     used.push(placed);
 
-    // --- APPLY EXACT GEOMETRY (NO MUTATION AFTER THIS) ---
+    // --- APPLY TEXT POSITIONS ---
     const baseX = placed.x;
     const baseY = placed.y + boxText.h;
 
     nameT.setAttribute("x", baseX);
     nameT.setAttribute("y", baseY);
 
-    let yCursor = baseY + fsName * 0.20;
-    coords.forEach(t => {
+    let yCursor = baseY + (fsName * 0.20);
+    for(const t of coords){
       t.setAttribute("x", baseX);
       t.setAttribute("y", yCursor);
-      yCursor += fsCoord * 1.10;
-    });
+      yCursor += (fsCoord * 1.10);
+    }
 
-    // cleanup old
-    g.querySelectorAll("[data-label-box], [data-leader]").forEach(n => n.remove());
+    // --- REMOVE OLD BOX/LEADER ---
+    g.querySelectorAll("rect[data-label-box], line[data-leader]").forEach(n => n.remove());
 
-    // box
+    // --- ADD BOX ---
     const rectEl = make("rect", {
       x: placed.x,
       y: placed.y,
@@ -1490,11 +1484,10 @@ function updateLabelPlacement(){
     });
     g.insertBefore(rectEl, g.firstChild);
 
-    // leader (purely decorative; does not move box)
+    // --- ADD LEADER ---
     addLeaderLine(g, pos, placed);
   }
 }
-
 
 
   
