@@ -1314,10 +1314,10 @@ function estimateTextBox(text, fsWorld){
   const ch = Math.max(1, (text || "").length);
 
   // Slightly more honest monospace width (prevents clipping)
-  const w = ch * fsWorld * 0.66;
+  const w = ch * fsWorld * 0.77;
 
   // Vertical safety for heavy weight + CRT line bleed
-  const h = fsWorld * 1.18;
+  const h = fsWorld * 1.28;
 
   return { w, h };
 }
