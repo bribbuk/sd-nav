@@ -1484,22 +1484,36 @@ function findClosestLen(refEllipse, totalLen, pos, guessLen){
 }
 
 
-  function updateTrailForBody(key, pos, frac){
-    const ot = orbitTrails.get(key);
-    if(!ot) return;
+function updateTrailForBody(key, pos, frac){
+  const ot = orbitTrails.get(key);
+  if(!ot) return;
 
-    const guess = frac * ot.totalLen;
-    let bestLen = guess;
-    try { bestLen = findClosestLen(ot.refEllipse, ot.totalLen, pos, guess); } catch(_){}
-
-    ot.lastLen = bestLen;
-
-    // each layer: dash ends at the planet (so tail is behind it)
-    for(const L of ot.layers){
-      const off = -(bestLen) - L.segLen;
-      L.node.setAttribute("stroke-dashoffset", String(off));
-    }
+  // First guess from last frame if possible
+  let guess = ot.lastLen;
+  if(!isFinite(guess)){
+    guess = frac * ot.totalLen;
   }
+
+  let bestLen = guess;
+  try {
+    bestLen = findClosestLen(
+      ot.refEllipse,
+      ot.totalLen,
+      pos,
+      guess
+    );
+  } catch(_){}
+
+  ot.lastLen = bestLen;
+  ot.lastPos = pos;
+
+  // Dash so that trail HEAD sits exactly at body
+  for(const L of ot.layers){
+    const offset = -(bestLen) - L.segLen;
+    L.node.setAttribute("stroke-dashoffset", String(offset));
+  }
+}
+
 
   // ---------------------------
   // 10) Bodies + clusters + journey line
