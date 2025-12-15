@@ -1339,7 +1339,8 @@ const PLANET_BLOCK_RADIUS = 0.55 * hudScale;
 
 for(const gg of gHUD.querySelectorAll("[data-label-group]")){
   const cls = gg.getAttribute("data-class");
-  if(cls !== "major") continue; // blocks Mercury..Neptune + Kyūsei
+  if(!(cls === "major" || cls === "inner")) continue;
+
 
   const p = gg.__bodyPos;
   if(!p) continue;
