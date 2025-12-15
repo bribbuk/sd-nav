@@ -1417,10 +1417,20 @@ function updateLabelPlacement(){
       };
 
       // keep in view if body is visible
-      if(inView(pos)){
-        rect.x = clamp(rect.x, vb.x + 0.4*hudScale, vb.x + vb.w - rect.w - 0.4*hudScale);
-        rect.y = clamp(rect.y, vb.y + 0.4*hudScale, vb.y + vb.h - rect.h - 0.4*hudScale);
-      }
+              if(inView(pos)){
+              r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
+              r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
+            }
+            
+            // NOW test the FINAL rectangle
+            let ok = true;
+            for(const u of used){
+              if(rectsOverlap(r,u)){
+                ok = false;
+                break;
+              }
+            }
+
 
       let ok = true;
       for(const u of used){
