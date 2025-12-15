@@ -1552,15 +1552,17 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   });
   defs.appendChild(path);
 
-  const label = make("text", {
-    fill: "#54522C",
-    opacity: "1.0",
-    "font-family":"monospace",
-    "font-weight":"1000",
-    "letter-spacing":"0.22em",
-    "font-size": String(fs)
-    // IMPORTANT: no glow filter here (belt texts should NOT glow)
-  });
+  
+const label = make("text", {
+  fill: "#54522C",
+  opacity: "1.0",
+  filter: "url(#beltglow)",   // ← ADD THIS
+  "font-family":"monospace",
+  "font-weight":"1000",
+  "letter-spacing":"0.22em",
+  "font-size": String(fs)
+});
+
 
   label.setAttribute("stroke", "none");
 
