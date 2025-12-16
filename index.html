@@ -1397,7 +1397,11 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
 
   function buildTrailForBody(b, el){
     const g = ellipseXYFromElements(el.a, el.e, el.I, el.Omega, el.omega);
-
+// PATCH S: scale trail geometry into world-space
+g.cx *= WORLD_SCALE;
+g.cy *= WORLD_SCALE;
+g.rx *= WORLD_SCALE;
+g.ry *= WORLD_SCALE;
     // reference ellipse (invisible) to compute lengths/points
     const ref = make("ellipse", {
       cx: g.cx, cy: g.cy, rx: g.rx, ry: g.ry,
