@@ -1553,15 +1553,15 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
     };
 
     const cx = make("text", { "data-coord":"1", "data-fs-base": String(coordBase), ...coordStyle });
-    setText(cx, `x ${fmtSign(pos.x, 3)}`);
+    setText(cx, `x ${fmtSign(pos.x / WORLD_SCALE, 3)}`);
     g.appendChild(cx);
 
     const cy = make("text", { "data-coord":"1", "data-fs-base": String(coordBase), ...coordStyle });
-    setText(cy, `y ${fmtSign(pos.y, 3)}`);
+    setText(cy, `y ${fmtSign(pos.y / WORLD_SCALE, 3)}`);
     g.appendChild(cy);
 
     const cz = make("text", { "data-coord":"1", "data-fs-base": String(coordBase), ...coordStyle });
-    setText(cz, `z ${fmtSign(pos.z, 3)}`);
+    setText(cz, `z ${fmtSign(pos.z / WORLD_SCALE, 3)}`);
     g.appendChild(cz);
 
     gHUD.appendChild(g);
