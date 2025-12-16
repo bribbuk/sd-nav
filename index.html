@@ -1213,88 +1213,36 @@ function updateDeclutter(){
   function rectsOverlap(a,b){
     return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
   }
+const GOLDEN = 2.399963229728653; // golden angle
 
-  function updateLabelPlacement(){
-    if(!gHUD) return;
-    const vb = interaction.vb;
+function updateLabelPlacement(){
+  if(!gHUD) return;
 
-    const used = [];
-    // avoid Sun region (text overlap)
-    used.push({ x:-0.9, y:-0.9, w:1.8, h:1.8 });
+  const groups = gHUD.querySelectorAll("[data-label-group]");
+  let i = 0;
 
-    const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
-    for(const g of groups){
-      const nameT = g.querySelector("[data-label]");
-      if(!nameT) continue;
+  groups.forEach(g => {
+    const pos = g.__bodyPos;
+    if(!pos) return;
 
-      const pos = g.__bodyPos || {x:0,y:0,z:0};
+    const angle = (i++ * GOLDEN) % (Math.PI * 2);
+    const r = 0.75 * hudScale;
 
-      const labelTxt = nameT.textContent || "";
-      const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
-      const box = estimateTextBox(labelTxt, fsName);
+    const x = pos.x + Math.cos(angle) * r;
+    const y = pos.y + Math.sin(angle) * r;
 
-      const coords = Array.from(g.querySelectorAll("[data-coord]"));
-      const fsCoord = coords[0] ? Number(coords[0].getAttribute("font-size") || (SIZE.coordBase * hudScale)) : (SIZE.coordBase * hudScale);
-      const extraH = coords.length ? (coords.length * (fsCoord * 1.10) + fsCoord*0.35) : 0;
+    const nameT = g.querySelector("[data-label]");
+    nameT.setAttribute("x", x);
+    nameT.setAttribute("y", y);
 
-      let placed = null;
-
-      for(const off of labelPlacement.offsets){
-        const dx = off.dx * hudScale;
-        const dy = off.dy * hudScale;
-
-        let x = pos.x + dx;
-        let y = pos.y + dy;
-
-        let r = {
-          x: x,
-          y: y - box.h,
-          w: box.w + labelPlacement.pad*hudScale,
-          h: box.h + extraH + labelPlacement.pad*hudScale
-        };
-
-        if(inView(pos)){
-          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-        }
-
-        let ok = true;
-        for(const u of used){
-          if(rectsOverlap(r,u)){ ok = false; break; }
-        }
-        if(!ok) continue;
-
-        placed = r;
-        break;
-      }
-
-      if(!placed){
-        let x = pos.x + 0.65*hudScale;
-        let y = pos.y - 0.55*hudScale;
-        let r = { x:x, y:y - box.h, w: box.w + labelPlacement.pad*hudScale, h: box.h + extraH + labelPlacement.pad*hudScale };
-        if(inView(pos)){
-          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-        }
-        placed = r;
-      }
-
-      used.push(placed);
-
-      const baseX = placed.x;
-      const baseY = placed.y + box.h;
-
-      nameT.setAttribute("x", baseX);
-      nameT.setAttribute("y", baseY);
-
-      let yCursor = baseY + (fsName * 0.92);
-      coords.forEach(t => {
-        t.setAttribute("x", baseX);
-        t.setAttribute("y", yCursor);
-        yCursor += (fsCoord * 1.10);
-      });
-    }
-  }
+    let yCursor = y + Number(nameT.getAttribute("font-size")) * 0.9;
+    g.querySelectorAll("[data-coord]").forEach(t => {
+      t.setAttribute("x", x);
+      t.setAttribute("y", yCursor);
+      yCursor += Number(t.getAttribute("font-size")) * 1.1;
+    });
+  });
+}
 
   // ---------------------------
   // 8) Belts + belt labels (vectorised: do NOT rescale with zoom)
