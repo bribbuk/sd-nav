@@ -1711,22 +1711,18 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
 
     const defs = svg.querySelector("defs");
 
-    // Belts: no borders; labels at 315 and 135; #54522C; opacity 1; NO glow
-    // Wild Waste: 2.10–3.30
-    drawBand(2.10, 3.30, 0.05);
-    addBeltLabel(defs, "ww315", "WILD WASTE", 2.70, 315, (3.30 - 2.10));
-    addBeltLabel(defs, "ww135", "WILD WASTE", 2.70, 135, (3.30 - 2.10));
+    drawBand(2.10 * WORLD_SCALE, 3.30 * WORLD_SCALE, 0.05);
+addBeltLabel(defs, "ww315", "WILD WASTE", 2.70 * WORLD_SCALE, 315, (3.30 - 2.10) * WORLD_SCALE);
+addBeltLabel(defs, "ww135", "WILD WASTE", 2.70 * WORLD_SCALE, 135, (3.30 - 2.10) * WORLD_SCALE);
 
-    // Second Crown: 30–50
-    drawBand(30.0, 50.0, 0.03);
-    addBeltLabel(defs, "sc315", "SECOND CROWN", 40.0, 315, (50.0 - 30.0));
-    addBeltLabel(defs, "sc135", "SECOND CROWN", 40.0, 135, (50.0 - 30.0));
+drawBand(30.0 * WORLD_SCALE, 50.0 * WORLD_SCALE, 0.03);
+addBeltLabel(defs, "sc315", "SECOND CROWN", 40.0 * WORLD_SCALE, 315, (50.0 - 30.0) * WORLD_SCALE);
+addBeltLabel(defs, "sc135", "SECOND CROWN", 40.0 * WORLD_SCALE, 135, (50.0 - 30.0) * WORLD_SCALE);
 
-    // Oort Cloud: 2000–100000 (present again)
-    drawBand(2000.0, 100000.0, 0.010);
-    addBeltLabel(defs, "oc315", "OORT CLOUD", 51000.0, 315, (100000.0 - 2000.0));
-    addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0, 135, (100000.0 - 2000.0));
-
+drawBand(2000.0 * WORLD_SCALE, 100000.0 * WORLD_SCALE, 0.010);
+addBeltLabel(defs, "oc315", "OORT CLOUD", 51000.0 * WORLD_SCALE, 315, (100000.0 - 2000.0) * WORLD_SCALE);
+addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 - 2000.0) * WORLD_SCALE);
+   
     drawSun();
 
     buildJourneyLine();
