@@ -783,12 +783,12 @@ const WORKING_VB_W = 4;
   // 5) ViewBox + interaction
   // ---------------------------
   const interaction = {
-    pointers: new Map(),
-    vb: { x:DEFAULT_VB_X, y:DEFAULT_VB_Y, w:DEFAULT_VB_W, h:DEFAULT_VB_W },
-    baseW: DEFAULT_VB_W,
-    justGestured: false,
-    gestureTimer: null
-  };
+  pointers: new Map(),
+  vb: { x:DEFAULT_VB_X, y:DEFAULT_VB_Y, w:DEFAULT_VB_W, h:DEFAULT_VB_W },
+  baseW: WORKING_VB_W,
+  justGestured: false,
+  gestureTimer: null
+};
 
   function setViewBox(vb){
     interaction.vb = vb;
