@@ -937,25 +937,36 @@ const MAX_W = 160000 * WORLD_SCALE;  // scaled world max
   function bodyDef(key){ return BODIES.find(b => b.key === key) || null; }
 
   function bodyPosAndM(key, jd){
-    const b = bodyDef(key);
-    if(!b) return { pos:{x:0,y:0,z:0}, Mdeg:0 };
+  const b = bodyDef(key);
+  if(!b) return { pos:{x:0,y:0,z:0}, Mdeg:0 };
 
-    if(b.type === "jpl"){
-      const out = planetJPL(b.key, jd);
-      return { pos: out.pos, Mdeg: out.el.M, el: out.el };
-    }
-    if(b.type === "kepler"){
-      const kb = b.body();
-      const out = posFromKeplerBody(kb, jd);
-      return { pos: out.pos, Mdeg: out.Mdeg, el: {a:kb.a,e:kb.e,I:kb.I,Omega:kb.Omega,omega:kb.omega} };
-    }
-    if(b.type === "l4j") return { pos: jovianL4Pos(jd), Mdeg:0 };
-    if(b.type === "l5j") return { pos: jovianL5Pos(jd), Mdeg:0 };
-    if(b.type === "l4s") return { pos: saturnL4Pos(jd), Mdeg:0 };
-    if(b.type === "l5s") return { pos: saturnL5Pos(jd), Mdeg:0 };
+  let out;
 
-    return { pos:{x:0,y:0,z:0}, Mdeg:0 };
+  if(b.type === "jpl"){
+    const o = planetJPL(b.key, jd);
+    out = { pos: o.pos, Mdeg: o.el.M, el: o.el };
   }
+  else if(b.type === "kepler"){
+    const kb = b.body();
+    const o = posFromKeplerBody(kb, jd);
+    out = { pos: o.pos, Mdeg: o.Mdeg, el: {a:kb.a,e:kb.e,I:kb.I,Omega:kb.Omega,omega:kb.omega} };
+  }
+  else if(b.type === "l4j") out = { pos: jovianL4Pos(jd), Mdeg:0 };
+  else if(b.type === "l5j") out = { pos: jovianL5Pos(jd), Mdeg:0 };
+  else if(b.type === "l4s") out = { pos: saturnL4Pos(jd), Mdeg:0 };
+  else if(b.type === "l5s") out = { pos: saturnL5Pos(jd), Mdeg:0 };
+  else out = { pos:{x:0,y:0,z:0}, Mdeg:0 };
+
+  // SCALE WORLD COORDS ONCE (plot-space)
+  return {
+    pos: {
+      x: out.pos.x * WORLD_SCALE,
+      y: out.pos.y * WORLD_SCALE,
+      z: out.pos.z * WORLD_SCALE
+    },
+    Mdeg: out.Mdeg,
+    el: out.el
+  };
 
   function computeDistanceAU(aKey, bKey, jd){
     const A = bodyPosAndM(aKey, jd).pos;
