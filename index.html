@@ -1124,11 +1124,12 @@ function scheduleLabelPlacement(){
   }
 
   const declutter = {
-    coordsHideAt: 95,
-    smallHideAt: 110,
-    innerHideAt: 220,
-    lagrangeHideAt: 95
-  };
+  const declutter = {
+  coordsHideAt: 95 * WORLD_SCALE,
+  smallHideAt: 110 * WORLD_SCALE,
+  innerHideAt: 220 * WORLD_SCALE,
+  lagrangeHideAt: 95 * WORLD_SCALE
+};
 
   function inView(p){
     const vb = interaction.vb;
