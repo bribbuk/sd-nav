@@ -577,10 +577,12 @@
   const mount = document.getElementById("solar-map");
   if(!mount) return;
 
-  // Default view: more zoomed-in to reduce “zoom too far” weirdness.
-  const DEFAULT_VB_W = 4;   // was 72
-  const DEFAULT_VB_X = -2;
-  const DEFAULT_VB_Y = -2;
+
+  const WORLD_SCALE = 10;
+
+const DEFAULT_VB_W = 4 * WORLD_SCALE;
+const DEFAULT_VB_X = -2 * WORLD_SCALE;
+const DEFAULT_VB_Y = -2 * WORLD_SCALE;
 // The scale at which HUD/text/glow are considered "native"
 const WORKING_VB_W = 4;
   
