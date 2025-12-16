@@ -760,7 +760,15 @@ const WORKING_VB_W = 4;
   function ensureDefs(){
     const defs = make("defs");
 
-    const filter = make("filter", { id:"tekugl", x:"-60%", y:"-60%", width:"220%", height:"220%" });
+
+    const filter = make("filter", {
+  id: "tekugl",
+  filterUnits: "objectBoundingBox",
+  x: "-0.6",
+  y: "-0.6",
+  width: "2.2",
+  height: "2.2"
+});
     filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"0.9", "flood-color":"#EBFA7A", "flood-opacity":"0.22" }));
     filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" }));
     defs.appendChild(filter);
