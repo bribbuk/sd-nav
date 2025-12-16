@@ -1506,7 +1506,7 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
 
   function drawSun(){
     // Removed the outer pale ring (the thing between Mercury and Venus).
-    const c1 = make("circle", { cx:0, cy:0, r:0.24, fill:"#ffcc00", opacity:"0.85", filter:"url(#tekugl)" });
+    const c1 = make("circle", { cx:0, cy:0, r:0.24 * WORLD_SCALE, fill:"#ffcc00", opacity:"0.85", filter:"url(#tekugl)" });
     gWorld.appendChild(c1);
   }
 
