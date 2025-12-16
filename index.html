@@ -840,9 +840,8 @@ const WORKING_VB_W = 4;
     const nx = (focusWorld.x - vb.x) / vb.w;
     const ny = (focusWorld.y - vb.y) / vb.h;
 
-    // Allow deeper zoom-in, but clamp to avoid “too far” instability.
-    const MIN_W = 0.001;     // prevents the worst deep-zoom label weirdness
-    const MAX_W = 160000;  // lets you reach Oort if you *want*
+const MIN_W = 0.2 * WORLD_SCALE;     // prevents deep-zoom precision jitter (scaled world)
+const MAX_W = 160000 * WORLD_SCALE;  // scaled world max
     const newW = clamp(vb.w * factor, MIN_W, MAX_W);
     const newH = newW;
 
