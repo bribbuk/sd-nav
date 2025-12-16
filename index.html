@@ -1073,9 +1073,8 @@ function scheduleLabelPlacement(){
   let hudScale = 1;
 
   const SIZE = {
-    nameBase: 1.55,   // big
-    coordBase: 0.55,  // smaller
-    hitBase: 0.85
+    nameBase: 0.1,   // big
+    coordBase: 0.03,  // smaller
   };
 
   const JOURNEY = {
@@ -1092,10 +1091,6 @@ function scheduleLabelPlacement(){
     if(gHUD){
       gHUD.querySelectorAll("[data-dot]").forEach(el => {
         const base = Number(el.getAttribute("data-dot-base") || "0.16");
-        el.setAttribute("r", (base * hudScale).toString());
-      });
-      gHUD.querySelectorAll("[data-hit-circle]").forEach(el => {
-        const base = Number(el.getAttribute("data-hit-base") || "0.85");
         el.setAttribute("r", (base * hudScale).toString());
       });
 
@@ -1559,16 +1554,6 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
 
     gHUD.appendChild(g);
 
-    const hit = make("circle", {
-      cx: pos.x, cy: pos.y,
-      r: (hitBase * hudScale),
-      fill:"transparent",
-      "data-hit": b.key,
-      "data-hit-circle":"1",
-      "data-hit-base": String(hitBase)
-    });
-    gHUD.appendChild(hit);
-
     return g;
   }
 
@@ -1647,26 +1632,6 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
     journeyLine.setAttribute("x2", String(B.x));
     journeyLine.setAttribute("y2", String(B.y));
   }
-
-  // Click-to-select (DEPART then ARRIVE)
-  let clickStage = 0;
-  svg.addEventListener("click", (e) => {
-    if(interaction.justGestured) return;
-    const target = e.target;
-    if(!(target instanceof SVGElement)) return;
-    const key = target.getAttribute("data-hit");
-    if(!key) return;
-    if(!bodyDef(key)) return;
-
-    if(clickStage % 2 === 0) selA.value = key;
-    else selB.value = key;
-
-    clickStage++;
-    updateReadout();
-    updateDeclutter();
-    updateJourneyLine();
-    updateLabelPlacement();
-  });
 
   selA.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
   selB.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
