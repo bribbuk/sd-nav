@@ -799,12 +799,20 @@ const WORKING_VB_W = 4;
 };
 
   function setViewBox(vb){
-    interaction.vb = vb;
-    svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
-    updateHUDScale();
-    updateDeclutter();
+  interaction.vb = vb;
+  svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+
+  // Cheap, safe to run every frame
+  updateHUDScale();
+  updateDeclutter();
+  updateJourneyLine();
+
+  // EXPENSIVE: defer while zooming/panning
+  if(interaction.justGestured){
+    scheduleLabelPlacement();
+  } else {
     updateLabelPlacement();
-    updateJourneyLine();
+  }
   }
 
   function clientToWorld(clientX, clientY){
@@ -1043,6 +1051,20 @@ btnReset.addEventListener("click", () => {
 });
 
 
+// ---------------------------
+// Label placement scheduler (PATCH H)
+// ---------------------------
+let placementScheduled = false;
+
+function scheduleLabelPlacement(){
+  if(placementScheduled) return;
+  placementScheduled = true;
+  requestAnimationFrame(() => {
+    placementScheduled = false;
+    updateLabelPlacement();
+  });
+}
+  
   // ---------------------------
   // 7) HUD scaling + declutter + placement (no overlap)
   // ---------------------------
