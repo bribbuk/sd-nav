@@ -755,78 +755,16 @@
 
   let gWorld, gTrails, gJourney, gHUD;
 
-function ensureDefs(){
-  const defs = make("defs");
+  function ensureDefs(){
+    const defs = make("defs");
 
-  // TEXT / JOURNEY glow (existing behaviour, slightly toned)
-  const textGlow = make("filter", {
-    id:"tekugl",
-    x:"-40%", y:"-40%", width:"180%", height:"180%"
-  });
-  textGlow.appendChild(make("feDropShadow", {
-    dx:"0", dy:"0",
-    stdDeviation:"0.8",
-    "flood-color":"#EBFA7A",
-    "flood-opacity":"0.22"
-  }));
-  textGlow.appendChild(make("feDropShadow", {
-    dx:"0", dy:"0",
-    stdDeviation:"1.2",
-    "flood-color":"#ffcc00",
-    "flood-opacity":"0.14"
-  }));
-  defs.appendChild(textGlow);
+    const filter = make("filter", { id:"tekugl", x:"-60%", y:"-60%", width:"220%", height:"220%" });
+    filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"0.9", "flood-color":"#EBFA7A", "flood-opacity":"0.22" }));
+    filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" }));
+    defs.appendChild(filter);
 
-// BELT TEXT glow — soft, olive, matches band
-const beltGlow = make("filter", {
-  id: "beltglow",
-  x: "-40%",
-  y: "-40%",
-  width: "180%",
-  height: "180%"
-});
-
-beltGlow.appendChild(make("feDropShadow", {
-  dx: "0",
-  dy: "0",
-  stdDeviation: "1.4",
-  "flood-color": "#54522C",
-  "flood-opacity": "0.55"
-}));
-
-beltGlow.appendChild(make("feDropShadow", {
-  dx: "0",
-  dy: "0",
-  stdDeviation: "2.6",
-  "flood-color": "#54522C",
-  "flood-opacity": "0.25"
-}));
-
-defs.appendChild(beltGlow);
-
-  
-  // BOX / LEADER glow (tighter, CRT edge burn)
-  const boxGlow = make("filter", {
-    id:"tekugl-box",
-    x:"-25%", y:"-25%", width:"150%", height:"150%"
-  });
-  boxGlow.appendChild(make("feDropShadow", {
-    dx:"0", dy:"0",
-    stdDeviation:"0.35",
-    "flood-color":"#ffcc00",
-    "flood-opacity":"0.35"
-  }));
-  boxGlow.appendChild(make("feDropShadow", {
-    dx:"0", dy:"0",
-    stdDeviation:"0.8",
-    "flood-color":"#EBFA7A",
-    "flood-opacity":"0.10"
-  }));
-  defs.appendChild(boxGlow);
-
-  svg.appendChild(defs);
-}
-
+    svg.appendChild(defs);
+  }
 
   function buildLayers(){
     gWorld  = make("g", { id:"world" });                  // belts + belt labels (NO glow)
@@ -1098,118 +1036,13 @@ btnReset.addEventListener("click", () => {
   // ---------------------------
   // 7) HUD scaling + declutter + placement (no overlap)
   // ---------------------------
-  function addLabelBox(g){
-  const texts = Array.from(g.querySelectorAll("text"));
-  if(!texts.length) return;
-
-  // Compute bounding box manually (SVG getBBox unreliable pre-render)
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-  texts.forEach(t => {
-    const x = Number(t.getAttribute("x") || 0);
-    const y = Number(t.getAttribute("y") || 0);
-    const fs = Number(t.getAttribute("font-size") || 1);
-    const len = (t.textContent || "").length;
-
-    const w = len * fs * 0.62;
-    const h = fs * 1.05;
-
-    minX = Math.min(minX, x);
-    maxX = Math.max(maxX, x + w);
-    minY = Math.min(minY, y - h);
-    maxY = Math.max(maxY, y);
-  });
-
-  const pad = 0.12 * hudScale;
-
-  const rect = make("rect", {
-    x: minX - pad,
-    y: minY - pad,
-    width: (maxX - minX) + pad*2,
-    height: (maxY - minY) + pad*2,
-    fill: "#262626",
-    stroke: "#ffcc00",
-    "stroke-width": 0.06 * hudScale,
-    filter: "url(#tekugl)"
-  });
-
-  g.insertBefore(rect, g.firstChild);
-}
-
-function addLeaderLine(g, bodyPos, box){
-  // Guard: only draw if we have a valid box
-  if(!box || !isFinite(box.x) || !isFinite(box.y) || !isFinite(box.w) || !isFinite(box.h)){
-    return;
-  }
-
-  const bx = box.x + box.w * 0.5;
-  const by = box.y + box.h * 0.5;
-
-  const dx = bx - bodyPos.x;
-  const dy = by - bodyPos.y;
-  const dist = Math.hypot(dx, dy);
-
-  // Close enough → no leader
-  if(dist < 0.9 * hudScale) return;
-
-// Prefer cardinal directions, allow diagonals only if clearly closer
-const raw = Math.atan2(dy, dx);
-const snap = Math.PI / 4;
-
-const candidates = [
-  0, Math.PI/2, Math.PI, -Math.PI/2,          // cardinals
-  snap, 3*snap, -snap, -3*snap                // diagonals
-];
-
-let best = candidates[0];
-let bestDiff = Infinity;
-
-for(const a of candidates){
-  const d = Math.abs(Math.atan2(Math.sin(raw-a), Math.cos(raw-a)));
-  if(d < bestDiff){
-    bestDiff = d;
-    best = a;
-  }
-}
-
-const ux = Math.cos(best);
-const uy = Math.sin(best);
-
-
-  const startX = bodyPos.x + ux * 0.25 * hudScale;
-  const startY = bodyPos.y + uy * 0.25 * hudScale;
-
-  const endX = bx - ux * (box.w * 0.5);
-  const endY = by - uy * (box.h * 0.5);
-
-const line = make("line", {
-  "data-leader":"1",
-    x1: startX,
-    y1: startY,
-    x2: endX,
-    y2: endY,
-    stroke: "#ffcc00",
-    "stroke-width": 0.035 * hudScale,
-    opacity: "0.85",
-    filter: "url(#tekugl)"
-  });
-
-  g.insertBefore(line, g.firstChild);
-}
-
-
-  
   let hudScale = 1;
 
-const SIZE = {
-  nameBase: 1,
-  coordBase: 0.4,
-  hitBase: 0.85,
-
-  // PATCH G
-  minorScale: 0.70
-};
-
+  const SIZE = {
+    nameBase: 1.55,   // big
+    coordBase: 0.55,  // smaller
+    hitBase: 0.85
+  };
 
   const JOURNEY = {
     strokeBase: 0.06,       // thinner
@@ -1249,38 +1082,37 @@ const SIZE = {
     }
   }
 
-const declutter = {
-  coordsHideAt:    95,
-  smallHideAt:    110,
-  innerHideAt:    220,
-  lagrangeHideAt: 95,
-
-  // PATCH G: extreme macro view
-  macroHideAt: 8000   // beyond this, Kyūsei + plotted bodies only
-};
-
+  const declutter = {
+    coordsHideAt: 95,
+    smallHideAt: 110,
+    innerHideAt: 220,
+    lagrangeHideAt: 95
+  };
 
   function inView(p){
     const vb = interaction.vb;
     return (p.x >= vb.x && p.x <= vb.x + vb.w && p.y >= vb.y && p.y <= vb.y + vb.h);
   }
-
 function updateDeclutter(){
   const w = interaction.vb.w;
 
+  // Existing tiers
   const coordsOn = w < declutter.coordsHideAt;
   const smallOn  = w < declutter.smallHideAt;
   const innerOn  = w < declutter.innerHideAt;
   const lagOn    = w < declutter.lagrangeHideAt;
 
-  const macroOnly = w > declutter.macroHideAt;
+  // PATCH G: extreme zoom tier
+  // At very large view widths, ONLY Kyūsei + plotted bodies remain
+  const EXTREME_HIDE_AT = 1200; // deliberately “wayyy out”
+  const extreme = w > EXTREME_HIDE_AT;
 
   const aSel = selA.value;
   const bSel = selB.value;
 
   if(!gHUD) return;
-
   const groups = gHUD.querySelectorAll("[data-label-group]");
+
   groups.forEach(g => {
     const cls = g.getAttribute("data-class") || "major";
     const key = g.getAttribute("data-key") || "";
@@ -1289,23 +1121,25 @@ function updateDeclutter(){
     const isSmall = cls === "small";
     const isMajor = cls === "major";
     const isLag   = cls === "smallL";
+    const isKyusei = key === "Kyusei";
 
     let show = true;
 
-    // PATCH G macro rule
-    if(macroOnly){
+    // PATCH G extreme rule first (overrides everything else)
+    if(extreme){
       show = (
-        key === "Kyusei" ||
+        isKyusei ||
         key === aSel ||
         key === bSel
       );
     } else {
+      // Normal declutter rules
       if(isSmall && !smallOn) show = false;
       if(isInner && !innerOn) show = false;
-      if(isLag && !lagOn) show = false;
+      if(isLag   && !lagOn)   show = false;
       if(isMajor) show = true;
 
-      // Selected labels always visible if body in view
+      // Selected labels always visible if body is in view
       if((key === aSel || key === bSel) && g.__bodyPos && inView(g.__bodyPos)){
         show = true;
       }
@@ -1313,292 +1147,120 @@ function updateDeclutter(){
 
     g.style.opacity = show ? "1" : "0";
 
+    // Coordinate sub-labels
     const coords = g.querySelectorAll("[data-coord]");
     coords.forEach(t => {
-      t.style.opacity = (coordsOn && !macroOnly) ? "0.78" : "0";
+      t.style.opacity = (show && coordsOn && !extreme) ? "0.78" : "0";
     });
   });
 }
 
 
-
   // Magnetic placement: adjacent, non-overlap, label always in-view if body in-view
-const labelPlacement = {
-  offsets: [
-    {dx:  0.60, dy: -0.55},
-    {dx:  0.60, dy:  0.75},
-    {dx: -0.60, dy: -0.55},
-    {dx: -0.60, dy:  0.75},
-    {dx:  0.00, dy: -0.95},
-    {dx:  0.00, dy:  1.10},
-  ],
+  const labelPlacement = {
+    offsets: [
+      {dx:  0.60, dy: -0.55},
+      {dx:  0.60, dy:  0.75},
+      {dx: -0.60, dy: -0.55},
+      {dx: -0.60, dy:  0.75},
+      {dx:  0.00, dy: -0.95},
+      {dx:  0.00, dy:  1.10},
+    ],
+    pad: 0.25
+  };
 
-  // PATCH G: intentionally cramped but safe
-  pad: 0.18
-};
-
-
-function estimateTextBox(text, fsWorld){
-  const ch = Math.max(1, (text || "").length);
-
-  // Slightly more honest monospace width (prevents clipping)
-  const w = ch * fsWorld * 0.77;
-
-  // Vertical safety for heavy weight + CRT line bleed
-  const h = fsWorld * 1.28;
-
-  return { w, h };
-}
-
+  function estimateTextBox(text, fsWorld){
+    const ch = Math.max(1, (text || "").length);
+    const w = ch * fsWorld * 0.62;
+    const h = fsWorld * 1.10;
+    return {w, h};
+  }
 
   function rectsOverlap(a,b){
     return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
   }
 
-function updateLabelPlacement(){
-  if(!gHUD) return;
-  const vb = interaction.vb;
+  function updateLabelPlacement(){
+    if(!gHUD) return;
+    const vb = interaction.vb;
 
-  const used = [];
+    const used = [];
+    // avoid Sun region (text overlap)
+    used.push({ x:-0.9, y:-0.9, w:1.8, h:1.8 });
 
-  // --- BODY EXCLUSION ZONES (ALL BODIES, INCLUDING SELF) ---
-  for(const b of BODIES){
-    const out = bodyPosAndM(b.key, currentJD());
-    if(!out || !out.pos) continue;
+    const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
+    for(const g of groups){
+      const nameT = g.querySelector("[data-label]");
+      if(!nameT) continue;
 
-    const p = out.pos;
-    const r =
-      dotRadiusFor(b) * hudScale * 6.0 +   // dot + glow
-      0.45 * hudScale;                     // CRT / stroke safety
+      const pos = g.__bodyPos || {x:0,y:0,z:0};
 
-    used.push({
-      x: p.x - r,
-      y: p.y - r,
-      w: r * 2,
-      h: r * 2,
-      _body: b.key
-    });
-  }
+      const labelTxt = nameT.textContent || "";
+      const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
+      const box = estimateTextBox(labelTxt, fsName);
 
-  const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
+      const coords = Array.from(g.querySelectorAll("[data-coord]"));
+      const fsCoord = coords[0] ? Number(coords[0].getAttribute("font-size") || (SIZE.coordBase * hudScale)) : (SIZE.coordBase * hudScale);
+      const extraH = coords.length ? (coords.length * (fsCoord * 1.10) + fsCoord*0.35) : 0;
 
-  for(const g of groups){
-    const nameT = g.querySelector("[data-label]");
-    if(!nameT) continue;
+      let placed = null;
 
-    const key = g.getAttribute("data-key");
-    const pos = g.__bodyPos;
-    if(!pos) continue;
+      for(const off of labelPlacement.offsets){
+        const dx = off.dx * hudScale;
+        const dy = off.dy * hudScale;
 
-    const labelTxt = nameT.textContent || "";
-    const fsName = Number(nameT.getAttribute("font-size"));
-    const boxText = estimateTextBox(labelTxt, fsName);
+        let x = pos.x + dx;
+        let y = pos.y + dy;
 
-    const coords = Array.from(g.querySelectorAll("[data-coord]"));
-    const fsCoord = coords[0]
-      ? Number(coords[0].getAttribute("font-size"))
-      : 0;
+        let r = {
+          x: x,
+          y: y - box.h,
+          w: box.w + labelPlacement.pad*hudScale,
+          h: box.h + extraH + labelPlacement.pad*hudScale
+        };
 
-    const extraH = coords.length
-      ? (coords.length * (fsCoord * 1.10) + fsCoord * 0.35)
-      : 0;
-
-    let placed = null;
-
-    for(const off of labelPlacement.offsets){
-      const x = pos.x + off.dx * hudScale;
-      const y = pos.y + off.dy * hudScale;
-
-      const rect = {
-        x,
-        y: y - boxText.h,
-        w: boxText.w + labelPlacement.pad * hudScale,
-        h: boxText.h + extraH + labelPlacement.pad * hudScale
-      };
-
-      // keep in view if body is visible
-              if(inView(pos)){
-              r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-              r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
-            }
-            
-            // NOW test the FINAL rectangle
-            let ok = true;
-            for(const u of used){
-              if(rectsOverlap(r,u)){
-                ok = false;
-                break;
-              }
-            }
-
-
-      let ok = true;
-      for(const u of used){
-        // 🚨 DO NOT SKIP SELF — labels must avoid their own body
-        if(rectsOverlap(rect, u)){
-          ok = false;
-          break;
+        if(inView(pos)){
+          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
+          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
         }
-      }
 
-      if(ok){
-        placed = rect;
+        let ok = true;
+        for(const u of used){
+          if(rectsOverlap(r,u)){ ok = false; break; }
+        }
+        if(!ok) continue;
+
+        placed = r;
         break;
       }
-    }
 
-    // fallback (still collision-safe because exclusion already includes body)
-    if(!placed){
-      placed = {
-        x: pos.x + 0.7 * hudScale,
-        y: pos.y - boxText.h - 0.6 * hudScale,
-        w: boxText.w + labelPlacement.pad * hudScale,
-        h: boxText.h + extraH + labelPlacement.pad * hudScale
-      };
-    }
-
-    used.push(placed);
-
-    // --- APPLY EXACT GEOMETRY (NO MUTATION AFTER THIS) ---
-    const baseX = placed.x;
-    const baseY = placed.y + boxText.h;
-
-    nameT.setAttribute("x", baseX);
-    nameT.setAttribute("y", baseY);
-
-    let yCursor = baseY + fsName * 0.20;
-    coords.forEach(t => {
-      t.setAttribute("x", baseX);
-      t.setAttribute("y", yCursor);
-      yCursor += fsCoord * 1.10;
-    });
-
-    // cleanup old
-    g.querySelectorAll("[data-label-box], [data-leader]").forEach(n => n.remove());
-
-    // box
-    const rectEl = make("rect", {
-      x: placed.x,
-      y: placed.y,
-      width: placed.w,
-      height: placed.h,
-      fill:"#262626",
-      stroke:"#ffcc00",
-      "stroke-width":0.06 * hudScale,
-      filter:"url(#tekugl-box)",
-      "data-label-box":"1"
-    });
-    g.insertBefore(rectEl, g.firstChild);
-
-    // leader (purely decorative; does not move box)
-    addLeaderLine(g, pos, placed);
-  }
-}
-
-
-
-  
-  
-  const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
-
-  for(const g of groups){
-    const nameT = g.querySelector("[data-label]");
-    if(!nameT) continue;
-
-    const pos = g.__bodyPos || {x:0,y:0,z:0};
-
-    const labelTxt = nameT.textContent || "";
-    const fsName = Number(nameT.getAttribute("font-size") || (SIZE.nameBase * hudScale));
-    const boxText = estimateTextBox(labelTxt, fsName);
-
-    const coords = Array.from(g.querySelectorAll("[data-coord]"));
-    const fsCoord = coords[0]
-      ? Number(coords[0].getAttribute("font-size"))
-      : (SIZE.coordBase * hudScale);
-
-    const extraH = coords.length
-      ? (coords.length * (fsCoord * 1.10) + fsCoord*0.35)
-      : 0;
-
-    let placed = null;
-
-    for(const off of labelPlacement.offsets){
-      const dx = off.dx * hudScale;
-      const dy = off.dy * hudScale;
-
-      let x = pos.x + dx;
-      let y = pos.y + dy;
-
-      let r = {
-        x: x,
-        y: y - boxText.h,
-        w: boxText.w + labelPlacement.pad*hudScale,
-        h: boxText.h + extraH + labelPlacement.pad*hudScale
-      };
-
-      if(inView(pos)){
-        r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
-        r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
+      if(!placed){
+        let x = pos.x + 0.65*hudScale;
+        let y = pos.y - 0.55*hudScale;
+        let r = { x:x, y:y - box.h, w: box.w + labelPlacement.pad*hudScale, h: box.h + extraH + labelPlacement.pad*hudScale };
+        if(inView(pos)){
+          r.x = clamp(r.x, vb.x + 0.4*hudScale, vb.x + vb.w - r.w - 0.4*hudScale);
+          r.y = clamp(r.y, vb.y + 0.4*hudScale, vb.y + vb.h - r.h - 0.4*hudScale);
+        }
+        placed = r;
       }
 
-      let ok = true;
-      for(const u of used){
-        if(rectsOverlap(r,u)){ ok = false; break; }
-      }
-      if(!ok) continue;
+      used.push(placed);
 
-      placed = r;
-      break;
+      const baseX = placed.x;
+      const baseY = placed.y + box.h;
+
+      nameT.setAttribute("x", baseX);
+      nameT.setAttribute("y", baseY);
+
+      let yCursor = baseY + (fsName * 0.92);
+      coords.forEach(t => {
+        t.setAttribute("x", baseX);
+        t.setAttribute("y", yCursor);
+        yCursor += (fsCoord * 1.10);
+      });
     }
-
-    if(!placed){
-      placed = {
-        x: pos.x + 0.65*hudScale,
-        y: pos.y - boxText.h - 0.55*hudScale,
-        w: boxText.w + labelPlacement.pad*hudScale,
-        h: boxText.h + extraH + labelPlacement.pad*hudScale
-      };
-    }
-
-    used.push(placed);
-
-    // --- UPDATE TEXT POSITIONS ---
-    const baseX = placed.x;
-    const baseY = placed.y + boxText.h;
-
-    nameT.setAttribute("x", baseX);
-    nameT.setAttribute("y", baseY);
-
-    let yCursor = baseY + (fsName * 0.20);
-    coords.forEach(t => {
-      t.setAttribute("x", baseX);
-      t.setAttribute("y", yCursor);
-      yCursor += (fsCoord * 1.10);
-    });
-
-    // --- REMOVE OLD BOX / LEADER IF ANY ---
-    Array.from(g.querySelectorAll("rect[data-label-box], line[data-leader]"))
-      .forEach(el => el.remove());
-
-    // --- ADD BOX ---
-    const rect = make("rect", {
-      x: placed.x,
-      y: placed.y,
-      width: placed.w,
-      height: placed.h,
-      fill: "#262626",
-      stroke: "#ffcc00",
-      "stroke-width": 0.06 * hudScale,
-      filter: "url(#tekugl-box)",
-      "data-label-box":"1"
-    });
-    g.insertBefore(rect, g.firstChild);
-
-    // --- ADD LEADER (if needed) ---
-    addLeaderLine(g, pos, placed);
   }
-}
-
 
   // ---------------------------
   // 8) Belts + belt labels (vectorised: do NOT rescale with zoom)
@@ -1663,19 +1325,15 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   });
   defs.appendChild(path);
 
-  
-const label = make("text", {
-  fill: "#54522C",
-  opacity: "1.0",
-  filter: "url(#beltglow)",   // ← ADD THIS
-  "font-family":"monospace",
-  "font-weight":"1000",
-  "letter-spacing":"0.22em",
-  "font-size": String(fs)
-});
-
-
-  label.setAttribute("stroke", "none");
+  const label = make("text", {
+    fill: "#54522C",
+    opacity: "1.0",
+    "font-family":"monospace",
+    "font-weight":"1000",
+    "letter-spacing":"0.22em",
+    "font-size": String(fs)
+    // IMPORTANT: no glow filter here (belt texts should NOT glow)
+  });
 
   const tp = make("textPath", {
     href: `#${id}`,
@@ -1746,8 +1404,7 @@ const label = make("text", {
   }
 
   // Per-body trail: multiple ellipse layers => “gradient” tail
-const orbitTrails = new Map(); 
-// key -> { refEllipse, totalLen, layers, minor, lastLen, lastPos }
+  const orbitTrails = new Map(); // key -> { refEllipse, totalLen, layers:[{node, segLen, op}], minor, lastLen }
 
   function buildTrailForBody(b, el){
     const g = ellipseXYFromElements(el.a, el.e, el.I, el.Omega, el.omega);
@@ -1796,66 +1453,46 @@ const orbitTrails = new Map();
     orbitTrails.set(b.key, { refEllipse: ref, totalLen, layers, minor, lastLen: 0 });
   }
 
-function findClosestLen(refEllipse, totalLen, pos, guessLen){
-  // PATCH G:
-  // Tight local minimisation so trail head sticks to body
-  let bestLen = clamp(guessLen, 0, totalLen);
-  let bestD = Infinity;
+  function findClosestLen(refEllipse, totalLen, pos, guessLen){
+    // local search around guess for closest point => keeps tail end aligned to planet
+    let bestLen = clamp(guessLen, 0, totalLen);
+    let bestD = Infinity;
 
-  // Progressive local search windows
-  const windows = [0.01, 0.03, 0.08];
-
-  for(const w of windows){
-    const span = totalLen * w;
-    const steps = 24;
-
-    for(let i = 0; i <= steps; i++){
-      const t = -span/2 + (span * i/steps);
-      const L = clamp(bestLen + t, 0, totalLen);
-      const p = refEllipse.getPointAtLength(L);
-      const dx = p.x - pos.x;
-      const dy = p.y - pos.y;
-      const d = dx*dx + dy*dy;
-      if(d < bestD){
-        bestD = d;
-        bestLen = L;
+    const spans = [0.02, 0.06, 0.12]; // progressively wider
+    for(const spanFrac of spans){
+      const span = totalLen * spanFrac;
+      const steps = 18;
+      for(let i=0;i<=steps;i++){
+        const t = -span/2 + (span * (i/steps));
+        const L = clamp(bestLen + t, 0, totalLen);
+        const p = refEllipse.getPointAtLength(L);
+        const dx = p.x - pos.x, dy = p.y - pos.y;
+        const d = dx*dx + dy*dy;
+        if(d < bestD){
+          bestD = d;
+          bestLen = L;
+        }
       }
     }
-  }
-  return bestLen;
-}
-
-
-function updateTrailForBody(key, pos, frac){
-  const ot = orbitTrails.get(key);
-  if(!ot) return;
-
-  // First guess from last frame if possible
-  let guess = ot.lastLen;
-  if(!isFinite(guess)){
-    guess = frac * ot.totalLen;
+    return bestLen;
   }
 
-  let bestLen = guess;
-  try {
-    bestLen = findClosestLen(
-      ot.refEllipse,
-      ot.totalLen,
-      pos,
-      guess
-    );
-  } catch(_){}
+  function updateTrailForBody(key, pos, frac){
+    const ot = orbitTrails.get(key);
+    if(!ot) return;
 
-  ot.lastLen = bestLen;
-  ot.lastPos = pos;
+    const guess = frac * ot.totalLen;
+    let bestLen = guess;
+    try { bestLen = findClosestLen(ot.refEllipse, ot.totalLen, pos, guess); } catch(_){}
 
-  // Dash so that trail HEAD sits exactly at body
-  for(const L of ot.layers){
-    const offset = -(bestLen) - L.segLen;
-    L.node.setAttribute("stroke-dashoffset", String(offset));
+    ot.lastLen = bestLen;
+
+    // each layer: dash ends at the planet (so tail is behind it)
+    for(const L of ot.layers){
+      const off = -(bestLen) - L.segLen;
+      L.node.setAttribute("stroke-dashoffset", String(off));
+    }
   }
-}
-
 
   // ---------------------------
   // 10) Bodies + clusters + journey line
@@ -1900,17 +1537,11 @@ function updateTrailForBody(key, pos, frac){
 
     const g = make("g", { "data-label-group":"1", "data-class": b.class, "data-key": b.key });
     g.__bodyPos = pos;
-    
-    // PATCH G: minor label scaling
-    const isMinorish = (b.class === "small" || b.class === "smallL");
-    const isSelected = (b.key === selA.value || b.key === selB.value);
-    
-    // Minor bodies smaller unless selected
-    const scale = (isMinorish && !isSelected) ? SIZE.minorScale : 1.0;
-    
-    const nameBase  = SIZE.nameBase  * scale;
-    const coordBase = SIZE.coordBase * scale;
 
+    // Slightly smaller labels for minors + L-points
+    const isMinorish = (b.class === "small" || b.class === "smallL");
+    const nameBase = isMinorish ? (SIZE.nameBase * 0.88) : SIZE.nameBase;
+    const coordBase = isMinorish ? (SIZE.coordBase * 0.90) : SIZE.coordBase;
 
     const nameText = make("text", {
       fill:"#ffcc00",
@@ -1943,7 +1574,7 @@ function updateTrailForBody(key, pos, frac){
     const cz = make("text", { "data-coord":"1", "data-fs-base": String(coordBase), ...coordStyle });
     setText(cz, `z ${fmtSign(pos.z, 3)}`);
     g.appendChild(cz);
-    
+
     gHUD.appendChild(g);
 
     const hit = make("circle", {
@@ -2052,25 +1683,6 @@ function updateTrailForBody(key, pos, frac){
     updateReadout();
     updateDeclutter();
     updateJourneyLine();
-
-// PATCH G: label z-order (distance from Sun, plotted always top)
-const groups = Array.from(gHUD.querySelectorAll("[data-label-group]"));
-groups.sort((a,b) => {
-  const pa = a.__bodyPos || {x:0,y:0};
-  const pb = b.__bodyPos || {x:0,y:0};
-
-  const da = Math.hypot(pa.x, pa.y);
-  const db = Math.hypot(pb.x, pb.y);
-
-  // Selected bodies always top
-  if(a.getAttribute("data-key") === selA.value || a.getAttribute("data-key") === selB.value) return 1;
-  if(b.getAttribute("data-key") === selA.value || b.getAttribute("data-key") === selB.value) return -1;
-
-  return da - db;
-});
-groups.forEach(g => gHUD.appendChild(g));
-
-    
     updateLabelPlacement();
   });
 
