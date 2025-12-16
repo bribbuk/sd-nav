@@ -971,8 +971,10 @@ const MAX_W = 160000 * WORLD_SCALE;  // scaled world max
   function computeDistanceAU(aKey, bKey, jd){
     const A = bodyPosAndM(aKey, jd).pos;
     const B = bodyPosAndM(bKey, jd).pos;
-    const dx = A.x - B.x, dy = A.y - B.y, dz = A.z - B.z;
-    return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    const dx = (A.x - B.x) / WORLD_SCALE;
+const dy = (A.y - B.y) / WORLD_SCALE;
+const dz = (A.z - B.z) / WORLD_SCALE;
+return Math.sqrt(dx*dx + dy*dy + dz*dz);
   }
 
   function updateReadout(){
