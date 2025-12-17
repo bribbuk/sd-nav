@@ -1423,7 +1423,7 @@ g.ry *= WORLD_SCALE;
     const tailFrac = minor ? 0.035 : 0.05;     // minor tails shorter and fade harder
     const tailLen = totalLen * tailFrac;
 
-    const strokeW = minor ? 0.45 / hudScale : 0.55 / hudScale;    // thinner than before
+    const strokeW = minor ? 0.45 : 0.55;    // thinner than before
 
     const layers = [];
     for(let i=0;i<layerCount;i++){
@@ -1435,7 +1435,7 @@ g.ry *= WORLD_SCALE;
         cx: g.cx, cy: g.cy, rx: g.rx, ry: g.ry,
         fill:"none",
         stroke:"rgba(255,204,0,1)",
-        "stroke-width": String(strokeW),
+        "stroke-width": String(strokeW * hudScale),
         "stroke-linecap":"round",
         "stroke-linejoin":"round",
         "stroke-opacity": String(op),
