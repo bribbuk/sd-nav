@@ -1496,9 +1496,10 @@ g.ry *= WORLD_SCALE;
   // Every layer ENDS at the planet.
   // Only the START of the dash moves backward.
   L.node.setAttribute(
-    "stroke-dashoffset",
-    String(-bestLen)
-  );
+  "stroke-dashoffset",
+  String(-(bestLen - L.segLen))
+);
+    
   }
   }
 
