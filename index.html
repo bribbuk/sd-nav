@@ -1446,62 +1446,46 @@ g.ry *= WORLD_SCALE;
       layers.push({ node:e, segLen, op });
     }
 
-    orbitTrails.set(b.key, { refEllipse: ref, totalLen, layers, minor, lastLen: 0 });
+  orbitTrails.set(b.key, {
+  refEllipse: ref,
+  totalLen,
+  layers,
+  minor,
+  lastLen: 0,
+
+  // ADD THESE:
+  e: el.e,
+  Mdeg: el.M
+});
+
   }
 
-  function findClosestLen(refEllipse, totalLen, pos, guessLen){
-    // local search around guess for closest point => keeps tail end aligned to planet
-    let bestLen = clamp(guessLen, 0, totalLen);
-    let bestD = Infinity;
-
-    const spans = [0.02, 0.06, 0.12]; // progressively wider
-    for(const spanFrac of spans){
-      const span = totalLen * spanFrac;
-      const steps = 18;
-      for(let i=0;i<=steps;i++){
-        const t = -span/2 + (span * (i/steps));
-        const L = clamp(bestLen + t, 0, totalLen);
-        const p = refEllipse.getPointAtLength(L);
-        const dx = p.x - pos.x, dy = p.y - pos.y;
-        const d = dx*dx + dy*dy;
-        if(d < bestD){
-          bestD = d;
-          bestLen = L;
-        }
-      }
-    }
-    return bestLen;
-  }
-
-  function updateTrailForBody(key, pos){
+  
+  function updateTrailForBody(key){
   const ot = orbitTrails.get(key);
   if(!ot) return;
 
-  // If we have a previous solution, reuse it
-  let guess = ot.lastLen || (ot.totalLen * 0.5);
+  // --- TIME-BASED POSITION (Kepler-correct) ---
+  // Mean anomaly -> eccentric anomaly
+  const E = solveKeplerE(ot.Mdeg, ot.e);
 
-  let bestLen = guess;
-  try {
-    bestLen = findClosestLen(
-      ot.refEllipse,
-      ot.totalLen,
-      pos,
-      guess
-    );
-  } catch(_) {}
+  // Fraction of orbital period elapsed
+  const frac = (E - ot.e * Math.sin(E)) / (2 * Math.PI);
 
+  // Convert to arc-length on reference ellipse
+  const bestLen = frac * ot.totalLen;
   ot.lastLen = bestLen;
 
+  // --- Apply to all layers ---
   for(const L of ot.layers){
-  // Every layer ENDS at the planet.
-  // Only the START of the dash moves backward.
-  L.node.setAttribute(
-  "stroke-dashoffset",
-  String(-(bestLen - L.segLen))
-);
-    
+    // Dash ENDS at planet, START trails backward
+    L.node.setAttribute(
+      "stroke-dashoffset",
+      String(-(bestLen - L.segLen))
+    );
   }
   }
+  
 
   // ---------------------------
   // 10) Bodies + clusters + journey line
