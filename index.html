@@ -1295,7 +1295,7 @@ function updateLabelPlacement(){
 
 function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   // Base label height ~= 50% of band width (vectorised, map-space)
-  let fs = Math.max(0.12, bandWidth * 0.50);
+  let fs = Math.max(0.12, Math.min(bandWidth, 1200) * 0.50);
 
   // PATCH G belt-specific scaling
   // SECOND CROWN: ~20% smaller
