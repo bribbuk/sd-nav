@@ -1594,12 +1594,11 @@ g.ry *= WORLD_SCALE;
   // - Elongated (~2x) along orbital tangent
   // - Always perpendicular to Sun vector
 
-  const nDots = 0.28 * WORLD_SCALE;              // denser, gritty
-  const coreRadius = 0.030 * WORLD_SCALE;      // tight core
-  const stretch = 0.1 * WORLD_SCALE;         // elongation length (≈2x old)
-  const jitter = 0.0004 * WORLD_SCALE;          // noise
+const nDots = 0.45 * WORLD_SCALE;      // modest density bump
+const stretch = 0.10 * WORLD_SCALE;   // keep length
+const jitter  = 0.025 * WORLD_SCALE;  // REAL width  // Vector from Sun (0,0) to L-point
 
-  // Vector from Sun (0,0) to L-point
+    
   const vx = center.x;
   const vy = center.y;
   const vLen = Math.hypot(vx, vy) || 1;
