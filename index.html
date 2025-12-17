@@ -1473,7 +1473,8 @@ g.ry *= WORLD_SCALE;
   const frac = (E - ot.e * Math.sin(E)) / (2 * Math.PI);
 
   // Convert to arc-length on reference ellipse
-  const bestLen = frac * ot.totalLen;
+  const phaseOffset = ((ot.omegaDeg || 0) % 360) / 360;
+  const bestLen = ((frac + phaseOffset) % 1) * ot.totalLen;
   ot.lastLen = bestLen;
 
   // --- Apply to all layers ---
