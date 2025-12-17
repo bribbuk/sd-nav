@@ -1516,7 +1516,7 @@ g.ry *= WORLD_SCALE;
   }
 
   function drawBodyAndLabel(b, pos){
-    const baseR = dotRadiusFor(b);
+    const baseR = dotRadiusFor(b) * PLANET_SIZE_MULT;
     const hitBase = Math.max(SIZE.hitBase, baseR * 6);
 
     const dot = make("circle", {
