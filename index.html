@@ -1420,7 +1420,7 @@ g.ry *= WORLD_SCALE;
 
     const minor = (b.class === "small");
     const layerCount = minor ? 7 : 5;         // “double reduction” on minor => more steps
-    const tailFrac = minor ? 0.14 : 0.22;     // minor tails shorter and fade harder
+    const tailFrac = minor ? 0.035 : 0.05;     // minor tails shorter and fade harder
     const tailLen = totalLen * tailFrac;
 
     const strokeW = minor ? 0.045 : 0.055;    // thinner than before
