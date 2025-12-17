@@ -1473,21 +1473,29 @@ g.ry *= WORLD_SCALE;
     return bestLen;
   }
 
-  function updateTrailForBody(key, pos, frac){
-    const ot = orbitTrails.get(key);
-    if(!ot) return;
+  function updateTrailForBody(key, pos){
+  const ot = orbitTrails.get(key);
+  if(!ot) return;
 
-    const guess = frac * ot.totalLen;
-    let bestLen = guess;
-    try { bestLen = findClosestLen(ot.refEllipse, ot.totalLen, pos, guess); } catch(_){}
+  // If we have a previous solution, reuse it
+  let guess = ot.lastLen || (ot.totalLen * 0.5);
 
-    ot.lastLen = bestLen;
+  let bestLen = guess;
+  try {
+    bestLen = findClosestLen(
+      ot.refEllipse,
+      ot.totalLen,
+      pos,
+      guess
+    );
+  } catch(_) {}
 
-    // each layer: dash ends at the planet (so tail is behind it)
-    for(const L of ot.layers){
-      const off = -(bestLen) - L.segLen;
-      L.node.setAttribute("stroke-dashoffset", String(off));
-    }
+  ot.lastLen = bestLen;
+
+  for(const L of ot.layers){
+    const off = -(bestLen + L.segLen);
+    L.node.setAttribute("stroke-dashoffset", off);
+  }
   }
 
   // ---------------------------
