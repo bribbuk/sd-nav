@@ -1233,7 +1233,7 @@ function updateLabelPlacement(){
     if(!pos) return;
 
     const angle = (i++ * GOLDEN) % (Math.PI * 2);
-    const r = 0.75 * hudScale;
+    const r = 0.75 * WORLD_SCALE * hudScale;
 
     const x = pos.x + Math.cos(angle) * r;
     const y = pos.y + Math.sin(angle) * r;
