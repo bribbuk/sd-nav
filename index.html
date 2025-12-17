@@ -1439,7 +1439,7 @@ g.ry *= WORLD_SCALE;
         "stroke-linecap":"round",
         "stroke-linejoin":"round",
         "stroke-opacity": String(op),
-        "stroke-dasharray": `${segLen} ${Math.max(1, totalLen)}`
+        "stroke-dasharray": `${segLen} ${totalLen}`    
       });
       e.setAttribute("transform", `rotate(${g.rotDeg} ${g.cx} ${g.cy})`);
       gTrails.appendChild(e);
