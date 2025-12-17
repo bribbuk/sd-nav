@@ -1759,7 +1759,7 @@ addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 
     for(const b of BODIES){
       if(b.type === "l4j" || b.type === "l5j" || b.type === "l4s" || b.type === "l5s") continue;
       const out = bodyPosAndM(b.key, jd);
-      updateTrailForBody(b.key, out.pos, null);
+      updateTrailForBody(b.key);
     }
 
     updateJourneyLine();
