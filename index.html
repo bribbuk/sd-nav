@@ -1145,7 +1145,7 @@ function updateDeclutter(){
 
   // PATCH G: extreme zoom tier
   // At very large view widths, ONLY Kyūsei + plotted bodies remain
-  const EXTREME_HIDE_AT = 1200; // deliberately “wayyy out”
+  const EXTREME_HIDE_AT = 1200 * WORLD_SCALE; // deliberately “wayyy out”
   const extreme = w > EXTREME_HIDE_AT;
 
   const aSel = selA.value;
