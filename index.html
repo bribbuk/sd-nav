@@ -1423,7 +1423,7 @@ g.ry *= WORLD_SCALE;
     const tailFrac = minor ? 0.035 : 0.05;     // minor tails shorter and fade harder
     const tailLen = totalLen * tailFrac;
 
-    const strokeW = minor ? 0.045 : 0.055;    // thinner than before
+    const strokeW = minor ? 0.045 * WORLD_SCALE : 0.055 * WORLD_SCALE;    // thinner than before
 
     const layers = [];
     for(let i=0;i<layerCount;i++){
