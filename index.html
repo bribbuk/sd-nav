@@ -1100,7 +1100,7 @@ function scheduleLabelPlacement(){
 
   function updateHUDScale(){
     hudScale = interaction.vb.w / interaction.baseW;
-    hudScale = clamp(hudScale, 0.009, 999);
+    hudScale = clamp(hudScale, 0.009, 9999999);
 
     // dots + hit radii scale screen-constant
     if(gHUD){
