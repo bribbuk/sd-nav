@@ -1493,8 +1493,12 @@ g.ry *= WORLD_SCALE;
   ot.lastLen = bestLen;
 
   for(const L of ot.layers){
-    const off = -(bestLen + L.segLen);
-    L.node.setAttribute("stroke-dashoffset", off);
+  // Every layer ENDS at the planet.
+  // Only the START of the dash moves backward.
+  L.node.setAttribute(
+    "stroke-dashoffset",
+    String(-bestLen)
+  );
   }
   }
 
