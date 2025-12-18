@@ -1401,6 +1401,8 @@ function buildSampledTrail(b, jd){
     opacity: opacity
   });
 
+path.__strokeBase = strokeBase;
+  
   // Fade tail using stroke gradient via opacity mask (cheap + stable)
   path.setAttribute("stroke-dasharray", "1 0"); // keeps round caps stable
 
