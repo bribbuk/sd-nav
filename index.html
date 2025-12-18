@@ -1724,8 +1724,8 @@ function updateJourneyLine(){
 }
 
 
-  selA.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
-  selB.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
+  selA.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); render();});
+  selB.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); render();});
 
   // ---------------------------
   // 11) JPL Horizons hydration for Eris/Haumea
