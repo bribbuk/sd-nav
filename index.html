@@ -1610,13 +1610,13 @@ function buildSampledTrail(b, jd){
 
 function drawGhostBody(b, pos) {
   const baseR = dotRadiusFor(b) * PLANET_SIZE_MULT;
-  const size = baseR * hudScale * 2;
+  const size = baseR * hudScale * 6;
 
   const ghost = make("rect", {
-    x: pos.x - size / 2,
-    y: pos.y - size / 2,
-    width: size * 3,
-    height: size * 3,
+    x: pos.x - size / 6,
+    y: pos.y - size / 6,
+    width: size,
+    height: size,
     fill: "#ffcc00",
     opacity: "0.205", // 0.82 * 0.25
     filter: "url(#tekugl)"
