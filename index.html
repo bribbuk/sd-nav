@@ -1392,21 +1392,23 @@ function buildSampledTrail(b, jd){
   const opacity    = minor ? 0.28 : 0.34;
 
   const path = make("path", {
-    d,
-    fill: "none",
-    stroke: "#ffcc00",
-    "stroke-width": String(strokeBase * hudScale),
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-    opacity: opacity
-  });
+  const path = make("path", {
+  d,
+  fill: "none",
+  stroke: "#ffcc00",
+  "stroke-width": String(strokeBase * hudScale),
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  opacity: opacity
+});
 
+// ✅ STORE BASE WIDTH FOR HUD SCALING
 path.__strokeBase = strokeBase;
-  
-  // Fade tail using stroke gradient via opacity mask (cheap + stable)
-  path.setAttribute("stroke-dasharray", "1 0"); // keeps round caps stable
 
-  gTrails.appendChild(path);
+// Fade tail using stroke gradient via opacity mask (cheap + stable)
+path.setAttribute("stroke-dasharray", "1 0"); // keeps round caps stable
+
+gTrails.appendChild(path);
 }
   
   // ---------------------------
