@@ -1054,26 +1054,48 @@ const dz = (A.z - B.z) / WORLD_SCALE;
 return Math.sqrt(dx*dx + dy*dy + dz*dz);
   }
 
-  function updateReadout(){
-    const jd = currentJD();
-    const aKey = selA.value;
-    const bKey = selB.value;
+  // ---------------------------
+// INTERCEPT SOLVER (ghost target)
+// ---------------------------
+function solveInterceptDays(aKey, bKey, jd0) {
+  const A = bodyPosAndM(aKey, jd0).pos;
 
-    const aDef = bodyDef(aKey);
-    const bDef = bodyDef(bKey);
+  // Initial guess: straight-line snapshot distance
+  let t = computeDistanceAU(aKey, bKey, jd0) / AU_PER_DAY;
 
-    roDepart.textContent = aDef ? aDef.label : aKey;
-    roArrive.textContent = bDef ? bDef.label : bKey;
+  // Iterate to converge on moving-target intercept
+  for (let i = 0; i < 8; i++) {
+    const B = bodyPosAndM(bKey, jd0 + t).pos;
 
-    const dAU = computeDistanceAU(aKey, bKey, jd);
-    const AU_PER_DAY = 3.4629; // 0.02c
-    const tDays = dAU / AU_PER_DAY;
-    const fuel = 38.0 + tDays;
+    const dx = (B.x - A.x) / WORLD_SCALE;
+    const dy = (B.y - A.y) / WORLD_SCALE;
+    const dz = (B.z - A.z) / WORLD_SCALE;
 
-    roDist.textContent = `${fmtAU1(dAU)} AU`;
-    roTime.textContent = `${fmtAU1(tDays)} d`;
-    roFuel.textContent = `${fmtAU1(fuel)} ā`;
+    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+    t = dist / AU_PER_DAY;
   }
+
+  return t;
+}
+
+  
+function updateReadout(){
+  const aKey = selA.value;
+  const bKey = selB.value;
+
+  const aDef = bodyDef(aKey);
+  const bDef = bodyDef(bKey);
+
+  roDepart.textContent = aDef ? aDef.label : aKey;
+  roArrive.textContent = bDef ? bDef.label : bKey;
+
+  roDist.textContent = `${fmtAU1(journeyDistanceAU)} AU`;
+  roTime.textContent = `${fmtAU1(journeyDays)} d`;
+
+  const fuel = 38.0 + journeyDays;
+  roFuel.textContent = `${fmtAU1(fuel)} ā`;
+}
+
 
   dateEl.addEventListener("click", () => {
     const jd = currentJD();
@@ -1580,6 +1602,24 @@ function buildSampledTrail(b, jd){
     return g;
   }
 
+function drawGhostBody(b, pos) {
+  const baseR = dotRadiusFor(b) * PLANET_SIZE_MULT;
+  const size = baseR * hudScale * 2;
+
+  const ghost = make("rect", {
+    x: pos.x - size / 2,
+    y: pos.y - size / 2,
+    width: size,
+    height: size,
+    fill: "#ffcc00",
+    opacity: "0.205", // 0.82 * 0.25
+    filter: "url(#tekugl)"
+  });
+
+  gHUD.appendChild(ghost);
+}
+
+  
   function drawLCluster(center, seed){
   // PATCH G:
   // - Dot-like particulate cluster
@@ -1645,14 +1685,38 @@ const jitter  = 0.025 * WORLD_SCALE;  // REAL width  // Vector from Sun (0,0) to
   }
 
   function updateJourneyLine(){
-    if(!journeyLine) return;
-    const jd = currentJD();
-    const A = bodyPosAndM(selA.value, jd).pos;
-    const B = bodyPosAndM(selB.value, jd).pos;
-    journeyLine.setAttribute("x1", String(A.x));
-    journeyLine.setAttribute("y1", String(A.y));
-    journeyLine.setAttribute("x2", String(B.x));
-    journeyLine.setAttribute("y2", String(B.y));
+let journeyGhostPos = null;
+let journeyDays = 0;
+let journeyDistanceAU = 0;
+
+function updateJourneyLine(){
+  if(!journeyLine) return;
+
+  const jd = currentJD();
+  const aKey = selA.value;
+  const bKey = selB.value;
+
+  const A = bodyPosAndM(aKey, jd).pos;
+
+  // Solve intercept
+  journeyDays = solveInterceptDays(aKey, bKey, jd);
+
+  const ghostOut = bodyPosAndM(bKey, jd + journeyDays);
+  journeyGhostPos = ghostOut.pos;
+
+  // Distance (true)
+  const dx = (journeyGhostPos.x - A.x) / WORLD_SCALE;
+  const dy = (journeyGhostPos.y - A.y) / WORLD_SCALE;
+  const dz = (journeyGhostPos.z - A.z) / WORLD_SCALE;
+  journeyDistanceAU = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+  // Draw journey line
+  journeyLine.setAttribute("x1", String(A.x));
+  journeyLine.setAttribute("y1", String(A.y));
+  journeyLine.setAttribute("x2", String(journeyGhostPos.x));
+  journeyLine.setAttribute("y2", String(journeyGhostPos.y));
+}
+
   }
 
   selA.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
@@ -1759,6 +1823,15 @@ for(const b of BODIES){
       drawBodyAndLabel(b, pos);
     }
 
+// Ghost destination marker
+if(journeyGhostPos){
+  const bDef = bodyDef(selB.value);
+  if(bDef){
+    drawGhostBody(bDef, journeyGhostPos);
+  }
+}
+
+    
     setDateLabel();
     updateReadout();
 
