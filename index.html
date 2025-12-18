@@ -1045,6 +1045,12 @@ const MAX_W = 160000 * WORLD_SCALE;  // scaled world max
     el: out.el
   };
  }
+
+// Sling Drive cruise speed: 2% c
+// 0.02c ≈ 3.4629 AU/day
+const AU_PER_DAY = 3.4629;
+
+  
   function computeDistanceAU(aKey, bKey, jd){
     const A = bodyPosAndM(aKey, jd).pos;
     const B = bodyPosAndM(bKey, jd).pos;
