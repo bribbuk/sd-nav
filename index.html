@@ -1398,14 +1398,14 @@ function updateLabelPlacement(){
 // 9) Trails (sampled ephemeris paths)
 // ---------------------------
 
-// Tunables (you can tweak later without breaking anything)
 const TRAIL = {
   // multipliers applied to aphelion AU
-  samplesAU: [0, 9, 15, 18],   // exactly your proposal
-  maxSamples: 4
+  // P0..P5 (6 points): the last two points make the "long faint trail" underneath
+  samplesAU: [0, 9, 15, 18, 22, 26],
+  maxSamples: 6
 };
 
-// Build a trail path from sampled past positions
+
 function buildSampledTrail(b, jd){
   // No trails for L-points
   if(b.type === "l4j" || b.type === "l5j" || b.type === "l4s" || b.type === "l5s") return;
@@ -1420,7 +1420,7 @@ function buildSampledTrail(b, jd){
     aphelionAU = kb.a * (1 + kb.e);
   }
 
-  // Sample past positions
+  // Sample past positions (P0..P5)
   const points = [];
   for(let i = 0; i < TRAIL.samplesAU.length; i++){
     const daysBack = TRAIL.samplesAU[i] * aphelionAU;
@@ -1428,42 +1428,71 @@ function buildSampledTrail(b, jd){
     points.push(out.pos);
   }
 
-const d = catmullRomSpline(points, 0.6);
+  // SAFETY: need at least 4 points to make a spline
+  if(points.length < 4) return;
 
+  // Two paths:
+  // - LONG (P0..P5) = faint "old" trail underneath
+  // - SHORT (P0..P3) = brighter recent trail on top
+  const pointsLong  = points;           // all 6 points
+  const pointsShort = points.slice(0,4);// first 4 points
+
+  const dLong  = catmullRomSpline(pointsLong, 0.6);
+  const dShort = catmullRomSpline(pointsShort, 0.6);
 
   const minor = (b.class === "small");
+  const strokeBase = minor ? 0.45 : 0.55;
+  const opacity    = minor ? 0.28 : 0.34;
 
-  const strokeBase = minor ? 0.53 : 0.65;
-  const opacity    = minor ? 0.18 : 0.24;
+  // ==========================
+  // 1) LONG, faint, blurred trail (under everything)
+  // ==========================
+  const longTrail = make("path", {
+    d: dLong,
+    fill: "none",
+    stroke: "#ffcc00",
+    "stroke-width": String(strokeBase * 2.6 * hudScale),
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: opacity * 0.16,
+    filter: "url(#trailBlur)"
+  });
+  longTrail.__strokeBase = strokeBase * 2.6;
+  gTrails.appendChild(longTrail);
 
-// --- blurred tapered underlay (fat → thin perceptually)
-const underlay = make("path", {
-  d,
-  fill: "none",
-  stroke: "#ffcc00",
-  "stroke-width": String(strokeBase * 2.2 * hudScale),
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-  opacity: opacity * 0.95,
-  filter: "url(#trailBlur)",
-  mask: "url(#trailTaperMask)"
-});
-underlay.__strokeBase = strokeBase * 2.2;
-gTrails.appendChild(underlay);
+  // ==========================
+  // 2) SHORT underlay (your existing glow, but SHORT)
+  //    (Mask removed to avoid the misleading gradient trick.)
+  // ==========================
+  const underlay = make("path", {
+    d: dShort,
+    fill: "none",
+    stroke: "#ffcc00",
+    "stroke-width": String(strokeBase * 2.2 * hudScale),
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: opacity * 0.45,
+    filter: "url(#trailBlur)"
+  });
+  underlay.__strokeBase = strokeBase * 2.2;
+  gTrails.appendChild(underlay);
 
-// --- sharp core line (thin, readable)
-const core = make("path", {
-  d,
-  fill: "none",
-  stroke: "#ffcc00",
-  "stroke-width": String(strokeBase * hudScale),
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-  opacity: opacity
-});
-core.__strokeBase = strokeBase;
-gTrails.appendChild(core);
+  // ==========================
+  // 3) SHORT core (sharp line)
+  // ==========================
+  const core = make("path", {
+    d: dShort,
+    fill: "none",
+    stroke: "#ffcc00",
+    "stroke-width": String(strokeBase * hudScale),
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: opacity
+  });
+  core.__strokeBase = strokeBase;
+  gTrails.appendChild(core);
 }
+
   
   // ---------------------------
   // 10) Bodies + clusters + journey line
