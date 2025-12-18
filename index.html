@@ -881,18 +881,9 @@ defs.appendChild(mask);
   interaction.vb = vb;
   svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
 
-  // Cheap, safe to run every frame
-  updateHUDScale();
-  updateDeclutter();
-  updateJourneyLine();
-
-  // EXPENSIVE: defer while zooming/panning
-  if(interaction.justGestured){
-    scheduleLabelPlacement();
-  } else {
-    updateLabelPlacement();
-  }
-  }
+  // Re-render so ghost + journey visuals refresh correctly
+  render();
+}
 
   function clientToWorld(clientX, clientY){
     const rect = svg.getBoundingClientRect();
