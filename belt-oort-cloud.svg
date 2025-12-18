@@ -10,7 +10,7 @@
         font-family="monospace"
         font-weight="1000"
         letter-spacing="0.22em"
-        font-size="10"
+        font-size="18"
         text-anchor="middle">
     <textPath href="#arc315" startOffset="50%">
       OORT CLOUD
