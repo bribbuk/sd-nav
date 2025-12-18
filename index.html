@@ -1338,6 +1338,68 @@ function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
   gWorld.appendChild(label);
 }
 
+
+// ---------------------------
+// 9) Trails (sampled ephemeris paths)
+// ---------------------------
+
+// Tunables (you can tweak later without breaking anything)
+const TRAIL = {
+  // multipliers applied to aphelion AU
+  samplesAU: [0, 9, 15, 18],   // exactly your proposal
+  maxSamples: 4
+};
+
+// Build a trail path from sampled past positions
+function buildSampledTrail(b, jd){
+  // No trails for L-points
+  if(b.type === "l4j" || b.type === "l5j" || b.type === "l4s" || b.type === "l5s") return;
+
+  // Get orbital scale (aphelion proxy)
+  let aphelionAU = 1;
+  if(b.type === "jpl"){
+    const el = planetJPL(b.key, jd).el;
+    aphelionAU = el.a * (1 + el.e);
+  } else if(b.type === "kepler"){
+    const kb = b.body();
+    aphelionAU = kb.a * (1 + kb.e);
+  }
+
+  // Sample past positions
+  const points = [];
+  for(let i = 0; i < TRAIL.samplesAU.length; i++){
+    const daysBack = TRAIL.samplesAU[i] * aphelionAU;
+    const out = bodyPosAndM(b.key, jd - daysBack);
+    points.push(out.pos);
+  }
+
+  // Build SVG path (move → line)
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for(let i = 1; i < points.length; i++){
+    d += ` L ${points[i].x} ${points[i].y}`;
+  }
+
+  const minor = (b.class === "small");
+
+  const strokeBase = minor ? 0.45 : 0.55;
+  const opacity    = minor ? 0.28 : 0.34;
+
+  const path = make("path", {
+    d,
+    fill: "none",
+    stroke: "#ffcc00",
+    "stroke-width": String(strokeBase * hudScale),
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+    opacity: opacity
+  });
+
+  // Fade tail using stroke gradient via opacity mask (cheap + stable)
+  path.setAttribute("stroke-dasharray", "1 0"); // keeps round caps stable
+
+  gTrails.appendChild(path);
+}
+  
   // ---------------------------
   // 10) Bodies + clusters + journey line
   // ---------------------------
