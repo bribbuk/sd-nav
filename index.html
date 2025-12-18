@@ -1234,6 +1234,7 @@ if(gTrails){
   smallHideAt: 60 * WORLD_SCALE,
   innerHideAt: 20 * WORLD_SCALE,
   lagrangeHideAt: 30 * WORLD_SCALE
+    if(isMajor && key !== "Kyusei" && w > 300 * WORLD_SCALE) show = false;
 };
 
   function inView(p){
@@ -1559,7 +1560,7 @@ function buildSampledTrail(b, jd){
 
     // Slightly smaller labels for minors + L-points
     const isMinorish = (b.class === "small" || b.class === "smallL");
-    const nameBase = isMinorish ? (SIZE.nameBase * 0.88) : SIZE.nameBase;
+    const nameBase = isMinorish ? (SIZE.nameBase * 0.80) : SIZE.nameBase;
     const coordBase = isMinorish ? (SIZE.coordBase * 0.90) : SIZE.coordBase;
 
     const nameText = make("text", {
