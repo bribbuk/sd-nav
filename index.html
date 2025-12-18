@@ -794,26 +794,45 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
 
     svg.appendChild(defs);
 
-    // --- Belt glow neutraliser (counter-glow) ---
+    // --- Belt glow neutraliser (OVERLAY, not behind) ---
 const beltNeutral = make("filter", {
   id: "belt-neutralise",
   filterUnits: "objectBoundingBox",
-  x: "-0.9",
-  y: "-0.9",
-  width: "2.8",
-  height: "2.8"
+  x: "-0.8",
+  y: "-0.8",
+  width: "2.6",
+  height: "2.6"
 });
 
-// Dark halo using PAGE BACKGROUND colour
+// 1) Blur the text itself
 beltNeutral.appendChild(
-  make("feDropShadow", {
-    dx: "0",
-    dy: "0",
-    stdDeviation: "2.4",        // slightly larger than scene glow
-    "flood-color": "#262626",   // PAGE BACKGROUND
-    "flood-opacity": "0.55"     // strong enough to cancel
+  make("feGaussianBlur", {
+    in: "SourceGraphic",
+    stdDeviation: "1.8",
+    result: "blur"
   })
 );
+
+// 2) Recolour the blur to PAGE BACKGROUND (#262626)
+beltNeutral.appendChild(
+  make("feColorMatrix", {
+    in: "blur",
+    type: "matrix",
+    values: `
+      0 0 0 0 0.149
+      0 0 0 0 0.149
+      0 0 0 0 0.149
+      0 0 0 0.65 0
+    `,
+    result: "darkHalo"
+  })
+);
+
+// 3) Merge ORDER: original → dark halo ON TOP
+const merge = make("feMerge");
+merge.appendChild(make("feMergeNode", { in: "SourceGraphic" }));
+merge.appendChild(make("feMergeNode", { in: "darkHalo" }));
+beltNeutral.appendChild(merge);
 
 defs.appendChild(beltNeutral);
   }
