@@ -1338,7 +1338,13 @@ function updateLabelPlacement(){
     const pos = g.__bodyPos;
     if(!pos) return;
 
-    const angle = (i++ * GOLDEN) % (Math.PI * 2);
+let angle = (i++ * GOLDEN) % (Math.PI * 2);
+
+// Enforce x + y > 0 half-plane
+// (cosθ + sinθ > 0)
+if (Math.cos(angle) + Math.sin(angle) <= 0) {
+  angle = (angle + Math.PI) % (Math.PI * 2);
+}
     const r = 0.28 * WORLD_SCALE * hudScale;
 
     const x = pos.x + Math.cos(angle) * r;
