@@ -1134,6 +1134,14 @@ function scheduleLabelPlacement(){
     hudScale = interaction.vb.w / interaction.baseW;
     hudScale = clamp(hudScale, 0.009, 9999999);
 
+const blur = svg.querySelector("#tekugl-tight feGaussianBlur");
+if(blur){
+  blur.setAttribute(
+    "stdDeviation",
+    (0.45 * hudScale).toString()
+  );
+}
+    
     // dots + hit radii scale screen-constant
     if(gHUD){
       gHUD.querySelectorAll("[data-dot]").forEach(el => {
