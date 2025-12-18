@@ -814,10 +814,7 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
     filter.appendChild(make("feDropShadow", { dx:"0", dy:"0", stdDeviation:"1.6", "flood-color":"#ffcc00", "flood-opacity":"0.18" }));
     defs.appendChild(filter);
 
-    svg.appendChild(defs);
-  }
-
-  const trailBlur = make("filter", {
+const trailBlur = make("filter", {
   id: "trailBlur",
   x: "-0.5",
   y: "-0.5",
@@ -828,6 +825,10 @@ trailBlur.appendChild(make("feGaussianBlur", {
   stdDeviation: "0.35"
 }));
 defs.appendChild(trailBlur);
+
+    
+    svg.appendChild(defs);
+  }
 
   const mask = make("mask", { id: "trailTaperMask" });
 
