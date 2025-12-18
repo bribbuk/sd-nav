@@ -1671,6 +1671,12 @@ const jitter  = 0.025 * WORLD_SCALE;  // REAL width  // Vector from Sun (0,0) to
   }
 }
 
+// ---------------------------
+// Journey state (GLOBAL)
+// ---------------------------
+let journeyGhostPos = null;
+let journeyDays = 0;
+let journeyDistanceAU = 0;
 
   // Journey line: dotted, glow, opacity 1, single line
   let journeyLine = null;
@@ -1683,12 +1689,6 @@ const jitter  = 0.025 * WORLD_SCALE;  // REAL width  // Vector from Sun (0,0) to
     });
     gJourney.appendChild(journeyLine);
   }
-
-  function updateJourneyLine(){
-let journeyGhostPos = null;
-let journeyDays = 0;
-let journeyDistanceAU = 0;
-
 function updateJourneyLine(){
   if(!journeyLine) return;
 
@@ -1704,20 +1704,19 @@ function updateJourneyLine(){
   const ghostOut = bodyPosAndM(bKey, jd + journeyDays);
   journeyGhostPos = ghostOut.pos;
 
-  // Distance (true)
+  // True distance
   const dx = (journeyGhostPos.x - A.x) / WORLD_SCALE;
   const dy = (journeyGhostPos.y - A.y) / WORLD_SCALE;
   const dz = (journeyGhostPos.z - A.z) / WORLD_SCALE;
   journeyDistanceAU = Math.sqrt(dx*dx + dy*dy + dz*dz);
 
   // Draw journey line
-  journeyLine.setAttribute("x1", String(A.x));
-  journeyLine.setAttribute("y1", String(A.y));
-  journeyLine.setAttribute("x2", String(journeyGhostPos.x));
-  journeyLine.setAttribute("y2", String(journeyGhostPos.y));
+  journeyLine.setAttribute("x1", A.x);
+  journeyLine.setAttribute("y1", A.y);
+  journeyLine.setAttribute("x2", journeyGhostPos.x);
+  journeyLine.setAttribute("y2", journeyGhostPos.y);
 }
 
-  }
 
   selA.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
   selB.addEventListener("change", () => { updateReadout(); updateDeclutter(); updateJourneyLine(); updateLabelPlacement(); });
@@ -1823,6 +1822,14 @@ for(const b of BODIES){
       drawBodyAndLabel(b, pos);
     }
 
+
+
+    
+    setDateLabel();
+    updateReadout();
+
+    updateJourneyLine();
+
 // Ghost destination marker
 if(journeyGhostPos){
   const bDef = bodyDef(selB.value);
@@ -1830,12 +1837,7 @@ if(journeyGhostPos){
     drawGhostBody(bDef, journeyGhostPos);
   }
 }
-
     
-    setDateLabel();
-    updateReadout();
-
-    updateJourneyLine();
     updateHUDScale();
     updateDeclutter();
     updateLabelPlacement();
