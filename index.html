@@ -826,11 +826,8 @@ trailBlur.appendChild(make("feGaussianBlur", {
 }));
 defs.appendChild(trailBlur);
 
-    
-    svg.appendChild(defs);
-  }
 
-  const mask = make("mask", { id: "trailTaperMask" });
+      const mask = make("mask", { id: "trailTaperMask" });
 
 const grad = make("linearGradient", {
   id: "trailFadeGrad",
@@ -854,8 +851,9 @@ mask.appendChild(make("rect", {
 }));
 
 defs.appendChild(mask);
-
-  
+    
+    svg.appendChild(defs);
+  }
 
   function buildLayers(){
     gWorld  = make("g", { id:"world" });                  // belts + belt labels (NO glow)
