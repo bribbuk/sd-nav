@@ -775,25 +775,6 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
   function ensureDefs(){
     const defs = make("defs");
 
-    const tight = make("filter", {
-  id: "tekugl-tight",
-  filterUnits: "userSpaceOnUse",
-  x: "-8",
-  y: "-8",
-  width: "16",
-  height: "16"
-});
-
-tight.appendChild(make("feGaussianBlur", {
-  in: "SourceGraphic",
-  stdDeviation: "0.45"
-}));
-
-tight.appendChild(make("feMerge"));
-tight.appendChild(make("feMergeNode", { in: "blur" }));
-tight.appendChild(make("feMergeNode", { in: "SourceGraphic" }));
-
-defs.appendChild(tight);
 
     const filter = make("filter", {
   id: "tekugl",
@@ -1134,14 +1115,6 @@ function scheduleLabelPlacement(){
     hudScale = interaction.vb.w / interaction.baseW;
     hudScale = clamp(hudScale, 0.009, 9999999);
 
-const blur = svg.querySelector("#tekugl-tight feGaussianBlur");
-if(blur){
-  blur.setAttribute(
-    "stdDeviation",
-    (0.45 * hudScale).toString()
-  );
-}
-    
     // dots + hit radii scale screen-constant
     if(gHUD){
       gHUD.querySelectorAll("[data-dot]").forEach(el => {
