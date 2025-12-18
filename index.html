@@ -816,7 +816,20 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
 
     svg.appendChild(defs);
   }
-   
+
+  const trailBlur = make("filter", {
+  id: "trailBlur",
+  x: "-0.5",
+  y: "-0.5",
+  width: "2",
+  height: "2"
+});
+trailBlur.appendChild(make("feGaussianBlur", {
+  stdDeviation: "0.35"
+}));
+defs.appendChild(trailBlur);
+
+  
 
   function buildLayers(){
     gWorld  = make("g", { id:"world" });                  // belts + belt labels (NO glow)
