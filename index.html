@@ -794,63 +794,7 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
 
     svg.appendChild(defs);
 
-    // --- Belt glow neutraliser (strong, controllable) ---
-const beltNeutral = make("filter", {
-  id: "belt-neutralise",
-  x: "-0.9",
-  y: "-0.9",
-  width: "2.8",
-  height: "2.8"
-});
-
-// 1) Blur ONLY the alpha of the text
-beltNeutral.appendChild(
-  make("feGaussianBlur", {
-    in: "SourceAlpha",
-    stdDeviation: "2.0",
-    result: "blurA"
-  })
-);
-
-// 2) BOOST that alpha (this is your main "strength" knob)
-beltNeutral.appendChild(
-  make("feComponentTransfer", { in: "blurA", result: "boostA" })
-);
-beltNeutral.lastChild.appendChild(
-  make("feFuncA", {
-    type: "linear",
-    slope: "2.5",     // <-- INCREASE THIS for stronger dark halo
-    intercept: "0"
-  })
-);
-
-// 3) Solid fill in page background colour
-beltNeutral.appendChild(
-  make("feFlood", {
-    "flood-color": "#262626",
-    "flood-opacity": "1",
-    result: "bg"
-  })
-);
-
-// 4) Mask the bg colour by the boosted alpha
-beltNeutral.appendChild(
-  make("feComposite", {
-    in: "bg",
-    in2: "boostA",
-    operator: "in",
-    result: "darkHalo"
-  })
-);
-
-// 5) Merge: original text + dark halo ON TOP
-const merge = make("feMerge");
-merge.appendChild(make("feMergeNode", { in: "SourceGraphic" }));
-merge.appendChild(make("feMergeNode", { in: "darkHalo" }));
-beltNeutral.appendChild(merge);
-
-defs.appendChild(beltNeutral);
-  }
+   
 
   function buildLayers(){
     gWorld  = make("g", { id:"world" });                  // belts + belt labels (NO glow)
@@ -1338,6 +1282,21 @@ function updateLabelPlacement(){
   // ---------------------------
   // 8) Belts + belt labels (vectorised: do NOT rescale with zoom)
   // ---------------------------
+
+    function addBeltLabelSVG(href, rMid, size, rotationDeg){
+  const img = make("image", {
+    href,
+    x: -size / 2,
+    y: -size / 2,
+    width: size,
+    height: size,
+    transform: `rotate(${rotationDeg}) translate(0 ${-rMid})`,
+    opacity: "1"
+  });
+  gWorld.appendChild(img);
+}
+
+    
   function circlePath(cx,cy,r){
     return [
       `M ${cx + r} ${cy}`,
@@ -1374,50 +1333,6 @@ function updateLabelPlacement(){
     gWorld.appendChild(p);
   }
 
-function addBeltLabel(defs, id, text, rMid, centerDeg, bandWidth){
-  // Base label height ~= 50% of band width (vectorised, map-space)
-  let fs = Math.max(0.12, bandWidth * 0.50);
-
-  // PATCH G belt-specific scaling
-  // SECOND CROWN: ~20% smaller
-  // OORT CLOUD: ~50% larger
-  const t = (text || "").toUpperCase();
-  if(t.includes("SECOND CROWN")){
-    fs *= 0.80;
-  }
-  if(t.includes("OORT CLOUD")){
-    fs *= 1.50;
-  }
-
-  const span = 110;
-  const path = make("path", {
-    id,
-    d: arcPath(rMid, centerDeg, span),
-    fill:"none",
-    stroke:"none"
-  });
-  defs.appendChild(path);
-
-  const label = make("text", {
-  fill: "#54522C",
-  opacity: "1.0",
-  "font-family":"monospace",
-  "font-weight":"1000",
-  "letter-spacing":"0.22em",
-  "font-size": String(fs),
-  filter: "url(#belt-neutralise)"   // 👈 ADD THIS
-});
-
-  const tp = make("textPath", {
-    href: `#${id}`,
-    startOffset:"50%",
-    "text-anchor":"middle"
-  });
-
-  setText(tp, text);
-  label.appendChild(tp);
-  gWorld.appendChild(label);
-}
 
 
 // ---------------------------
@@ -1713,17 +1628,21 @@ const jitter  = 0.025 * WORLD_SCALE;  // REAL width  // Vector from Sun (0,0) to
 
     const defs = svg.querySelector("defs");
 
-    drawBand(2.10 * WORLD_SCALE, 3.30 * WORLD_SCALE, 0.05);
-addBeltLabel(defs, "ww315", "WILD WASTE", 2.70 * WORLD_SCALE, 315, (3.30 - 2.10) * WORLD_SCALE);
-addBeltLabel(defs, "ww135", "WILD WASTE", 2.70 * WORLD_SCALE, 135, (3.30 - 2.10) * WORLD_SCALE);
+// --- WILD WASTE ---
+drawBand(2.10 * WORLD_SCALE, 3.30 * WORLD_SCALE, 0.05);
+addBeltLabelSVG("belt-wild-waste.svg", 2.70 * WORLD_SCALE, 5.4 * WORLD_SCALE, 315);
+addBeltLabelSVG("belt-wild-waste.svg", 2.70 * WORLD_SCALE, 5.4 * WORLD_SCALE, 135);
 
+// --- SECOND CROWN ---
 drawBand(30.0 * WORLD_SCALE, 50.0 * WORLD_SCALE, 0.03);
-addBeltLabel(defs, "sc315", "SECOND CROWN", 40.0 * WORLD_SCALE, 315, (50.0 - 30.0) * WORLD_SCALE);
-addBeltLabel(defs, "sc135", "SECOND CROWN", 40.0 * WORLD_SCALE, 135, (50.0 - 30.0) * WORLD_SCALE);
+addBeltLabelSVG("belt-second-crown.svg", 40.0 * WORLD_SCALE, 7.2 * WORLD_SCALE, 315);
+addBeltLabelSVG("belt-second-crown.svg", 40.0 * WORLD_SCALE, 7.2 * WORLD_SCALE, 135);
 
+// --- OORT CLOUD ---
 drawBand(2000.0 * WORLD_SCALE, 100000.0 * WORLD_SCALE, 0.010);
-addBeltLabel(defs, "oc315", "OORT CLOUD", 51000.0 * WORLD_SCALE, 315, (100000.0 - 2000.0) * WORLD_SCALE);
-addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 - 2000.0) * WORLD_SCALE);
+addBeltLabelSVG("belt-oort-cloud.svg", 51000.0 * WORLD_SCALE, 140000 * WORLD_SCALE, 315);
+addBeltLabelSVG("belt-oort-cloud.svg", 51000.0 * WORLD_SCALE, 140000 * WORLD_SCALE, 135);
+
    
     drawSun();
 
