@@ -1642,6 +1642,11 @@ addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 
     drawSun();
 
     buildJourneyLine();
+
+// Trails: sampled ephemeris trails
+for(const b of BODIES){
+  buildSampledTrail(b, jd);
+}
     
     // Bodies + labels
     for(const b of BODIES){
