@@ -793,6 +793,29 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
     defs.appendChild(filter);
 
     svg.appendChild(defs);
+
+    // --- Belt glow neutraliser (counter-glow) ---
+const beltNeutral = make("filter", {
+  id: "belt-neutralise",
+  filterUnits: "objectBoundingBox",
+  x: "-0.9",
+  y: "-0.9",
+  width: "2.8",
+  height: "2.8"
+});
+
+// Dark halo using PAGE BACKGROUND colour
+beltNeutral.appendChild(
+  make("feDropShadow", {
+    dx: "0",
+    dy: "0",
+    stdDeviation: "2.4",        // slightly larger than scene glow
+    "flood-color": "#262626",   // PAGE BACKGROUND
+    "flood-opacity": "0.55"     // strong enough to cancel
+  })
+);
+
+defs.appendChild(beltNeutral);
   }
 
   function buildLayers(){
