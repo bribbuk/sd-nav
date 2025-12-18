@@ -1008,7 +1008,7 @@ const MAX_W = 160000 * WORLD_SCALE;  // scaled world max
   function setDateLabel(){
     const jd = currentJD();
     const {y,m,d} = jdToYMD(jd);
-    dateEl.textContent = `DATE: ${y}-${pad2(m)}-${pad2(d)}  (Δ ${dayOffset}d)`;
+    dateEl.textContent = `DEPART: ${y}-${pad2(m)}-${pad2(d)}  (Δ ${dayOffset}d)`;
   }
 
   function bodyDef(key){ return BODIES.find(b => b.key === key) || null; }
