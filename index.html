@@ -829,6 +829,31 @@ trailBlur.appendChild(make("feGaussianBlur", {
 }));
 defs.appendChild(trailBlur);
 
+  const mask = make("mask", { id: "trailTaperMask" });
+
+const grad = make("linearGradient", {
+  id: "trailFadeGrad",
+  x1: "0", y1: "0",
+  x2: "1", y2: "0",
+  gradientUnits: "objectBoundingBox"
+});
+
+grad.appendChild(make("stop", { offset: "0%",  "stop-color": "white", "stop-opacity": "1" }));
+grad.appendChild(make("stop", { offset: "70%", "stop-color": "white", "stop-opacity": "0.6" }));
+grad.appendChild(make("stop", { offset: "100%", "stop-color": "white", "stop-opacity": "0" }));
+
+defs.appendChild(grad);
+
+mask.appendChild(make("rect", {
+  x: "-100000",
+  y: "-100000",
+  width: "200000",
+  height: "200000",
+  fill: "url(#trailFadeGrad)"
+}));
+
+defs.appendChild(mask);
+
   
 
   function buildLayers(){
@@ -1412,7 +1437,23 @@ const d = catmullRomSpline(points, 0.6);
   const strokeBase = minor ? 0.45 : 0.55;
   const opacity    = minor ? 0.28 : 0.34;
 
-  const path = make("path", {
+// --- blurred tapered underlay (fat → thin perceptually)
+const underlay = make("path", {
+  d,
+  fill: "none",
+  stroke: "#ffcc00",
+  "stroke-width": String(strokeBase * 2.2 * hudScale),
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  opacity: opacity * 0.45,
+  filter: "url(#trailBlur)",
+  mask: "url(#trailTaperMask)"
+});
+underlay.__strokeBase = strokeBase * 2.2;
+gTrails.appendChild(underlay);
+
+// --- sharp core line (thin, readable)
+const core = make("path", {
   d,
   fill: "none",
   stroke: "#ffcc00",
@@ -1421,15 +1462,9 @@ const d = catmullRomSpline(points, 0.6);
   "stroke-linejoin": "round",
   opacity: opacity
 });
+core.__strokeBase = strokeBase;
+gTrails.appendChild(core);
 
-// ✅ STORE BASE WIDTH FOR HUD SCALING
-path.__strokeBase = strokeBase;
-
-// Fade tail using stroke gradient via opacity mask (cheap + stable)
-path.setAttribute("stroke-dasharray", "1 0"); // keeps round caps stable
-
-gTrails.appendChild(path);
-}
   
   // ---------------------------
   // 10) Bodies + clusters + journey line
