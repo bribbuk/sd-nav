@@ -775,6 +775,25 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
   function ensureDefs(){
     const defs = make("defs");
 
+    const tight = make("filter", {
+  id: "tekugl-tight",
+  filterUnits: "userSpaceOnUse",
+  x: "-8",
+  y: "-8",
+  width: "16",
+  height: "16"
+});
+
+tight.appendChild(make("feGaussianBlur", {
+  in: "SourceGraphic",
+  stdDeviation: "0.45"
+}));
+
+tight.appendChild(make("feMerge"));
+tight.appendChild(make("feMergeNode", { in: "blur" }));
+tight.appendChild(make("feMergeNode", { in: "SourceGraphic" }));
+
+defs.appendChild(tight);
 
     const filter = make("filter", {
   id: "tekugl",
