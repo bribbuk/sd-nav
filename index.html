@@ -794,41 +794,56 @@ const WORKING_VB_W = 4 * WORLD_SCALE;
 
     svg.appendChild(defs);
 
-    // --- Belt glow neutraliser (OVERLAY, not behind) ---
+    // --- Belt glow neutraliser (strong, controllable) ---
 const beltNeutral = make("filter", {
   id: "belt-neutralise",
-  filterUnits: "objectBoundingBox",
-  x: "-0.8",
-  y: "-0.8",
-  width: "2.6",
-  height: "2.6"
+  x: "-0.9",
+  y: "-0.9",
+  width: "2.8",
+  height: "2.8"
 });
 
-// 1) Blur the text itself
+// 1) Blur ONLY the alpha of the text
 beltNeutral.appendChild(
   make("feGaussianBlur", {
-    in: "SourceGraphic",
-    stdDeviation: "1.8",
-    result: "blur"
+    in: "SourceAlpha",
+    stdDeviation: "2.0",
+    result: "blurA"
   })
 );
 
-// 2) Recolour the blur to PAGE BACKGROUND (#262626)
+// 2) BOOST that alpha (this is your main "strength" knob)
 beltNeutral.appendChild(
-  make("feColorMatrix", {
-    in: "blur",
-    type: "matrix",
-    values: `
-      0 0 0 0 0.149
-      0 0 0 0 0.149
-      0 0 0 0 0.149
-      0 0 0 1 0
-    `,
+  make("feComponentTransfer", { in: "blurA", result: "boostA" })
+);
+beltNeutral.lastChild.appendChild(
+  make("feFuncA", {
+    type: "linear",
+    slope: "2.5",     // <-- INCREASE THIS for stronger dark halo
+    intercept: "0"
+  })
+);
+
+// 3) Solid fill in page background colour
+beltNeutral.appendChild(
+  make("feFlood", {
+    "flood-color": "#262626",
+    "flood-opacity": "1",
+    result: "bg"
+  })
+);
+
+// 4) Mask the bg colour by the boosted alpha
+beltNeutral.appendChild(
+  make("feComposite", {
+    in: "bg",
+    in2: "boostA",
+    operator: "in",
     result: "darkHalo"
   })
 );
 
-// 3) Merge ORDER: original → dark halo ON TOP
+// 5) Merge: original text + dark halo ON TOP
 const merge = make("feMerge");
 merge.appendChild(make("feMergeNode", { in: "SourceGraphic" }));
 merge.appendChild(make("feMergeNode", { in: "darkHalo" }));
