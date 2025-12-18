@@ -1364,7 +1364,7 @@ function updateLabelPlacement(){
 // Tunables (you can tweak later without breaking anything)
 const TRAIL = {
   // multipliers applied to aphelion AU
-  samplesAU: [0, 9, 15, 18],   // exactly your proposal
+  samplesAU: [0, 3, 6, 9],   // exactly your proposal
   maxSamples: 4
 };
 
@@ -1386,7 +1386,7 @@ function buildSampledTrail(b, jd){
   // Sample past positions
   const points = [];
   for(let i = 0; i < TRAIL.samplesAU.length; i++){
-    const daysBack = TRAIL.samplesAU[i] * aphelionAU;
+    const daysBack = TRAIL.samplesAU[i] * aphelionAU ** 2;
     const out = bodyPosAndM(b.key, jd - daysBack);
     points.push(out.pos);
   }
