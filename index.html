@@ -1124,6 +1124,13 @@ function scheduleLabelPlacement(){
       journeyLine.setAttribute("stroke-width", String(JOURNEY.strokeBase * hudScale));
       journeyLine.setAttribute("stroke-dasharray", `${JOURNEY.dotLenBase * hudScale} ${JOURNEY.gapBase * hudScale}`);
     }
+    // trail stroke widths (screen-constant)
+if(gTrails){
+  gTrails.querySelectorAll("path").forEach(p => {
+    const base = p.__strokeBase;
+    if(base) p.setAttribute("stroke-width", String(base * hudScale));
+  });
+}
   }
   
   const declutter = {
