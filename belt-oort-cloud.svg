@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-100 -100 200 200">
+
+  <defs>
+    <path id="arc315"
+          d="M 70 -70 A 100 100 0 0 1 -70 70"/>
+  </defs>
+
+  <text fill="#54522C"
+        font-family="monospace"
+        font-weight="1000"
+        letter-spacing="0.22em"
+        font-size="18"
+        text-anchor="middle">
+    <textPath href="#arc315" startOffset="50%">
+      OORT CLOUD
+    </textPath>
+  </text>
+
+</svg>
