@@ -1580,16 +1580,7 @@ addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 
     drawSun();
 
     buildJourneyLine();
-
-    // Trails: build once per render (day change). No trails for L-points.
-    orbitTrails.clear();
-    for(const b of BODIES){
-      if(b.type === "l4j" || b.type === "l5j" || b.type === "l4s" || b.type === "l5s") continue;
-      const out = bodyPosAndM(b.key, jd);
-      if(!out.el || !out.el.a) continue;
-      buildTrailForBody(b, out.el);
-    }
-
+    
     // Bodies + labels
     for(const b of BODIES){
       const out = bodyPosAndM(b.key, jd);
@@ -1605,13 +1596,6 @@ addBeltLabel(defs, "oc135", "OORT CLOUD", 51000.0 * WORLD_SCALE, 135, (100000.0 
 
     setDateLabel();
     updateReadout();
-
-    // Update trails so their heads align to the *actual* planet XY position.
-    for(const b of BODIES){
-      if(b.type === "l4j" || b.type === "l5j" || b.type === "l4s" || b.type === "l5s") continue;
-      const out = bodyPosAndM(b.key, jd);
-      updateTrailForBody(b.key);
-    }
 
     updateJourneyLine();
     updateHUDScale();
