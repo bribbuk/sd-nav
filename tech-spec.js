@@ -165,10 +165,9 @@ mount.appendChild(frame);
     if (!svgRoot) return;
 
     highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    highlight.setAttribute("fill", "ffcc00");
-    highlight.setAttribute("fill-opacity", "0.2");
+    highlight.setAttribute("fill", "transparent");
     highlight.setAttribute("stroke", "#ffcc00");
-    highlight.setAttribute("stroke-width", "0.1");
+    highlight.setAttribute("stroke-width", "1");
     highlight.style.pointerEvents = "none";
 
     svgRoot.appendChild(highlight);
