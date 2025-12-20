@@ -458,14 +458,35 @@ That sustained flux-field is what crews experience as chromatic smearing: redshi
 Exceeding a ship's rated limit is not an engine problem. It's a material problem. The  Tokamak (and stern) fail to Doppler shear, which destabilises the containment field (and shreds hulls).
         </p>
 
-<div class="diagram-wrap">
-  <object
-    data="sd-diagram.svg"
-    type="image/svg+xml"
-    class="inline-svg"
-    aria-hidden="true">
-  </object>
+<div class="tech-spec-box">
+
+  <div class="tech-spec-controls">
+    <label for="inspect-select">INSPECT</label>
+    <select id="inspect-select">
+      <option value="">—</option>
+      <option value="a">a</option>
+      <option value="b">b</option>
+      <option value="c.i">c.i</option>
+      <option value="c.ii">c.ii</option>
+      <option value="c.iii">c.iii</option>
+      <option value="c.iv">c.iv</option>
+    </select>
+  </div>
+
+  <div class="tech-spec-diagram">
+    <object
+      id="sd-diagram"
+      data="sd-diagram.svg"
+      type="image/svg+xml">
+    </object>
+  </div>
+
+  <div class="tech-spec-readout" id="diagram-readout">
+    <!-- JS will write here -->
+  </div>
+
 </div>
+
 
         
         <div style="height: 20px;"></div>
@@ -1997,5 +2018,7 @@ if(journeyGhostPos){
 })();
 </script>
 
+<script src="tech-spec.js"></script>
+  
 </body>
 </html>
