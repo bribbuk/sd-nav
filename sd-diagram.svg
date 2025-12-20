@@ -1,0 +1,94 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="700 1400 900 800"
+  width="100%"
+  height="100%"
+  aria-label="Sling Drive Flux Field Diagram"
+>
+
+<style>
+  :root {
+    --tek-yellow: #FFC000;
+  }
+
+  /* --- Flux envelope --- */
+  .flux-envelope {
+    fill: rgba(255, 192, 0, 0.035);
+  }
+
+  /* --- Field lines --- */
+  .flux-line {
+    fill: none;
+    stroke: var(--tek-yellow);
+    stroke-width: 6.875;
+    stroke-miterlimit: 8;
+    stroke-dasharray: 27.5 20.625;
+    stroke-opacity: 0.30;
+    animation: fluxFlow 6s linear infinite;
+  }
+
+  .flux-line.fast { animation-duration: 3.8s; }
+  .flux-line.slow { animation-duration: 8.5s; }
+
+  @keyframes fluxFlow {
+    from { stroke-dashoffset: 0; }
+    to   { stroke-dashoffset: -110; }
+  }
+</style>
+
+<!-- ======================================================
+     FLUX FIELD ENVELOPE (belt-style, low-opacity)
+     ====================================================== -->
+<path
+  class="flux-envelope"
+  fill-rule="evenodd"
+  d="
+    M 1150 1450
+    C 1400 1550 1400 2150 1150 2250
+    C 900 2150 900 1550 1150 1450
+    Z
+
+    M 1150 1600
+    C 1250 1650 1250 2050 1150 2100
+    C 1050 2050 1050 1650 1150 1600
+    Z
+  "
+/>
+
+<!-- ======================================================
+     FLUX FIELD LINES (animated)
+     ====================================================== -->
+
+<!-- centre -->
+<path class="flux-line fast"
+  d="M1150 1500 L1150 2200"
+/>
+
+<!-- inner -->
+<path class="flux-line"
+  d="M1029.5 1490.5 L1029.5 1956.77"
+/>
+
+<path class="flux-line"
+  d="M1270.5 1490.5 L1270.5 1956.77"
+/>
+
+<!-- outer -->
+<path class="flux-line slow"
+  d="M900.5 1530 C820 1750 820 1950 900.5 2170"
+/>
+
+<path class="flux-line slow"
+  d="M1400.5 1530 C1480 1750 1480 1950 1400.5 2170"
+/>
+
+<!-- slight curvature variants -->
+<path class="flux-line"
+  d="M980 1505 C930 1720 930 1980 980 2200"
+/>
+
+<path class="flux-line"
+  d="M1320 1505 C1370 1720 1370 1980 1320 2200"
+/>
+
+</svg>
