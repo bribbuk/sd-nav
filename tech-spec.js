@@ -71,6 +71,17 @@
       align-items: center;
       font-size: 0.85em;
       margin-bottom: 8px;
+      position: static;
+    }
+
+    .tech-spec-top > div {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      background: rgba(38,38,38,0.65);
+      padding: 4px 6px;
+      border: 1px solid rgba(255,204,0,0.35);
+      backdrop-filter: blur(2px);
     }
 
     .tech-spec-top select {
@@ -79,7 +90,7 @@
       border: 1px solid rgba(255,204,0,0.35);
       font-family: monospace;
       padding: 2px 6px;
-            filter:
+      filter:
         drop-shadow(0 0 1.5px rgba(235,250,122,0.22))
         drop-shadow(0 0 4px rgba(255,204,0,0.14))
         drop-shadow(0 0 10px rgba(255,204,0,0.06));
