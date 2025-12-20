@@ -20,7 +20,7 @@
     },
     "b": {
       label: "b",
-      text: "░░░ Default Loadout ░░░ Direct Sling Field; Extreme Energy Density ░░░ ! Decreased M-T Vector (-vt) ░░░ ∴ Decreased relative mass ░░░ ∴ Inflated spacetime ░░░ ∴ Efficient acceleration ░░░",
+      text: "░▒░ Default Loadout ░▒░ Direct Sling Field; Extreme Energy Density ░▒░ ! Decreased M-T Vector (-vt) ░▒░ ∴ Decreased relative mass ░▒░ ∴ Inflated spacetime ░▒░ ∴ Efficient acceleration ░░░",
       box: { x: 1130, y: 550, w: 120, h: 120 }
     },
     "c.i": {
