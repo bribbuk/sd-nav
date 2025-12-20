@@ -1,4 +1,8 @@
-<svg width="2396" height="1402" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" overflow="hidden">
+<svg
+  viewBox="0 0 2396 1402"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  preserveAspectRatio="xMidYMid meet">
 
   <style>
   .flux {
@@ -18,14 +22,8 @@
   </style>
   
   <defs>
-    
-    <clipPath id="clip0">
-      
-      <rect x="424" y="564" width="2396" height="1402"/>
-    
-    </clipPath>
   
-  </defs><g clip-path="url(#clip0)" transform="translate(-424 -564)">
+  </defs><g>
     
     <path d="M1167.5 1752.5 1167.5 1534.53 1275.5 1452.97 1275.5 1403.5" stroke="#FFC000" stroke-width="6.875" stroke-miterlimit="8" stroke-opacity="0.2" fill="none" fill-rule="evenodd"/>
     
