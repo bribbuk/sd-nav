@@ -16,32 +16,32 @@
     "a": {
       label: "a",
       text: "Direct Sling Field; Extreme Energy Density <br><br>! Decreased M-T Vector (-vt) <br>∴ Decreased relative mass <br>∴ Inflated spacetime <br>∴ Efficient acceleration",
-      box: { x: 750, y: 500, w: 120, h: 120 }
+      box: { x: 750, y: 550, w: 120, h: 120 }
     },
     "b": {
       label: "b",
       text: "Temporal shear gradient along the drive spine.",
-      box: { x: 1130, y: 500, w: 120, h: 120 }
+      box: { x: 1130, y: 550, w: 120, h: 120 }
     },
     "c.i": {
       label: "c.i",
       text: "Forward field inversion threshold.",
-      box: { x: 800, y: 1020, w: 180, h: 120 }
+      box: { x: 800, y: 2020, w: 180, h: 120 }
     },
     "c.ii": {
       label: "c.ii",
       text: "Spatial velocity rotation phase.",
-      box: { x: 900, y: 1100, w: 180, h: 120 }
+      box: { x: 900, y: 2100, w: 180, h: 120 }
     },
     "c.iii": {
       label: "c.iii",
       text: "Residual temporal drag dissipation.",
-      box: { x: 1000, y: 1180, w: 180, h: 120 }
+      box: { x: 1000, y: 2180, w: 180, h: 120 }
     },
     "c.iv": {
       label: "c.iv",
       text: "Field collapse and cruise-state stabilisation.",
-      box: { x: 1100, y: 1260, w: 180, h: 120 }
+      box: { x: 1100, y: 2260, w: 180, h: 120 }
     }
   };
 
