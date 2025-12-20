@@ -61,9 +61,9 @@
     
     <path 
       
-        class="flux reverse"
+        class="flux"
 
-      d="M424.5 1240.5 710.287 1240.5" stroke="#00aa00" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M424.5 1240.5 710.287 1240.5" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
@@ -73,33 +73,33 @@
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M906.5 1194.5C921.549 1170.33 1013.67 1080.51 1100.5 1188.56" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M906.5 1194.5C921.549 1170.33 1013.67 1080.51 1100.5 1188.56" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M726.5 1184.5C662.309 1136.95 583.137 1045.72 553.5 908.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M726.5 1184.5C662.309 1136.95 583.137 1045.72 553.5 908.5" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M713.5 1210.5C683.827 1194.49 573.964 1181.34 447.5 1078.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M713.5 1210.5C683.827 1194.49 573.964 1181.34 447.5 1078.5" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M2432.5 588.5C2172.44 845.562 1726.51 1166.59 1309.5 1205.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M2432.5 588.5C2172.44 845.562 1726.51 1166.59 1309.5 1205.5" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M1548.5 568.5C1548.11 688.567 1517.29 1045.09 1303.5 1182.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M1548.5 568.5C1548.11 688.567 1517.29 1045.09 1303.5 1182.5" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <g><g><g>
       
@@ -119,39 +119,39 @@
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M78 267C45.4948 246.288-75.3037 119.501 70.0095 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1137.5 1395.5)"/>
+      d="M78 267C45.4948 246.288-75.3037 119.501 70.0095 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1137.5 1395.5)"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M58.0001 194C33.8295 178.951-55.9951 86.8281 52.0584 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1100.5 1341.5)"/>
+      d="M58.0001 194C33.8295 178.951-55.9951 86.8281 52.0584 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1100.5 1341.5)"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M173 276C108.809 228.446 29.6369 137.221 0 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 553.5 1569.5)"/>
+      d="M173 276C108.809 228.446 29.6369 137.221 0 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 553.5 1569.5)"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M266 132C236.326 115.994 126.464 102.836 0 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 447.5 1398.5)"/>
+      d="M266 132C236.326 115.994 126.464 102.836 0 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 447.5 1398.5)"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M616 1123C359.355 862.939 38.8475 417.015 0 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1309.5 1272.5)"/>
+      d="M616 1123C359.355 862.939 38.8475 417.015 0 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1309.5 1272.5)"/>
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M614 245C493.933 244.609 137.414 213.792 0 0" stroke="#FFFFFF" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1303.5 1295.5)"/>
+      d="M614 245C493.933 244.609 137.414 213.792 0 0" stroke="#FFC000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1303.5 1295.5)"/>
     
     <path d="M1532 591 1548 564 1564 591Z" fill="#FFC000" fill-rule="evenodd"/>
     
