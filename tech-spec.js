@@ -141,7 +141,9 @@
     </div>
   `;
 
-  document.body.appendChild(frame);
+const mount = document.getElementById("tech-spec");
+if (!mount) return;
+mount.appendChild(frame);
 
   /* ---------------------------------------------------------------------------
      4. LOGIC
