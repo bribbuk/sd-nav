@@ -26,22 +26,22 @@
     "c.i": {
       label: "c.i",
       text: "Forward field inversion threshold.",
-      box: { x: 800, y: 2020, w: 180, h: 120 }
+      box: { x: 800, y: 1620, w: 180, h: 120 }
     },
     "c.ii": {
       label: "c.ii",
       text: "Spatial velocity rotation phase.",
-      box: { x: 900, y: 2100, w: 180, h: 120 }
+      box: { x: 900, y: 1700, w: 180, h: 120 }
     },
     "c.iii": {
       label: "c.iii",
       text: "Residual temporal drag dissipation.",
-      box: { x: 1000, y: 2180, w: 180, h: 120 }
+      box: { x: 1000, y: 1780, w: 180, h: 120 }
     },
     "c.iv": {
       label: "c.iv",
       text: "Field collapse and cruise-state stabilisation.",
-      box: { x: 1100, y: 2260, w: 180, h: 120 }
+      box: { x: 1100, y: 1860, w: 180, h: 120 }
     }
   };
 
