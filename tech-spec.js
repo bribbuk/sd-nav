@@ -15,8 +15,7 @@
   const INSPECT_DATA = {
     "a": {
       label: "a",
-      text: "Direct Sling Field; Extreme Energy Density <br> ! Decreased M-T Vector (-vt) ∴ Decreased relative mass ∴ Inflated spacetime ∴ Efficient acceleration
-        ",
+      text: "Direct Sling Field; Extreme Energy Density <br><br>! Decreased M-T Vector (-vt) <br>∴ Decreased relative mass <br>∴ Inflated spacetime <br>∴ Efficient acceleration",
       box: { x: 820, y: 520, w: 220, h: 140 }
     },
     "b": {
