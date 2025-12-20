@@ -16,32 +16,32 @@
     "a": {
       label: "a",
       text: "Direct Sling Field; Extreme Energy Density <br><br>! Decreased M-T Vector (-vt) <br>∴ Decreased relative mass <br>∴ Inflated spacetime <br>∴ Efficient acceleration",
-      box: { x: 820, y: 520, w: 220, h: 140 }
+      box: { x: 760, y: 500, w: 120, h: 120 }
     },
     "b": {
-      label: "B",
+      label: "b",
       text: "Temporal shear gradient along the drive spine.",
-      box: { x: 1080, y: 620, w: 260, h: 160 }
+      box: { x: 1140, y: 500, w: 120, h: 120 }
     },
     "c.i": {
-      label: "C.I",
+      label: "c.i",
       text: "Forward field inversion threshold.",
-      box: { x: 1420, y: 480, w: 240, h: 130 }
+      box: { x: 800, y: 20, w: 180, h: 120 }
     },
     "c.ii": {
-      label: "C.II",
+      label: "c.ii",
       text: "Spatial velocity rotation phase.",
-      box: { x: 1500, y: 720, w: 260, h: 150 }
+      box: { x: 900, y: 100, w: 180, h: 120 }
     },
     "c.iii": {
-      label: "C.III",
+      label: "c.iii",
       text: "Residual temporal drag dissipation.",
-      box: { x: 1260, y: 860, w: 280, h: 160 }
+      box: { x: 1000, y: 180, w: 180, h: 120 }
     },
     "c.iv": {
-      label: "C.IV",
+      label: "c.iv",
       text: "Field collapse and cruise-state stabilisation.",
-      box: { x: 980, y: 900, w: 260, h: 150 }
+      box: { x: 1100, y: 260, w: 180, h: 120 }
     }
   };
 
@@ -116,7 +116,7 @@
 
   frame.innerHTML = `
     <div class="tech-spec-top">
-      <span>TECH SPEC</span>
+      <span>TSDS (Technical Specification Data Sheet)</span>
       <div>
         <label for="tech-spec-select">INSPECT</label>
         <select id="tech-spec-select">
@@ -136,7 +136,7 @@
     </div>
 
     <div class="tech-spec-readout">
-      <span class="label">DETAIL</span>
+      <span class="label">[is]</span>
       <span id="tech-spec-readout-text">—</span>
     </div>
   `;
@@ -161,13 +161,11 @@ mount.appendChild(frame);
     if (!svgRoot) return;
 
     highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    highlight.setAttribute("fill", "none");
+    highlight.setAttribute("fill", "ffcc00");
     highlight.setAttribute("stroke", "#ffcc00");
-    highlight.setAttribute("stroke-width", "2");
-    highlight.setAttribute("stroke-dasharray", "6 4");
-    highlight.setAttribute("vector-effect", "non-scaling-stroke");
+    highlight.setAttribute("stroke-width", "0");
     highlight.style.pointerEvents = "none";
-    highlight.style.opacity = "0";
+    highlight.style.opacity = "0.2";
 
     svgRoot.appendChild(highlight);
   });
