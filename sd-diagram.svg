@@ -10,7 +10,12 @@
     from { stroke-dashoffset: 0; }
     to   { stroke-dashoffset: -288; }
   }
-</style>
+
+    .reverse {
+  animation-direction: reverse;
+}
+  
+  </style>
   
   <defs>
     
@@ -50,7 +55,7 @@
     
     <path 
 
-        class="flux"
+        class="flux reverse" 
       
       d="M1314.5 1238.5 2814.36 1238.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
