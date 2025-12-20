@@ -16,12 +16,12 @@
     "a": {
       label: "a",
       text: "Direct Sling Field; Extreme Energy Density <br><br>! Decreased M-T Vector (-vt) <br>∴ Decreased relative mass <br>∴ Inflated spacetime <br>∴ Efficient acceleration",
-      box: { x: 760, y: 480, w: 120, h: 120 }
+      box: { x: 750, y: 500, w: 120, h: 120 }
     },
     "b": {
       label: "b",
       text: "Temporal shear gradient along the drive spine.",
-      box: { x: 1140, y: 480, w: 120, h: 120 }
+      box: { x: 1130, y: 500, w: 120, h: 120 }
     },
     "c.i": {
       label: "c.i",
