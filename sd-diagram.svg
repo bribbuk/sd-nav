@@ -8,7 +8,7 @@
 
   @keyframes flux-move {
     from { stroke-dashoffset: 0; }
-    to   { stroke-dashoffset: -120; }
+    to   { stroke-dashoffset: -144; }
   }
 </style>
   
