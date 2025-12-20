@@ -54,7 +54,7 @@
     .tech-spec-frame {
       margin: 40px 0;
       padding: 12px;
-      background: #262626;
+      background: transparent;
       border: 1px solid rgba(255,204,0,0.35);
       font-family: monospace;
       color: #ffcc00;
@@ -74,7 +74,7 @@
     }
 
     .tech-spec-top select {
-      background: #262626;
+      background: transparent;
       color: #ffcc00;
       border: 1px solid #ffcc00;
       font-family: monospace;
