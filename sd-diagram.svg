@@ -61,9 +61,9 @@
     
     <path 
       
-        class="flux"
+        class="flux reverse"
 
-      d="M424.5 1240.5 710.287 1240.5" stroke="#FF0000" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+      d="M424.5 1240.5 710.287 1240.5" stroke="#00aa00" stroke-width="4.58333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
