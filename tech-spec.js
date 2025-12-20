@@ -15,12 +15,12 @@
   const INSPECT_DATA = {
     "a": {
       label: "a",
-      text: "Direct Sling Field; Extreme Energy Density <br><br>! Decreased M-T Vector (-vt) <br>∴ Decreased relative mass <br>∴ Inflated spacetime <br>∴ Efficient acceleration",
+      text: "...",
       box: { x: 750, y: 550, w: 120, h: 120 }
     },
     "b": {
       label: "b",
-      text: "Temporal shear gradient along the drive spine.",
+      text: "░░░ Default Loadout ░░░ Direct Sling Field; Extreme Energy Density ░░░ ! Decreased M-T Vector (-vt) ░░░ ∴ Decreased relative mass ░░░ ∴ Inflated spacetime ░░░ ∴ Efficient acceleration ░░░",
       box: { x: 1130, y: 550, w: 120, h: 120 }
     },
     "c.i": {
