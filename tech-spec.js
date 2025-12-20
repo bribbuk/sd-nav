@@ -1,29 +1,17 @@
 (() => {
   "use strict";
 
-  /*
-    TECH SPEC DIAGRAM TOOL
-    PATCH A — initial functional version
+  /* ============================================================================
+     TECH SPEC DIAGRAM INSTRUMENT
+     Single-file, self-contained implementation
+     ========================================================================== */
 
-    Responsibilities:
-    - Load external SVG (sd-diagram.svg)
-    - Provide INSPECT dropdown behaviour
-    - Draw a hover highlight box over SVG
-    - Display concise readout text
-  */
+  /* ---------------------------------------------------------------------------
+     1. CONFIGURATION
+     ------------------------------------------------------------------------- */
 
-  // ---- DOM HOOKS -------------------------------------------------------------
+  const SVG_PATH = "sd-diagram.svg";
 
-  const select  = document.getElementById("inspect-select");
-  const readout = document.getElementById("diagram-readout");
-  const object  = document.getElementById("sd-diagram");
-
-  // Bail safely if this tool is not present on the page
-  if (!select || !readout || !object) return;
-
-  // ---- DATA MODEL ------------------------------------------------------------
-
-  // Coordinates are in SVG viewBox space
   const INSPECT_DATA = {
     "a": {
       label: "A",
@@ -57,24 +45,120 @@
     }
   };
 
-  // ---- STATE -----------------------------------------------------------------
+  /* ---------------------------------------------------------------------------
+     2. STYLE INJECTION (NO DEPENDENCIES)
+     ------------------------------------------------------------------------- */
 
-  let svgRoot     = null;
-  let highlight   = null;
-  let svgLoaded   = false;
+  const style = document.createElement("style");
+  style.textContent = `
+    .tech-spec-frame {
+      margin: 40px 0;
+      padding: 12px;
+      background: #262626;
+      border: 1px solid rgba(255,204,0,0.35);
+      font-family: monospace;
+      color: #ffcc00;
+      filter:
+        drop-shadow(0 0 1.5px rgba(235,250,122,0.22))
+        drop-shadow(0 0 4px rgba(255,204,0,0.14))
+        drop-shadow(0 0 10px rgba(255,204,0,0.06));
+      position: relative;
+    }
 
-  // ---- SVG INITIALISATION ----------------------------------------------------
+    .tech-spec-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85em;
+      margin-bottom: 8px;
+    }
+
+    .tech-spec-top select {
+      background: #262626;
+      color: #ffcc00;
+      border: 1px solid #ffcc00;
+      font-family: monospace;
+      padding: 2px 6px;
+    }
+
+    .tech-spec-diagram {
+      position: relative;
+      width: 100%;
+      height: clamp(240px, 40vh, 420px);
+      margin-bottom: 10px;
+    }
+
+    .tech-spec-diagram object {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .tech-spec-readout {
+      font-size: 0.85em;
+      opacity: 0.9;
+      min-height: 1.4em;
+    }
+
+    .tech-spec-readout .label {
+      opacity: 0.6;
+      margin-right: 6px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ---------------------------------------------------------------------------
+     3. DOM CONSTRUCTION
+     ------------------------------------------------------------------------- */
+
+  const frame = document.createElement("div");
+  frame.className = "tech-spec-frame";
+
+  frame.innerHTML = `
+    <div class="tech-spec-top">
+      <span>TECH SPEC</span>
+      <div>
+        <label for="tech-spec-select">INSPECT</label>
+        <select id="tech-spec-select">
+          <option value="">—</option>
+          <option value="a">a</option>
+          <option value="b">b</option>
+          <option value="c.i">c.i</option>
+          <option value="c.ii">c.ii</option>
+          <option value="c.iii">c.iii</option>
+          <option value="c.iv">c.iv</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tech-spec-diagram">
+      <object id="tech-spec-svg" data="${SVG_PATH}" type="image/svg+xml"></object>
+    </div>
+
+    <div class="tech-spec-readout">
+      <span class="label">DETAIL</span>
+      <span id="tech-spec-readout-text">—</span>
+    </div>
+  `;
+
+  document.body.appendChild(frame);
+
+  /* ---------------------------------------------------------------------------
+     4. LOGIC
+     ------------------------------------------------------------------------- */
+
+  const select = frame.querySelector("#tech-spec-select");
+  const readout = frame.querySelector("#tech-spec-readout-text");
+  const object = frame.querySelector("#tech-spec-svg");
+
+  let svgRoot = null;
+  let highlight = null;
 
   object.addEventListener("load", () => {
     svgRoot = object.contentDocument?.querySelector("svg");
     if (!svgRoot) return;
 
-    // Create highlight rectangle (SVG-native)
-    highlight = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "rect"
-    );
-
+    highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     highlight.setAttribute("fill", "none");
     highlight.setAttribute("stroke", "#ffcc00");
     highlight.setAttribute("stroke-width", "2");
@@ -84,33 +168,24 @@
     highlight.style.opacity = "0";
 
     svgRoot.appendChild(highlight);
-
-    svgLoaded = true;
   });
 
-  // ---- UI BEHAVIOUR -----------------------------------------------------------
-
   select.addEventListener("change", () => {
-    if (!svgLoaded || !highlight) return;
-
     const key = select.value;
     const entry = INSPECT_DATA[key];
 
-    // Clear state
-    if (!entry) {
-      highlight.style.opacity = "0";
-      readout.textContent = "";
+    if (!entry || !highlight) {
+      if (highlight) highlight.style.opacity = "0";
+      readout.textContent = "—";
       return;
     }
 
-    // Position highlight
     highlight.setAttribute("x", entry.box.x);
     highlight.setAttribute("y", entry.box.y);
     highlight.setAttribute("width", entry.box.w);
     highlight.setAttribute("height", entry.box.h);
     highlight.style.opacity = "1";
 
-    // Update readout
     readout.textContent = `${entry.label} — ${entry.text}`;
   });
 
