@@ -249,20 +249,6 @@ function wrapEntireSVGWithGlow(svgRoot) {
 
 
   
-svgRoot.setAttribute("overflow", "visible");
-    
-  ensureTekuGlow(svgRoot);
-
-   
-    
-    highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    highlight.setAttribute("fill", "transparent");
-    highlight.setAttribute("stroke", "#ffcc00");
-    highlight.setAttribute("stroke-width", "1");
-    highlight.style.pointerEvents = "none";
-
-    svgRoot.appendChild(highlight);
-  });
 
   select.addEventListener("change", () => {
     const key = select.value;
