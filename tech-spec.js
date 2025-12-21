@@ -121,6 +121,32 @@
       opacity: 0.6;
       margin-right: 6px;
     }
+
+.tech-spec-inspect {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: rgba(38,38,38,0.65);
+  padding: 4px 6px;
+  border: 1px solid rgba(255,204,0,0.35);
+  backdrop-filter: blur(2px);
+  font-size: 0.8em;
+}
+
+.tech-spec-inspect label {
+  margin-right: 6px;
+  opacity: 0.8;
+}
+
+.tech-spec-inspect select {
+  background: transparent;
+  color: #ffcc00;
+  border: 1px solid rgba(255,204,0,0.35);
+  font-family: monospace;
+  padding: 2px 6px;
+}
+
+    
   `;
   document.head.appendChild(style);
 
@@ -132,25 +158,28 @@
   frame.className = "tech-spec-frame";
 
   frame.innerHTML = `
-    <div class="tech-spec-top">
-      <span>TSDS (Technical Specification Data Sheet)</span>
-      <div>
-        <label for="tech-spec-select">INSPECT</label>
-        <select id="tech-spec-select">
-          <option value="">—</option>
-          <option value="a">a</option>
-          <option value="b">b</option>
-          <option value="c.i">c.i</option>
-          <option value="c.ii">c.ii</option>
-          <option value="c.iii">c.iii</option>
-          <option value="c.iv">c.iv</option>
-        </select>
-      </div>
-    </div>
+<div class="tech-spec-top">
+  <span>TSDS (Technical Specification Data Sheet)</span>
+</div>
 
-    <div class="tech-spec-diagram">
-      <object id="tech-spec-svg" data="${SVG_PATH}" type="image/svg+xml"></object>
-    </div>
+
+<div class="tech-spec-diagram">
+  <object id="tech-spec-svg" data="${SVG_PATH}" type="image/svg+xml"></object>
+
+  <div class="tech-spec-inspect">
+    <label for="tech-spec-select">INSPECT</label>
+    <select id="tech-spec-select">
+      <option value="">—</option>
+      <option value="a">a</option>
+      <option value="b">b</option>
+      <option value="c.i">c.i</option>
+      <option value="c.ii">c.ii</option>
+      <option value="c.iii">c.iii</option>
+      <option value="c.iv">c.iv</option>
+    </select>
+  </div>
+</div>
+
 
     <div class="tech-spec-readout">
       <span class="label">[is]</span>
