@@ -290,7 +290,7 @@ function wrapEntireSVGWithGlow(svgRoot) {
   highlight = document.createElementNS(SVG_NS, "rect");
   highlight.setAttribute("fill", "transparent");
   highlight.setAttribute("stroke", "#ffcc00");
-  highlight.setAttribute("stroke-width", "1");
+  highlight.setAttribute("stroke-width", "2");
   highlight.style.pointerEvents = "none";
   highlight.style.opacity = "0";
 
