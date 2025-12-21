@@ -100,7 +100,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: 420px;
+  max-height: 520px;
   margin-bottom: 10px;
 }
 
