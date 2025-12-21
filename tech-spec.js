@@ -152,10 +152,8 @@
 .tech-spec-divider {
   height: 1px;
   margin: 6px 0 8px;
-  background:
-    rgba(255,204,0,0.35),
-  );
-  opacity: 0.8;
+  background: rgba(255,204,0,0.35);
+  opacity: 0.6;
 }
     
   `;
