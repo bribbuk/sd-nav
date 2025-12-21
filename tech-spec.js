@@ -148,6 +148,17 @@
   padding: 2px 6px;
 }
 
+.tech-spec-divider {
+  height: 1px;
+  margin: 6px 0 8px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,204,0,0.35),
+    transparent
+  );
+  opacity: 0.8;
+}
     
   `;
   document.head.appendChild(style);
