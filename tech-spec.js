@@ -102,7 +102,7 @@
   aspect-ratio: 16 / 9;
   max-height: 620px;
   margin-bottom: 10px;
-  padding-bottom: 10px
+  padding-bottom: 20px
 }
 
 
@@ -126,8 +126,8 @@
 .tech-spec-inspect {
   position: absolute;
   right: 10px;
-  bottom: 10px;
-  padding: 4px 4px;
+  bottom: 5px;
+  padding: 4px 2px;
   font-size: 0.8em;
 }
 
@@ -152,11 +152,8 @@
 .tech-spec-divider {
   height: 1px;
   margin: 6px 0 8px;
-  background: linear-gradient(
-    to right,
-    transparent,
+  background:
     rgba(255,204,0,0.35),
-    transparent
   );
   opacity: 0.8;
 }
