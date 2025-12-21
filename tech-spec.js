@@ -15,7 +15,7 @@
   const INSPECT_DATA = {
     "a": {
       label: "a",
-      text: "...",
+      text: "Emergent Counter-Field; Focusing Effect ∴ Increased relative mass ∴ Condensed spacetime ∴ Increased M-T Vector (+vt)",
       box: { x: 750, y: 550, w: 120, h: 120 }
     },
     "b": {
@@ -25,22 +25,22 @@
     },
     "c.i": {
       label: "c.i",
-      text: "Forward field inversion threshold.",
+      text: "Minkowski Tokamak : Stern-mounted field limiter at the axial bulge, toroidal positron cage",
       box: { x: 780, y: 1920, w: 180, h: 120 }
     },
     "c.ii": {
       label: "c.ii",
-      text: "Spatial velocity rotation phase.",
+      text: "Sling Drive: vt field generator; Overtuned Native YAMAHA Kestrel Mk.4",
       box: { x: 920, y: 1800, w: 180, h: 120 }
     },
     "c.iii": {
       label: "c.iii",
-      text: "Residual temporal drag dissipation.",
+      text: "Antimatter Reactor; Retrofitted NEW_RAINBOW_AGRICULTURE Double-Spooled Engine",
       box: { x: 1000, y: 1780, w: 180, h: 120 }
     },
     "c.iv": {
       label: "c.iv",
-      text: "Field collapse and cruise-state stabilisation.",
+      text: "Lockheed “Aurora” Nuclear Ramjets; Cannibalised Engine Feed (Direct), Redundant He-3 ²H Internals",
       box: { x: 1100, y: 1860, w: 180, h: 120 }
     }
   };
