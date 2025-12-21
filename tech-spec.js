@@ -216,6 +216,8 @@ function ensureTekuGlow(svg) {
     svgRoot = object.contentDocument?.querySelector("svg");
     if (!svgRoot) return;
 
+svgRoot.setAttribute("overflow", "visible");
+    
   ensureTekuGlow(svgRoot);
 
       svgRoot.querySelectorAll(".flux").forEach(p => {
