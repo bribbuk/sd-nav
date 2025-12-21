@@ -238,15 +238,23 @@ function wrapEntireSVGWithGlow(svgRoot) {
   // Required for mobile Chrome
   svgRoot.setAttribute("overflow", "visible");
 
-  // Make sure the glow filter exists
+  // Inject glow filter
   ensureTekuGlow(svgRoot);
 
-  // ✅ APPLY GLOW TO ENTIRE DIAGRAM
+  // Wrap entire diagram in one glow group
   wrapEntireSVGWithGlow(svgRoot);
 
-  // Your highlight rectangle etc can stay AFTER this
-});
+  // Create highlight rect (NOT glowing)
+  highlight = document.createElementNS(SVG_NS, "rect");
+  highlight.setAttribute("fill", "transparent");
+  highlight.setAttribute("stroke", "#ffcc00");
+  highlight.setAttribute("stroke-width", "1");
+  highlight.style.pointerEvents = "none";
+  highlight.style.opacity = "0";
 
+  // IMPORTANT: append AFTER wrapping so it stays on top
+  svgRoot.appendChild(highlight);
+});
 
   
 
