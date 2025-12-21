@@ -26,12 +26,12 @@
     "c.i": {
       label: "c.i",
       text: "Forward field inversion threshold.",
-      box: { x: 800, y: 1620, w: 180, h: 120 }
+      box: { x: 780, y: 1920, w: 180, h: 120 }
     },
     "c.ii": {
       label: "c.ii",
       text: "Spatial velocity rotation phase.",
-      box: { x: 900, y: 1700, w: 180, h: 120 }
+      box: { x: 920, y: 1800, w: 180, h: 120 }
     },
     "c.iii": {
       label: "c.iii",
