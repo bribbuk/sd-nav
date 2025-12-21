@@ -171,10 +171,57 @@ mount.appendChild(frame);
   let svgRoot = null;
   let highlight = null;
 
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+function ensureTekuGlow(svg) {
+  if (!svg || svg.querySelector("#tekugl")) return;
+
+  let defs = svg.querySelector("defs");
+  if (!defs) {
+    defs = document.createElementNS(SVG_NS, "defs");
+    svg.insertBefore(defs, svg.firstChild);
+  }
+
+  const filter = document.createElementNS(SVG_NS, "filter");
+  filter.setAttribute("id", "tekugl");
+  filter.setAttribute("filterUnits", "objectBoundingBox");
+  filter.setAttribute("x", "-0.6");
+  filter.setAttribute("y", "-0.6");
+  filter.setAttribute("width", "2.2");
+  filter.setAttribute("height", "2.2");
+
+  const inner = document.createElementNS(SVG_NS, "feDropShadow");
+  inner.setAttribute("dx", "0");
+  inner.setAttribute("dy", "0");
+  inner.setAttribute("stdDeviation", "0.9");
+  inner.setAttribute("flood-color", "#EBFA7A");
+  inner.setAttribute("flood-opacity", "0.22");
+
+  const outer = document.createElementNS(SVG_NS, "feDropShadow");
+  outer.setAttribute("dx", "0");
+  outer.setAttribute("dy", "0");
+  outer.setAttribute("stdDeviation", "1.6");
+  outer.setAttribute("flood-color", "#FFC000");
+  outer.setAttribute("flood-opacity", "0.18");
+
+  filter.appendChild(inner);
+  filter.appendChild(outer);
+  defs.appendChild(filter);
+}
+
+
+  
   object.addEventListener("load", () => {
     svgRoot = object.contentDocument?.querySelector("svg");
     if (!svgRoot) return;
 
+  ensureTekuGlow(svgRoot);
+
+      svgRoot.querySelectorAll(".flux").forEach(p => {
+    p.setAttribute("filter", "url(#tekugl)");
+  });
+    
     highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     highlight.setAttribute("fill", "transparent");
     highlight.setAttribute("stroke", "#ffcc00");
