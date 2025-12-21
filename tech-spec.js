@@ -210,12 +210,45 @@ function ensureTekuGlow(svg) {
   defs.appendChild(filter);
 }
 
+function wrapEntireSVGWithGlow(svgRoot) {
+  // Prevent double-wrapping
+  if (svgRoot.querySelector("#diagram-root")) return;
 
+  // Create wrapper group
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("id", "diagram-root");
+  g.setAttribute("filter", "url(#tekugl)");
+
+  // Move ALL existing SVG children (except <defs>) into the group
+  const children = Array.from(svgRoot.childNodes);
+  children.forEach(node => {
+    if (node.nodeName !== "defs") {
+      g.appendChild(node);
+    }
+  });
+
+  // Put the group back into the SVG
+  svgRoot.appendChild(g);
+}
   
   object.addEventListener("load", () => {
-    svgRoot = object.contentDocument?.querySelector("svg");
-    if (!svgRoot) return;
+  svgRoot = object.contentDocument?.querySelector("svg");
+  if (!svgRoot) return;
 
+  // Required for mobile Chrome
+  svgRoot.setAttribute("overflow", "visible");
+
+  // Make sure the glow filter exists
+  ensureTekuGlow(svgRoot);
+
+  // ✅ APPLY GLOW TO ENTIRE DIAGRAM
+  wrapEntireSVGWithGlow(svgRoot);
+
+  // Your highlight rectangle etc can stay AFTER this
+});
+
+
+  
 svgRoot.setAttribute("overflow", "visible");
     
   ensureTekuGlow(svgRoot);
