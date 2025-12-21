@@ -126,9 +126,7 @@
   position: absolute;
   right: 10px;
   bottom: 10px;
-  background: rgba(38,38,38,0.65);
-  padding: 4px 6px;
-  backdrop-filter: blur(2px);
+  padding: 4px 4px;
   font-size: 0.8em;
 }
 
@@ -138,9 +136,11 @@
 }
 
 .tech-spec-inspect select {
-  background: transparent;
+  background: rgba(38,38,38,0.65);
   color: #ffcc00;
+  opacity: 0.8
   border: 1px solid rgba(255,204,0,0.35);
+  backdrop-filter: blur(2px);
   font-family: monospace;
   padding: 2px 6px;
 }
@@ -158,7 +158,7 @@
 
   frame.innerHTML = `
 <div class="tech-spec-top">
-  <span>TSDS (Technical Specification Data Sheet)</span>
+  <span>Virtual TSDS (Technical Specification Data Sheet)</span>
 </div>
 
 
