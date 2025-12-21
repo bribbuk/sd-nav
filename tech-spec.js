@@ -253,9 +253,7 @@ svgRoot.setAttribute("overflow", "visible");
     
   ensureTekuGlow(svgRoot);
 
-      svgRoot.querySelectorAll(".flux").forEach(p => {
-    p.setAttribute("filter", "url(#tekugl)");
-  });
+   
     
     highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     highlight.setAttribute("fill", "transparent");
