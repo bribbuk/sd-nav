@@ -136,6 +136,9 @@
 }
 
 .tech-spec-inspect select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   background: rgba(38,38,38,0.65);
   color: #ffcc00;
   opacity: 0.8
