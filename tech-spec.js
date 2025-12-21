@@ -166,7 +166,7 @@
   <object id="tech-spec-svg" data="${SVG_PATH}" type="image/svg+xml"></object>
 
   <div class="tech-spec-inspect">
-    <label for="tech-spec-select">INSPECT</label>
+    <label for="tech-spec-select">INSPECT:</label>
     <select id="tech-spec-select">
       <option value="a">a</option>
       <option value="b">b</option>
@@ -178,6 +178,10 @@
   </div>
 </div>
 
+    <div class="tech-spec-readout">
+      <span class="label">[FETCH]</span>
+      <span id="tech-spec-readout-text"></span>
+    </div>
   `;
 
 const mount = document.getElementById("tech-spec");
