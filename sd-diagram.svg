@@ -22,30 +22,7 @@
   </style>
   
   <defs>
-
-  <filter id="tightGlow"
-          filterUnits="objectBoundingBox"
-          x="-0.6" y="-0.6"
-          width="2.2" height="2.2">
-
-    <!-- tight inner halo -->
-    <feDropShadow
-      dx="0"
-      dy="0"
-      stdDeviation="0.9"
-      flood-color="#EBFA7A"
-      flood-opacity="0.22" />
-
-    <!-- soft outer halo -->
-    <feDropShadow
-      dx="0"
-      dy="0"
-      stdDeviation="1.6"
-      flood-color="#FFC000"
-      flood-opacity="0.18" />
-
-  </filter>
-    
+  
   </defs><g>
     
     <path d="M1167.5 1752.5 1167.5 1534.53 1275.5 1452.97 1275.5 1403.5" stroke="#FFC000" stroke-width="6.875" stroke-miterlimit="8" stroke-opacity="0.15" fill="none" fill-rule="evenodd"/>
@@ -78,63 +55,63 @@
 
         class="flux" 
       
-      d="M1314.5 1238.5 2814.36 1238.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M1314.5 1238.5 2814.36 1238.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux"
 
-      d="M424.5 1240.5 710.287 1240.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M424.5 1240.5 710.287 1240.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M870.5 1159.5C891.212 1126.99 1018 1006.2 1137.5 1151.51" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M870.5 1159.5C891.212 1126.99 1018 1006.2 1137.5 1151.51" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M906.5 1194.5C921.549 1170.33 1013.67 1080.51 1100.5 1188.56" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M906.5 1194.5C921.549 1170.33 1013.67 1080.51 1100.5 1188.56" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M726.5 1184.5C662.309 1136.95 583.137 1045.72 553.5 908.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M726.5 1184.5C662.309 1136.95 583.137 1045.72 553.5 908.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M713.5 1210.5C683.827 1194.49 573.964 1181.34 447.5 1078.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M713.5 1210.5C683.827 1194.49 573.964 1181.34 447.5 1078.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M2432.5 588.5C2172.44 845.562 1726.51 1166.59 1309.5 1205.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M2432.5 588.5C2172.44 845.562 1726.51 1166.59 1309.5 1205.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M1548.5 568.5C1548.11 688.567 1517.29 1045.09 1303.5 1182.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" filter="url(#tightGlow)"/>
+      d="M1548.5 568.5C1548.11 688.567 1517.29 1045.09 1303.5 1182.5" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
     
     <g><g><g>
       
-      <path d="M1200.5 1162.31C1157.86 1162.3 1123.28 1196.86 1123.27 1239.5 1123.26 1282.14 1157.81 1316.72 1200.46 1316.73 1243.1 1316.74 1277.68 1282.19 1277.69 1239.54 1277.69 1239.54 1277.69 1239.53 1277.69 1239.52 1277.71 1196.9 1243.18 1162.33 1200.56 1162.31 1200.54 1162.31 1200.52 1162.31 1200.5 1162.31ZM1200.5 1312.67C1160.1 1312.68 1127.34 1279.94 1127.33 1239.54 1127.32 1199.14 1160.06 1166.39 1200.46 1166.37 1240.85 1166.36 1273.61 1199.1 1273.62 1239.5 1273.62 1239.51 1273.62 1239.52 1273.62 1239.53 1273.58 1279.9 1240.87 1312.62 1200.5 1312.67Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000" filter="url(#tightGlow)"/>
+      <path d="M1200.5 1162.31C1157.86 1162.3 1123.28 1196.86 1123.27 1239.5 1123.26 1282.14 1157.81 1316.72 1200.46 1316.73 1243.1 1316.74 1277.68 1282.19 1277.69 1239.54 1277.69 1239.54 1277.69 1239.53 1277.69 1239.52 1277.71 1196.9 1243.18 1162.33 1200.56 1162.31 1200.54 1162.31 1200.52 1162.31 1200.5 1162.31ZM1200.5 1312.67C1160.1 1312.68 1127.34 1279.94 1127.33 1239.54 1127.32 1199.14 1160.06 1166.39 1200.46 1166.37 1240.85 1166.36 1273.61 1199.1 1273.62 1239.5 1273.62 1239.51 1273.62 1239.52 1273.62 1239.53 1273.58 1279.9 1240.87 1312.62 1200.5 1312.67Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000"/>
       
-      <path d="M1163.94 1237.47 1235.03 1237.47 1235.03 1241.53 1163.94 1241.53Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000" filter="url(#tightGlow)"/>
+      <path d="M1163.94 1237.47 1235.03 1237.47 1235.03 1241.53 1163.94 1241.53Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000"/>
     
     </g></g></g>
     
     <g><g><g>
       
-      <path d="M812.5 1162.31C769.858 1162.3 735.28 1196.86 735.268 1239.5 735.255 1282.14 769.813 1316.72 812.455 1316.73 855.097 1316.74 889.675 1282.19 889.687 1239.54 889.687 1239.54 889.687 1239.53 889.687 1239.52 889.71 1196.9 855.179 1162.33 812.561 1162.31 812.541 1162.31 812.52 1162.31 812.5 1162.31ZM812.5 1312.67C772.102 1312.68 739.343 1279.94 739.33 1239.54 739.318 1199.14 772.057 1166.39 812.455 1166.37 852.853 1166.36 885.613 1199.1 885.625 1239.5 885.625 1239.51 885.625 1239.52 885.625 1239.53 885.585 1279.9 852.873 1312.62 812.5 1312.67Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000" filter="url(#tightGlow)"/>
+      <path d="M812.5 1162.31C769.858 1162.3 735.28 1196.86 735.268 1239.5 735.255 1282.14 769.813 1316.72 812.455 1316.73 855.097 1316.74 889.675 1282.19 889.687 1239.54 889.687 1239.54 889.687 1239.53 889.687 1239.52 889.71 1196.9 855.179 1162.33 812.561 1162.31 812.541 1162.31 812.52 1162.31 812.5 1162.31ZM812.5 1312.67C772.102 1312.68 739.343 1279.94 739.33 1239.54 739.318 1199.14 772.057 1166.39 812.455 1166.37 852.853 1166.36 885.613 1199.1 885.625 1239.5 885.625 1239.51 885.625 1239.52 885.625 1239.53 885.585 1279.9 852.873 1312.62 812.5 1312.67Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000"/>
       
-      <path d="M813.516 1203.98 809.453 1203.98 809.453 1237.47 775.938 1237.47 775.938 1241.53 809.453 1241.53 809.453 1275.08 813.516 1275.08 813.516 1241.53 847.031 1241.53 847.031 1237.47 813.516 1237.47 813.516 1203.98Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000" filter="url(#tightGlow)"/>
+      <path d="M813.516 1203.98 809.453 1203.98 809.453 1237.47 775.938 1237.47 775.938 1241.53 809.453 1241.53 809.453 1275.08 813.516 1275.08 813.516 1241.53 847.031 1241.53 847.031 1237.47 813.516 1237.47 813.516 1203.98Z" stroke="#FFC000" stroke-width="9.28571" fill="#FFC000"/>
     
     </g></g></g>
     
@@ -142,37 +119,37 @@
       
         class="flux reverse"
 
-      d="M78 267C45.4948 246.288-75.3037 119.501 70.0095 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1137.5 1395.5)" filter="url(#tightGlow)"/>
+      d="M78 267C45.4948 246.288-75.3037 119.501 70.0095 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1137.5 1395.5)"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M58.0001 194C33.8295 178.951-55.9951 86.8281 52.0584 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1100.5 1341.5)" filter="url(#tightGlow)"/>
+      d="M58.0001 194C33.8295 178.951-55.9951 86.8281 52.0584 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(-1.83697e-16 -1 -1 1.83697e-16 1100.5 1341.5)"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M173 276C108.809 228.446 29.6369 137.221 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 553.5 1569.5)" filter="url(#tightGlow)"/>
+      d="M173 276C108.809 228.446 29.6369 137.221 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 553.5 1569.5)"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M266 132C236.326 115.994 126.464 102.836 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 447.5 1398.5)" filter="url(#tightGlow)"/>
+      d="M266 132C236.326 115.994 126.464 102.836 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(1 0 0 -1 447.5 1398.5)"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M616 1123C359.355 862.939 38.8475 417.015 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1309.5 1272.5)" filter="url(#tightGlow)"/>
+      d="M616 1123C359.355 862.939 38.8475 417.015 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1309.5 1272.5)"/>
     
     <path 
       
         class="flux reverse"
 
-      d="M614 245C493.933 244.609 137.414 213.792 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1303.5 1295.5)" filter="url(#tightGlow)"/>
+      d="M614 245C493.933 244.609 137.414 213.792 0 0" stroke="#FFC000" stroke-width="5.9" stroke-opacity="0.95" stroke-miterlimit="8" fill="none" fill-rule="evenodd" transform="matrix(6.12323e-17 1 1 -6.12323e-17 1303.5 1295.5)"/>
     
     <path d="M1532 591 1548 564 1564 591Z" fill="#FFC000" fill-rule="evenodd"/>
     
