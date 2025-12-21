@@ -185,7 +185,7 @@ function ensureTekuGlow(svg) {
 
   const filter = document.createElementNS(SVG_NS, "filter");
   filter.setAttribute("id", "tekugl");
-  filter.setAttribute("filterUnits", "objectBoundingBox");
+  filter.setAttribute("filterUnits", "userSpaceOnUse");
   filter.setAttribute("x", "-10000");
   filter.setAttribute("y", "-10000");
   filter.setAttribute("width", "20000");
