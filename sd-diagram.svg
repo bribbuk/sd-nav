@@ -22,7 +22,28 @@
   </style>
   
   <defs>
-  
+
+  <filter id="tekugl"
+          filterUnits="objectBoundingBox"
+          x="-0.6" y="-0.6"
+          width="2.2" height="2.2">
+
+    <!-- tight inner glow -->
+    <feDropShadow
+      dx="0" dy="0"
+      stdDeviation="0.9"
+      flood-color="#EBFA7A"
+      flood-opacity="0.22" />
+
+    <!-- softer outer glow -->
+    <feDropShadow
+      dx="0" dy="0"
+      stdDeviation="1.6"
+      flood-color="#ffcc00"
+      flood-opacity="0.18" />
+
+  </filter>
+    
   </defs><g>
     
     <path d="M1167.5 1752.5 1167.5 1534.53 1275.5 1452.97 1275.5 1403.5" stroke="#FFC000" stroke-width="6.875" stroke-miterlimit="8" stroke-opacity="0.15" fill="none" fill-rule="evenodd"/>
