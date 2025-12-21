@@ -186,10 +186,10 @@ function ensureTekuGlow(svg) {
   const filter = document.createElementNS(SVG_NS, "filter");
   filter.setAttribute("id", "tekugl");
   filter.setAttribute("filterUnits", "objectBoundingBox");
-  filter.setAttribute("x", "-0.6");
-  filter.setAttribute("y", "-0.6");
-  filter.setAttribute("width", "2.2");
-  filter.setAttribute("height", "2.2");
+  filter.setAttribute("x", "-10000");
+  filter.setAttribute("y", "-10000");
+  filter.setAttribute("width", "20000");
+  filter.setAttribute("height", "20000");
 
   const inner = document.createElementNS(SVG_NS, "feDropShadow");
   inner.setAttribute("dx", "0");
