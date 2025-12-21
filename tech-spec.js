@@ -96,12 +96,14 @@
         drop-shadow(0 0 10px rgba(255,204,0,0.06));
     }
 
-    .tech-spec-diagram {
-      position: relative;
-      width: 100%;
-      height: clamp(240px, 40vh, 420px);
-      margin-bottom: 10px;
-    }
+.tech-spec-diagram {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 420px;
+  margin-bottom: 10px;
+}
+
 
     .tech-spec-diagram object {
       width: 100%;
