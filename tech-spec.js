@@ -102,6 +102,7 @@
   aspect-ratio: 16 / 9;
   max-height: 520px;
   margin-bottom: 10px;
+  padding-bottom: 10px
 }
 
 
@@ -141,7 +142,7 @@
   appearance: none;
   background: rgba(38,38,38,0.65);
   color: #ffcc00;
-  opacity: 0.8
+  opacity: 0.8;
   border: 1px solid rgba(255,204,0,0.35);
   backdrop-filter: blur(2px);
   font-family: monospace;
@@ -191,6 +192,8 @@
     </select>
   </div>
 </div>
+
+<div class="tech-spec-divider"></div>
 
     <div class="tech-spec-readout">
       <span class="label">[FETCH]</span>
