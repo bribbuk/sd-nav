@@ -128,7 +128,6 @@
   bottom: 10px;
   background: rgba(38,38,38,0.65);
   padding: 4px 6px;
-  border: 1px solid rgba(255,204,0,0.35);
   backdrop-filter: blur(2px);
   font-size: 0.8em;
 }
@@ -169,7 +168,6 @@
   <div class="tech-spec-inspect">
     <label for="tech-spec-select">INSPECT</label>
     <select id="tech-spec-select">
-      <option value="">—</option>
       <option value="a">a</option>
       <option value="b">b</option>
       <option value="c.i">c.i</option>
@@ -180,11 +178,6 @@
   </div>
 </div>
 
-
-    <div class="tech-spec-readout">
-      <span class="label">[is]</span>
-      <span id="tech-spec-readout-text">—</span>
-    </div>
   `;
 
 const mount = document.getElementById("tech-spec");
